@@ -1,0 +1,52 @@
+Network portal project notes
+============================
+
+This is a log file of the steps used to create the Network Portal app. It's a
+rails 3.0.x app, using MySQL and jQuery.
+
+
+== create rails app
+
+rails new network_portal -d mysql
+cd network_portal/
+mv README rails.README
+touch README
+add gem "mongrel" to Gemfile
+bundle
+
+rails server
+
+browser to: http://127.0.0.1:3000/
+
+
+== added routes to use erb templates for static pages
+
+root :to => "static#index"
+match 'about' => "static#about"
+
+see: app/controllers/static_controller.rb
+     app/views/static/*
+
+== create DB and configure rails
+
+start mysql
+log-in as root
+create database network_portal_development;
+create user 'network_portal'@'localhost' identified by 'some password';
+grant all privileges on network_portal_development.* to 'network_portal'@'localhost';
+
+Got warning message:
+WARNING: This version of mysql2 (0.3.6) doesn't ship with the ActiveRecord adapter bundled anymore as it's now part of Rails 3.1
+WARNING: Please use the 0.2.x releases if you plan on using it in Rails <= 3.0.x
+
+Edit Gemfile to:
+gem 'mysql2', '< 0.3'
+bundle
+
+ok
+
+== convert project to use jQuery instead of prototype
+
+rake rails:template LOCATION=https://github.com/lleger/Rails-3-jQuery/raw/master/jquery.rb
+
+

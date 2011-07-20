@@ -1,0 +1,106 @@
+
+
+body {
+  margin: 0;
+  margin-bottom: 25px;
+  padding: 0;
+  background-color: #f0f0f0;
+  font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
+  font-size: 13px;
+  color: #333;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+a  {color: #03c}
+a:hover {
+  background-color: #03c;
+  color: white;
+  text-decoration: none;
+}
+
+#page {
+  background-color: #f0f0f0;
+  width: 750px;
+  margin: 0;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#content {
+  float: left;
+  background-color: white;
+  border: 3px solid #aaa;
+  padding: 25px;
+  width: 500px;
+}
+
+#sidebar {
+  float: right;
+  width: 175px;
+}
+
+#footer {
+  clear: both;
+  color: #aaa;
+  font-size: small;
+  padding-top: 36pt;
+  text-align: center;
+}
+
+#footer a {
+  color: #aaa;
+  text-decoration: none;
+}
+#footer a:hover {
+  color: #aaa;
+  background-color: #f0f0f0;
+  text-decoration: none;
+}
+
+
+#header, #place-holder {
+  padding-left: 75px;
+  padding-right: 30px;
+}
+
+#header {
+  background-image: url("/images/network_portal_logo.png");
+  background-repeat: no-repeat;
+  background-position: top left;
+  height: 64px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #ccc;
+}
+
+#header h1, #header h2 {margin: 0}
+#header h2 {
+  color: #888;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+#sidebar ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+#sidebar ul h3 {
+  margin-top: 25px;
+  font-size: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+#sidebar li {
+  list-style-type: none;
+}
+#sidebar ul.links li {
+  margin-bottom: 5px;
+}
+
+#place-holder li {
+  margin-top: 12pt;
+}

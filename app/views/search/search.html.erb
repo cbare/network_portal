@@ -1,0 +1,32 @@
+<div id="content">
+  <h1>Search Results</h1>
+  <p>app/views/search/search.html.erb</p>
+
+  <p>Searched for: <%= @q %></p>
+
+  <div id="gene_results">
+    <h2>Gene</h2>
+    <p>Gene search results...</p>
+  </div>
+
+  <div id="network_results">
+    <h2>Network</h2>
+    <p><a href="/network">view network</a></p>
+  </div>
+
+  <div id="function_results">
+    <h2>Function</h2>
+    <p>Function search results...</p>
+  </div>
+
+  <div id="motif_results">
+    <h2>Motif</h2>
+    <p>Motif search results...</p>
+  </div>
+
+  <p>Maybe these categories should be: genes, motifs, regulators, and conditions,
+    while networks could encompass all, which would more closely reflect the
+    structure of the biclusters.</p>
+    
+  <p><a href="/search_form">new search</a>&nbsp;<a href="/">home</a></p>
+</div>
