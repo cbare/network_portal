@@ -104,3 +104,18 @@ a:hover {
 #place-holder li {
   margin-top: 12pt;
 }
+
+#main-gene {
+    display: table;
+}
+
+#organism {
+    display: table-cell;
+    width: 100px;
+    padding-right: 20px;
+}
+
+#match-count {
+    display: table-cell;
+    width: 100px;
+}

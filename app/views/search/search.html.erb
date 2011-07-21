@@ -1,32 +1,55 @@
-<div id="content">
-  <h1>Search Results</h1>
-  <p>app/views/search/search.html.erb</p>
+<div id="page">
+  <div id="content">
+    <h1>Search Results</h1>
+    <p>app/views/search/search.html.erb</p>
 
-  <p>Searched for: <%= @q %></p>
+    <p>Searched for: <%= @q %></p>
 
-  <div id="gene_results">
-    <h2>Gene</h2>
-    <p>Gene search results...</p>
-  </div>
+    <div id="portal-tabs">
+      <ul>
+	<li><a href="#gene_results">Gene:</a></li>
+	<li><a href="#network_results">Network:</a></li>
+	<li><a href="#function_results">Function:</a></li>
+	<li><a href="#motif_results">Motif:</a></li>
+      </ul>
+      <div id="gene_results">
+	<div id="main-gene">
+	  <section id="organism">
+	    <span id="showhide_geneList" class="showhide">H.salinarum</span>
+	    <div id="geneList">
+	      gene 1
+	      <br />
+	      gene 2
+	      <br />
+	      gene 3
+	    </div>
+	  </section>
+	  <section id="match-count">
+	    13
+	  </section>
+	</div>
+      </div>
 
-  <div id="network_results">
-    <h2>Network</h2>
-    <p><a href="/network">view network</a></p>
-  </div>
+      <section id="network_results">
+	<h2>Network</h2>
+	<p><a href="/network">view network</a></p>
+      </section>
 
-  <div id="function_results">
-    <h2>Function</h2>
-    <p>Function search results...</p>
-  </div>
+      <section id="function_results">
+	<h2>Function</h2>
+	<p>Function search results...</p>
+      </section>
 
-  <div id="motif_results">
-    <h2>Motif</h2>
-    <p>Motif search results...</p>
-  </div>
+      <section id="motif_results">
+	<h2>Motif</h2>
+	<p>Motif search results...</p>
+      </section>
+    </div>
 
-  <p>Maybe these categories should be: genes, motifs, regulators, and conditions,
-    while networks could encompass all, which would more closely reflect the
-    structure of the biclusters.</p>
+    <p>Maybe these categories should be: genes, motifs, regulators, and conditions,
+      while networks could encompass all, which would more closely reflect the
+      structure of the biclusters.</p>
     
-  <p><a href="/search_form">new search</a>&nbsp;<a href="/">home</a></p>
-</div>
+    <p><a href="/search_form">new search</a>&nbsp;<a href="/">home</a></p>
+  </div><!-- End #content -->
+</div><!-- End #page -->

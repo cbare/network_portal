@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
   $(document).ready( function() {
     // automatically populate search box by clicking on example search items
@@ -8,19 +7,21 @@
   });
 </script>
 
-<div id="content">
-  <h1>Search</h1>
-  <p>app/views/search/index.html.erb</p>
+<div id="page">
+  <div id="content">
+    <h1>Search</h1>
+    <p>app/views/search/index.html.erb</p>
 
-  <%= form_tag('/search', :method => "get") do %>
+    <%= form_tag('/search', :method => "get") do %>
     <%= label_tag(:q, "Search for:") %><br />
     <%= text_area_tag(:q, "", :size => "48x6") %><br />
     <%= submit_tag("Search") %>
-  <% end %>
+    <% end %>
 
-  <h2>Examples</h2>
-  <h3>Search for foo genes</h3>
-  <p class="example-search">abc, def, ghi2, jkl</p>
+    <h2>Examples</h2>
+    <h3>Search for foo genes</h3>
+    <p class="example-search">abc, def, ghi2, jkl</p>
 
-  <p><a href="/search_form">new search</a>&nbsp;<a href="/">home</a></p>
+    <p><a href="/search_form">new search</a>&nbsp;<a href="/">home</a></p>
+  </div>
 </div>
