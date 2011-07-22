@@ -15,12 +15,15 @@ h1 {
   color: #000;
 }
 
-a  {color: #03c}
-a:hover {
+a  {
+    color: #03c
+}
+
+/*a:hover {
   background-color: #03c;
   color: white;
   text-decoration: none;
-}
+}*/
 
 #page {
   background-color: #f0f0f0;
@@ -105,17 +108,34 @@ a:hover {
   margin-top: 12pt;
 }
 
-#main-gene {
+#gene-group-1, #gene-group-2 {
     display: table;
 }
 
-#organism {
+#organism, #match-count, #gene-view {
     display: table-cell;
     width: 100px;
     padding-right: 20px;
 }
 
-#match-count {
+#organism {
+    text-align: left;
+    vertical-align: bottom;
+}
+
+#match-count, #gene-view, #add-to-cart {
+    text-align: center;
+}
+
+#add-to-cart {
     display: table-cell;
     width: 100px;
+}
+
+.title {
+    text-decoration: underline;
+}
+
+#icon, #match-count, .gene-title {
+    vertical-align: top;
 }

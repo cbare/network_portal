@@ -13,10 +13,22 @@
 	<li><a href="#motif_results">Motif:</a></li>
       </ul>
       <div id="gene_results">
-	<div id="main-gene">
+	<section id="organism" class="title">
+	  <h4>Organism</h4>
+	</section>
+	<section id="match-count" class="title">
+	  <h4># of matching genes</h4>
+	</section>
+	<section id="gene-view" class="title">
+	  <h4>Analyze results with gene view</h4>
+	</section>
+	<section id="add-to-cart" class="title">
+	  <h4>Add to analysis cart</h4>
+	</section>
+	<div id="gene-group-1">
 	  <section id="organism">
-	    <span id="showhide_geneList" class="showhide">H.salinarum</span>
-	    <div id="geneList">
+	    <span id="showhide_gene-list-1" class="showhide gene-title">H.salinarum</span>
+	    <div id="gene-list-1">
 	      gene 1
 	      <br />
 	      gene 2
@@ -25,7 +37,35 @@
 	    </div>
 	  </section>
 	  <section id="match-count">
-	    13
+	    <span class="row-title">13</span>
+	  </section>
+	  <section id="gene-view">
+	    <span id="icon"><%= link_to image_tag("portal_icons/analyze_gene.png", :mouseover => "portal_icons/analyze_gene_hover.png"), {:action => :search} %></span>
+	  </section>
+	  <section id="add-to-cart">
+	    <span id="icon"><%= link_to image_tag("portal_icons/cart.png", :mouseover => "portal_icons/cart_hover.png"), {:action => :search} %></span>
+	  </section>
+	</div>
+	<br />
+	<div id="gene-group-2">
+	  <section id="organism">
+	    <span id="showhide_gene-list-2" class="showhide gene-title">H.volcanii</span>
+	    <div id="gene-list-2">
+	      gene a
+	      <br />
+	      gene b
+	      <br />
+	      gene c
+	    </div>	  
+	  </section>
+	  <section id="match-count">
+	    <span class="row-title">7</span>
+	  </section>
+	  <section id="gene-view">
+	    <%= link_to image_tag("portal_icons/analyze_gene.png", :mouseover => "portal_icons/analyze_gene_hover.png"), {:action => :search} %>
+	  </section>
+	  <section id="add-to-cart">
+	    <span id="icon"><%= link_to image_tag("portal_icons/cart.png", :mouseover => "portal_icons/cart_hover.png"), {:action => :search} %></span>
 	  </section>
 	</div>
       </div>
