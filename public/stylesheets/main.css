@@ -108,14 +108,41 @@ a  {
   margin-top: 12pt;
 }
 
-#gene-group-1, #gene-group-2 {
+#portal-tabs {
+    width: 500px;
+}
+
+#gene-group-1, #gene-group-2, #bicluster-group-1, #bicluster-group-2, #organism-group-1, #organism-group-2 {
     display: table;
 }
 
-#organism, #match-count, #gene-view {
+#gene-results, #network-results, #function-results, #motif-results {
+    padding-left: 10px;
+}
+
+#organism, #match-count, #function {
+    display: table-cell;
+    width: 110px;
+    padding-right: 20px;
+}
+
+#gene-view {
     display: table-cell;
     width: 100px;
-    padding-right: 20px;
+}
+
+#network-view {
+    display: table-cell;
+    width: 100px;
+}
+
+#function-view {
+    display: table-cell;
+    width: 100px;
+}
+
+#add-to-cart {
+    padding-left: 20px;
 }
 
 #organism {
@@ -123,7 +150,12 @@ a  {
     vertical-align: bottom;
 }
 
-#match-count, #gene-view, #add-to-cart {
+#match-count, #gene-view, #add-to-cart, #network-view, #function-view {
+    text-align: center;
+    vertical-align: top;
+}
+
+#function-results #organism.title {
     text-align: center;
 }
 
@@ -132,18 +164,31 @@ a  {
     width: 100px;
 }
 
-.title {
+.title, #match-count.title, #add-to-cart.title {
     text-decoration: underline;
+    vertical-align: bottom;
 }
 
-#icon, #match-count, .gene-title {
+.row-item, #organism.row-item {
     vertical-align: top;
 }
 
+#icon, .gene-title, .bicluster-title {
+    vertical-align: top;
+}
+
+span.gene-title, span.bicluster-title, span.organism-title {
+    display: block;
+    text-align: right;
+    max-width: 100%;
+}
+
 .expanded {
-    background: url("../images/portal_icons/down_arrow.png") no-repeat left top;
+    background: url("../images/portal_icons/down_arrow.png") no-repeat;
+    height: 27px;
 }
 
 .collapsed {
-    background: url("../images/portal_icons/right_arrow.png") no-repeat left top;    
+    background: url("../images/portal_icons/right_arrow.png") no-repeat;    
+    height: 27px;
 }

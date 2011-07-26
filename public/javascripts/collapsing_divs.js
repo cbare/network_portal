@@ -35,7 +35,7 @@ function addCollapsingDivListeners(openMultiple) {
 			        $(this).addClass('expanded').removeClass('collapsed');
 			    }
 			});
-			//$(parentID).css("background-image", "url(portal_icons/down_arrow.png)");
+			// end my change
 			$(parentID).bind('click', {'name': childName, 'mul': openMultiple}, function(e) {
 				if ($("#"+e.data['name']).is(":visible")) {
 					$("#"+e.data['name']).slideUp('fast');
