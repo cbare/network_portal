@@ -25,8 +25,17 @@ function addCollapsingDivListeners(openMultiple) {
 				first = false;
 			else
 				child.hide();
-			//$(parentID).css('cursor', 'pointer');
-			$(parentID).css('background-image', '/portal_icons/down_arrow.png');
+			$(parentID).css('cursor', 'pointer');
+			// my change
+			$(parentID).click(function() {
+			    if( $(this).hasClass('expanded')) {
+			        $(this).addClass('collapsed').removeClass('expanded');
+			    }
+			    else {
+			        $(this).addClass('expanded').removeClass('collapsed');
+			    }
+			});
+			//$(parentID).css("background-image", "url(portal_icons/down_arrow.png)");
 			$(parentID).bind('click', {'name': childName, 'mul': openMultiple}, function(e) {
 				if ($("#"+e.data['name']).is(":visible")) {
 					$("#"+e.data['name']).slideUp('fast');

@@ -139,3 +139,11 @@ a  {
 #icon, #match-count, .gene-title {
     vertical-align: top;
 }
+
+.expanded {
+    background: url("../images/portal_icons/down_arrow.png") no-repeat left top;
+}
+
+.collapsed {
+    background: url("../images/portal_icons/right_arrow.png") no-repeat left top;    
+}
