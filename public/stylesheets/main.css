@@ -27,10 +27,10 @@ a  {
 
 #page {
   background-color: #f0f0f0;
-  width: 750px;
+  width: 1050px;
   margin: 0;
   margin-top: 10px;
-  margin-left: auto;
+  margin-left: 100px; /*auto;*/
   margin-right: auto;
 }
 
@@ -39,11 +39,11 @@ a  {
   background-color: white;
   border: 3px solid #aaa;
   padding: 25px;
-  width: 500px;
+  width: 850px;
 }
 
 #sidebar {
-  float: right;
+  /*float: right; */
   width: 175px;
 }
 
@@ -53,6 +53,7 @@ a  {
   font-size: small;
   padding-top: 36pt;
   text-align: center;
+  margin-left: -150px;
 }
 
 #footer a {
@@ -109,34 +110,33 @@ a  {
 }
 
 #portal-tabs {
-    width: 500px;
+    /*width: 500px;*/
 }
 
 #gene-group-1, #gene-group-2, #bicluster-group-1, #bicluster-group-2, #organism-group-1, #organism-group-2 {
     display: table;
 }
 
+#motif-group-1, #motif-group-2  {
+    display: table;
+    width: 100%;
+}
+
 #gene-results, #network-results, #function-results, #motif-results {
     padding-left: 10px;
 }
 
-#organism, #match-count, #function {
+#organism, #match-count, #function, #motif {
     display: table-cell;
     width: 110px;
     padding-right: 20px;
 }
 
-#gene-view {
-    display: table-cell;
-    width: 100px;
+.homology-title, .interaction-title, .network-title, .summary-title, .related-title, .gene-function-title, .function-title {
+    width: 170px;
 }
 
-#network-view {
-    display: table-cell;
-    width: 100px;
-}
-
-#function-view {
+#gene-view, #network-view, #function-view, #motif-view {
     display: table-cell;
     width: 100px;
 }
@@ -150,12 +150,12 @@ a  {
     vertical-align: bottom;
 }
 
-#match-count, #gene-view, #add-to-cart, #network-view, #function-view {
+#match-count, #gene-view, #add-to-cart, #network-view, #function-view, #motif-view {
     text-align: center;
     vertical-align: top;
 }
 
-#function-results #organism.title {
+#function-results, #motif-results, #organism.title {
     text-align: center;
 }
 
@@ -173,13 +173,36 @@ a  {
     vertical-align: top;
 }
 
-#icon, .gene-title, .bicluster-title {
+.gene-title, .bicluster-title {
     vertical-align: top;
 }
 
-span.gene-title, span.bicluster-title, span.organism-title {
+#icon {
+    display: table;
+    margin-left: 35px;
+}
+
+#cell-item {
     display: block;
-    text-align: right;
+    height: 30px;
+}
+
+.motif-title {
+    width: 110px;
+}
+
+#organism-match {
+    display: table-cell;
+    width: 200px;
+}
+
+#motif-results #organism, #motif-results #motif-view {
+    padding-left: 20px;
+}
+
+span.gene-title, span.bicluster-title, span.organism-title, span.motif-title, span.function-title, span.homology-title, span.interaction-title, span.network-title, span.summary-title, span.related-title, span.gene-function-title {
+    display: block;
+    /*text-align: right;*/
     max-width: 100%;
 }
 
@@ -191,4 +214,34 @@ span.gene-title, span.bicluster-title, span.organism-title {
 .collapsed {
     background: url("../images/portal_icons/right_arrow.png") no-repeat;    
     height: 27px;
+}
+
+#organism-list {
+    display: table-cell;
+    width: 150px;
+    text-align: left;
+}
+
+#count-list {
+    display: table-cell;
+    width: 50px;
+    text-align: left;
+}
+
+#name, #count {
+    display: table-cell;
+}
+
+#subhead {
+    height: 35px;
+    margin: 0px;
+}
+
+#name #subhead, #count #subhead {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#item-title {
+    padding-left: 25px;
 }

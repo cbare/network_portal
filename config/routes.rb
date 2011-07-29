@@ -1,8 +1,12 @@
 NetworkPortal::Application.routes.draw do
 
-  match 'search_form' => 'search#index', :as => :search_form
-  match 'search' => 'search#search',     :as => :search
-  match 'network' => 'network#index',    :as => :network
+  match 'search_form' => 'search#index',            :as => :search_form
+  match 'search' => 'search#search',                :as => :search
+  match 'network' => 'network#index',               :as => :network
+  match 'analysis/gene' => 'analysis#gene',         :as => :gene
+  match 'analysis/function' => 'analysis#function', :as => :function
+  match 'analysis/motif' => 'analysis#motif',       :as => :motif
+  match 'analysis/network' => 'analysis#network',   :as => :anal_network
 
   root :to => "static#index"
 
