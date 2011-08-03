@@ -2,7 +2,7 @@ NetworkPortal::Application.routes.draw do
 
   match 'search_form' => 'search#index',            :as => :search_form
   match 'search' => 'search#search',                :as => :search
-  match 'network' => 'network#index',               :as => :network
+  match 'network' => 'network#show_in_cytoscape_web',               :as => :network
   match 'analysis/gene' => 'analysis#gene',         :as => :gene
   match 'analysis/function' => 'analysis#function', :as => :function
   match 'analysis/motif' => 'analysis#motif',       :as => :motif
