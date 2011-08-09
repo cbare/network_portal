@@ -6,8 +6,8 @@ create database if not exists network_portal_development;
 use network_portal_development;
 
 
-drop table if exists runs;
-create table runs (
+drop table if exists networks;
+create table networks (
   id int(11) primary key NOT NULL AUTO_INCREMENT,
   species_id int(11),
   name varchar(255),
@@ -19,7 +19,7 @@ create table runs (
 drop table if exists biclusters;
 create table biclusters (
   id int(11) primary key NOT NULL AUTO_INCREMENT,
-  run_id int(11) not null,
+  network_id int(11) not null,
   k int not null,
   residual real
 );
