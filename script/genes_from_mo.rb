@@ -2,6 +2,8 @@
 ## grab gene annotations from Microbes Online and import them to a MySQL DB
 ##
 
+## NOTE: this is out of date, abandoned and won't work. See genes_from_ncbi.rb
+
 require 'rubygems'
 require 'open-uri'
 require 'mysql'
@@ -86,6 +88,7 @@ while (line = file.gets)
 end
 
 sql.close
+db.close
 
 file.close
 
