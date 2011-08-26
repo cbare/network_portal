@@ -2,17 +2,18 @@
 ## get gene annotations from NCBI
 ##
 
-require 'rubygems'
-require 'open-uri'
-require 'mysql'
-require 'ostruct'
-
-
 # Expected format, a tab separated file with these columns:
 # Product Name, Start, End, Strand, Length, Gi, GeneID, Locus, Locus_tag, COG(s)
 # 2 header lines, for example:
 # Desulfovibrio vulgaris str. Hildenborough chromosome, complete genome
 # Product Name	Start	End	Strand	Length	Gi	GeneID	Locus	Locus_tag	COG(s)
+
+# Christopher Bare 2011-08
+
+require 'rubygems'
+require 'open-uri'
+require 'mysql'
+require 'ostruct'
 
 
 def dash_to_null(string)

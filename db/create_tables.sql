@@ -70,13 +70,14 @@ create table genes (
   end int(10) unsigned,
   strand char(1),
   description varchar(255),
+  transcription_factor boolean,
   INDEX(name),
   INDEX(species_id)
 );
 
 # link biclusters to member genes
-drop table if exists bicluster_genes;
-create table bicluster_genes (
+drop table if exists biclusters_genes;
+create table biclusters_genes (
   bicluster_id int(11) not null,
   gene_id int(11) not null,
   INDEX (bicluster_id),
@@ -87,6 +88,7 @@ create table bicluster_genes (
 drop table if exists conditions;
 create table conditions (
   id int(11) primary key NOT NULL AUTO_INCREMENT,
+  network_id int(11),
   name varchar(255)
 );
 
@@ -98,6 +100,68 @@ create table biclusters_conditions (
   INDEX (bicluster_id),
   INDEX (condition_id)
 );
+
+# motifs
+# a motif will belong to only 1 bicluster
+drop table if exists motifs;
+create table motifs (
+  id int(11) primary key NOT NULL AUTO_INCREMENT,
+  bicluster_id int(11),
+  position int(11),
+  sites int(11),
+  e_value real,
+  INDEX (bicluster_id)
+);
+
+
+# PSSMs
+drop table if exists pssms;
+create table pssms (
+  motif_id int(11) NOT NULL,
+  position int,
+  a real not null,
+  c real not null,
+  g real not null,
+  t real not null,
+  INDEX (motif_id)
+);
+
+
+# ratios - gene expression measurements
+# expression of a gene measured under a given condition
+drop table if exists expression;
+create table expression (
+  gene_id int(11) not null,
+  condition_id int(11) not null,
+  value real,
+  INDEX (gene_id),
+  INDEX (condition_id)
+);
+
+
+# influences are things that influence/predict the expression
+# of a bicluster. They might be TFs, TF-groups, logical functions
+# (AND, OR), or environmental factors.
+drop table if exists influences;
+create table influences (
+  id int(11) primary key NOT NULL AUTO_INCREMENT,
+  name varchar(255),
+  gene_id int(11),
+  type varchar(255)
+  index(gene_id)
+);
+
+drop table if exists biclusters_influences;
+create table biclusters_influences (
+  influence_id int(11),
+  bicluster_id int(11),
+  coefficient real,
+  INDEX (bicluster_id)
+);
+
+# tf_groups and tf_groups_genes?
+
+# 
 
 # gene_functions
 
