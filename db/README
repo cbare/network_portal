@@ -1,0 +1,19 @@
+Initializing the DB
+
+1) create DB, create user, grant privileges
+    * create database network_portal;
+    * create user testuser with login password 'example';
+    * grant all privileges on network_portal to testuser;
+
+2) create tables
+    * python manage.py syncdb
+
+3) populate w/ initial data
+    * species, chromosomes, etc.
+    * this is automatically done by syncdb. see networks/sql/chromosome.sql and species.sql
+
+4) populate gene table
+    * set of genes needs to contain all genes for which cMonkey has
+      expression data and will place in biclusters
+    * see scripts/insert_genes.py
+
