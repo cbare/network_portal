@@ -1,10 +1,13 @@
 ##
-## load gene annotations from NCBI into postgres
+## load DVH gene annotations from NCBI into postgres
+##
+## some of this code might be more-or-less reusable,
+## but it's written as a one-off
 ##
 import sys
 import psycopg2
 
-data_dir = '../../data/dvu'
+data_dir = '../data/dvu'
 genes_chromosome_file = 'proteins_chromosome.tsv'
 genes_plasmid_file = 'proteins_pDV.tsv'
 
