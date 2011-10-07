@@ -1,7 +1,0 @@
-{{ object.title }}
-{{ object.text }}
-{{ object.species }}
-{{ object.name }}
-{{ object.network_name }}
-{{ object.condition_name }}
-{{ object.annotation_title }}
