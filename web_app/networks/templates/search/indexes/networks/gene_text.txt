@@ -1,0 +1,7 @@
+{{ object.title }}
+{{ object.text }}
+{{ object.gene_name }}
+{{ object.gene_common_name }}
+{{ object.gene_type }}
+{{ object.gene_strand }}
+{{ object.gene_description }}

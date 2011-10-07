@@ -1,0 +1,4 @@
+{{ object.chromosome }}
+{{ object.chromosome_length }}
+{{ object.chromosome_topology }}
+{{ object.text }}

@@ -1,0 +1,3 @@
+{{ object.species_name }}
+{{ object.species_short_name }}
+{{ object.text }}
