@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Network Portal</title>
+</head>
+<body>
+  <h1>{{ species.name }}</h1>
+
+  <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
+  
+  <h2>Genome:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Chromosome</th>
+        <th>Length</th>
+        <th>Topology</th>
+        <th>Refseq</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for chr in chromosomes %}
+      <tr>
+        <td>{{ chr.name }}</td>
+        <td>{{ chr.length }}</td>
+        <td>{{ chr.topology }}</td>
+        <td>{% if chr.refseq %}<a href="http://www.ncbi.nlm.nih.gov/nuccore/{{ chr.refseq }}">{{ chr.refseq }}</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if species.ucsc_id %}
+  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
+  {% endif %}
+
+</body>
+</html>

@@ -1,11 +1,4 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#     * Rearrange models' order
-#     * Make sure each model has one field with primary_key=True
-# Feel free to rename the models, but don't rename db_table values or field names.
-#
-# Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
-# into your database.
+
 
 from django.db import models
 
@@ -19,6 +12,9 @@ class Species(models.Model):
     
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 class Chromosome(models.Model):
     species = models.ForeignKey(Species)
@@ -39,6 +35,7 @@ class Network(models.Model):
     
     def __unicode__(self):
         return self.name
+    
 
 class Condition(models.Model):
     network = models.ForeignKey(Network)
@@ -62,6 +59,9 @@ class Gene(models.Model):
     
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 class Influence(models.Model):
     name = models.CharField(max_length=255)
@@ -87,19 +87,6 @@ class Motif(models.Model):
     position = models.IntegerField(blank=True, null=True)
     sites = models.IntegerField(blank=True, null=True)
     e_value = models.FloatField(blank=True, null=True)
-
-# class PSSM(models.Model):
-#     motif = models.ForeignKey(Motif)
-#     position = models.IntegerField()
-#     a = models.FloatField()
-#     c = models.FloatField()
-#     g = models.FloatField()
-#     t = models.FloatField()
-
-# class Expression(models.Model):
-#     gene = models.ForeignKey(Gene)
-#     condition = models.ForeignKey(Condition)
-#     value = models.FloatField()
 
 # A generalized annotation field. Put annotation on any type of object.
 class Annotation(models.Model):

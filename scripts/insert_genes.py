@@ -57,7 +57,8 @@ def read_genes(filename, genes=None, chromosome='chromosome'):
                 gene.name = fields[8]                          # locus tag
                 if (fields[7] != '-'):
                     gene.common_name = fields[7]               # locus
-                gene.geneid = int(fields[5])
+                gene.gi = int(fields[5])
+                gene.geneid = int(fields[6])
                 gene.strand = fields[3]                        # '+' or '-'
                 gene.start = int(fields[1])
                 gene.end = int(fields[2])
@@ -200,24 +201,53 @@ def insert_genes_into_postgres(genes, species):
         if (con): con.close()
 
 
+def fix_gene_ids():
+    """I screwed up originally and inserted gi instead of geneid, so fix it here"""
+    genes = []
+    read_genes( data_dir + '/' + genes_chromosome_file, genes=genes, chromosome='chromosome' )
+    read_genes( data_dir + '/' + genes_plasmid_file, genes=genes, chromosome='pDV' )
 
-# user may specifying data directory on the command line
-if ( len(sys.argv) > 1 ):
-    data_dir = sys.argv[1]
+    con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+    cur = None
+    
+    try:
+        cur = con.cursor()
+        for gene in genes:
+            if gene.gi and gene.geneid:
+                cur.execute("""update networks_gene set geneid=%s where geneid=%s;""",
+                    (gene.geneid,
+                     gene.gi,))
+        con.commit()
 
-print("\nreading genes...\n")
+        
+    finally:
+        if (cur): cur.close()
+        if (con): con.close()
 
-genes = []
-read_genes( data_dir + '/' + genes_chromosome_file, genes=genes, chromosome='chromosome' )
-read_genes( data_dir + '/' + genes_plasmid_file, genes=genes, chromosome='pDV' )
-missing_genes( genes=genes )
 
-print("finished reading %d genes.\n" % (len(genes)))
 
-print("inserting genes...\n")
+def main():
+    # user may specifying data directory on the command line
+    if ( len(sys.argv) > 1 ):
+        data_dir = sys.argv[1]
 
-insert_genes_into_postgres(genes, "Desulfovibrio vulgaris Hildenborough")
+    print("\nreading genes...\n")
 
-print("finished inserting %d genes.\n" % (len(genes)))
+    genes = []
+    read_genes( data_dir + '/' + genes_chromosome_file, genes=genes, chromosome='chromosome' )
+    read_genes( data_dir + '/' + genes_plasmid_file, genes=genes, chromosome='pDV' )
+    missing_genes( genes=genes )
+
+    print("finished reading %d genes.\n" % (len(genes)))
+
+    print("inserting genes...\n")
+
+    insert_genes_into_postgres(genes, "Desulfovibrio vulgaris Hildenborough")
+
+    print("finished inserting %d genes.\n" % (len(genes)))
+
+if __name__ == "__main__":
+    main()
+
 
 
