@@ -14,52 +14,49 @@
 
         {% if query %}
             <h3>Results</h3>
-		  {{ result.species_name }}
-		  <br />
-		  {{ result.species_short_name }}
-		  <br />
-		  {{ result }}
-		  <br />
-		  {{ result.object.gene_name }}
-		  <br />
-		  {{ result.object.gene_common_name }}
-		  <br />
-		  {{ result.object.gene_type }}
-		  <br />
-		  {{ result.object.gene_strand }}
-		  <br />
-		  {{ result.object.gene_description }}
-		  <br />
-		  {{ result.object.chromosome }}		  
-		  <br />
-		  {{ result.object.chromosome_length }}
-		  <br />
-		  {{ result.object.chromosome_topology }}
-		  <br />
 
+		  {{ page }}
             {% for result in page.object_list %}
                 <p>
-		  {{ result.object.gene_name }}
+		  <b>gene name:</b> 
+		  {{ result.gene_name }}
 		  <br />
-		  {{ result.object.gene_common_name }}
+		  <b>gene common name:</b> 
+		  {{ result.gene_common_name }}
 		  <br />
-		  {{ result.object.gene_type }}
+		  <b>gene type:</b> 
+		  {{ result.gene_type }}
 		  <br />
-		  {{ result.object.gene_strand }}
+		  <b>gene strand:</b>
+		  {{ result.gene_strand }}
 		  <br />
-		  {{ result.object.gene_description }}
+		  <b>gene description:</b> 
+		  {{ result.gene_description }}
 		  <br />
-		  {{ result.object.chromosome }}		  
+		  <b>chromosome:</b>
+		  {{ result.chromosome }}		  
 		  <br />
-		  {{ result.object.chromosome_length }}
+		  <b>chromosome length:</b>
+		  {{ result.chromosome_length }}
 		  <br />
-		  {{ result.object.chromosome_topology }}
+		  <b>chromosome topology:</b>
+		  {{ result.chromosome_topology }}
 		  <br />
-		  {{ result.object.species_name }}
+		  <b>species name:</b>
+		  {{ result.species_name }}
 		  <br />
-		  {{ result.object.species_short_name }}
+		  <b>species short name:</b>
+		  {{ result.species_short_name }}
 		  <br />
-                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+		  <b>network name:</b> {{ result.network_name }}
+		  <br />
+		  <b>network descr:</b> {{ result.network_description }}
+		  <br />
+		  <b>network creation time:</b> {{ result.network_created_at }}
+		  <br />
+		  <b>gene name from species:</b> {{ result.gene_name.0 }} , {{ result.gene_name.5 }}
+		  <br />
+		  <b>text:</b> {{ result.text }}
                 </p>
             {% empty %}
                 <p>No results found.</p>

@@ -1,0 +1,31 @@
+ID,locusId,accession,GI,scaffoldId,start,stop,strand,name,desc,COG,COGFun,COGDesc,TIGRFam,TIGRRoles,GO,EC,ECDesc
+DVUA0124,209601,YP_009164.1,46562137,1945,162643,163059,+,DVUA0124,sigma factor serine-protein kinase (TIGR),COG2172,T,Anti-sigma regulatory factor (Ser/Thr protein kinase),,,GO:0005524,,
+DVUA0119,209605,YP_009159.1,46562141,1945,157639,158955,+,sctN,type III secretion system ATPase (TIGR),COG1157,NU,Flagellar biosynthesis/type III secretory pathway ATPase,TIGR01026 ATPase FliI/YscN family,TIGR02546 type III secretion apparatus H+-transporting two-sector ATPase,Energy metabolism:ATP-proton motive force interconversion,GO:0015986,GO:0030254,GO:0015031,GO:0016469,GO:0005737,GO:0045259,GO:0003936,GO:0046933,GO:0005524,GO:0046961,3.6.3.14,H(+)-transporting two-sector ATPase.
+DVUA0117,209606,YP_009157.1,46562142,1945,154970,155785,+,escJ,type III secretion lipoprotein (TIGR),COG4669,U,Type III secretory pathway, lipoprotein EscJ,TIGR02544 type III secretion apparatus lipoprotein, YscJ/HrcJ family,Cellular processes:Pathogenesis,GO:0009306,GO:0015448,,
+DVUA0114,209609,YP_009154.1,46562145,1945,153041,153250,+,DVUA0114,hypothetical protein (TIGR),,,,,,,,
+DVUA0112,209611,YP_009152.1,46562147,1945,149369,151243,+,DVUA0112,type III secretion system protein, YscC family (TIGR),COG1450,NU,Type II secretory pathway, component PulD,TIGR02516 type III secretion outer membrane pore, YscC/HrcC family,Cellular processes:Pathogenesis,GO:0009306,GO:0016020,GO:0015448,,
+DVUA0111,209612,YP_009151.1,46562148,1945,147662,148558,+,DVUA0111,type III secretion system protein, IpaC family, putative (TIGR),,,,,,,,
+DVUA0033,209689,YP_009073.1,46562214,1945,36600,36797,+,DVUA0033,hypothetical protein (TIGR),,,,,,,,
+DVUA0032,209690,YP_009072.1,46562215,1945,36568,35708,-,DVUA0032,hypothetical protein (TIGR),,,,,,,,
+DVUA0147,209727,YP_009187.1,46562249,1945,192334,193575,+,DVUA0147,conserved hypothetical protein (TIGR),COG2984,R,ABC-type uncharacterized transport system, periplasmic component,,,,,
+DVUA0131,209594,YP_009171.1,46562131,1945,171056,172894,+,DVUA0131,CRISPR-associated protein, CT1133 family (TIGR),,,,TIGR01863 CRISPR-associated protein, Csd1 family [csd1],Mobile and extrachromosomal element functions:Other,,,
+DVUA0126,209599,YP_009166.1,46562135,1945,164796,165263,+,DVUA0126,conserved hypothetical protein (TIGR),,,,,,GO:0009405,GO:0050708,GO:0005737,,
+DVUA0123,209602,YP_009163.1,46562138,1945,162292,162627,+,DVUA0123,anti-anti-sigma factor (TIGR),COG1366,T,Anti-anti-sigma regulatory factor (antagonist of anti-sigma factor),TIGR00377 anti-anti-sigma factor,Regulatory functions:Protein interactions,GO:0006355,GO:0045152,,
+DVUA0122,209603,YP_009162.1,46562139,1945,161611,162261,+,yscR,type III secretion system protein, YscR family (TIGR),COG4790,U,Type III secretory pathway, component EscR,TIGR01102 type III secretion apparatus protein, YscR/HrcR family [epaP],Cellular processes:Pathogenesis,GO:0009306,GO:0015031,GO:0016021,GO:0004806,GO:0015448,3.1.1.3,Triacylglycerol lipase.
+DVUA0121,209604,YP_009161.1,46562140,1945,160160,161614,+,DVUA0121,type III secretion system protein, YopQ family (TIGR),COG1886,NU,Flagellar motor switch/type III secretory pathway protein,TIGR02551 type III secretion apparatus protein, YscQ/HrcQ family [epaO],Cellular processes:Pathogenesis,GO:0030254,,
+DVUA0116,209607,YP_009156.1,46562143,1945,153722,154087,+,DVUA0116,conserved hypothetical protein (TIGR),,,,,,GO:0005488,,
+DVUA0115,209608,YP_009155.1,46562144,1945,153276,153527,+,DVUA0115,type III secretion system protein, YscF family (TIGR),,,,TIGR02105 type III secretion apparatus needle protein [eprI],Cellular processes:Pathogenesis,GO:0009405,GO:0015031,GO:0008565,,
+DVUA0113,209610,YP_009153.1,46562146,1945,151240,153048,+,DVUA0113,type III secretion protein, YscD family (TIGR),,,,TIGR02500 type III secretion apparatus protein, YscD/HrpQ family,Cellular processes:Pathogenesis,,,
+DVUA0109,209613,YP_009149.1,46562149,1945,146209,146709,+,DVUA0109,type III secretion system chaperone, LcrH/SycD family (TIGR),,,,TIGR02552 type III secretion low calcium response chaperone LcrH/SycD,,GO:0006950,GO:0005488,,
+DVUA0108,209614,YP_009148.1,46562150,1945,145691,146200,+,DVUA0108,hypothetical protein (TIGR),,,,,,,,
+DVUA0107,209615,YP_009147.1,46562151,1945,144885,144989,+,DVUA0107,hypothetical protein (TIGR),,,,,,,,
+DVUA0104,209617,YP_009144.1,46562153,1945,142421,140328,-,sctV,type III secretion inner membrane protein, HrcV family (TIGR),COG4789,U,Type III secretory pathway, component EscV,TIGR01399 type III secretion protein, HrcV family,Cellular processes:Pathogenesis,GO:0009306,GO:0015031,GO:0016021,,
+DVUA0101,209620,YP_009141.1,46562156,1945,138927,137887,-,flhB,type III secretion protein, hrpY/hrcU family (TIGR),COG1377,NU,Flagellar biosynthesis pathway, component FlhB,TIGR01404 type III secretion protein, YscU/HrpY family,Cellular processes:Pathogenesis,GO:0006810,GO:0009306,GO:0016021,,
+DVUA0100,209621,YP_009140.1,46562157,1945,137839,136112,-,flrC,sigma-54 dependent transcriptional regulator (TIGR),,,,,,GO:0000160,GO:0006355,GO:0005622,GO:0000166,GO:0003700,GO:0008134,GO:0005524,GO:0017111,,
+DVUA0099,209622,YP_009139.1,46562158,1945,135753,133570,-,DVUA0099,HAMP domain protein (TIGR),COG2208,TK,Serine phosphatase RsbU, regulator of sigma subunit,,,GO:0007165,GO:0016020,GO:0003824,GO:0004721,GO:0004871,,
+DVUA0081,209639,YP_009121.1,46562174,1945,107247,109361,+,DVUA0081,glycosyl transferase, group 1/2 family protein (TIGR),COG438,M,Glycosyltransferase,,,GO:0009058,,
+DVUA0079,209640,YP_009119.1,46562175,1945,105582,106268,+,cysC,adenylylsulfate kinase (TIGR),COG529,P,Adenylylsulfate kinase and related kinases,TIGR00455 adenylylsulfate kinase [cysC],Central intermediary metabolism:Sulfur metabolism,GO:0000103,GO:0006790,GO:0004020,GO:0005524,2.7.1.25,Adenylyl-sulfate kinase.
+DVUA0149,209725,YP_009189.1,46562247,1945,196632,198416,+,DVUA0149,hypothetical protein (TIGR),,,,,,,,
+DVU0490,209426,,NA,1944,559487,558218,-,DVU0490,EAL domain protein, authentic frameshift (TIGR),,,,,,,,
+motif_0136_2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+motif_0136_1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA

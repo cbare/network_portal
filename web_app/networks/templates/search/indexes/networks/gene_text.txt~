@@ -1,7 +1,9 @@
 {{ object.title }}
 {{ object.text }}
-{{ object.species }}
-{{ object.name }}
-{{ object.network_name }}
-{{ object.condition_name }}
-{{ object.annotation_title }}
+{{ object.gene_name }}
+{{ object.gene_common_name }}
+{{ object.gene_type }}
+{{ object.gene_strand }}
+{{ object.gene_description }}
+{{ object.species_name }}
+{{ object.species_short_name }}

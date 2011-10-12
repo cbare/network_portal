@@ -1,0 +1,3 @@
+{{ object.network_name }}
+{{ object.network_description }}
+{{ object.network_created_at }}

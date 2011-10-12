@@ -1,3 +1,4 @@
 {{ object.species_name }}
 {{ object.species_short_name }}
+{{ object.gene_name }}
 {{ object.text }}

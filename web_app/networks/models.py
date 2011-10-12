@@ -31,7 +31,7 @@ class Chromosome(models.Model):
         return self.name
 
 class Network(models.Model):
-    species = models.ForeignKey(Species)
+    species = models.ForeignKey(Species, related_name='speciesfk')
     name = models.CharField(max_length=255)
     data_source = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -48,8 +48,8 @@ class Condition(models.Model):
         return self.name
 
 class Gene(models.Model):
-    species = models.ForeignKey(Species)
-    chromosome = models.ForeignKey(Chromosome, blank=True, null=True)
+    species = models.ForeignKey(Species, related_name='species_gene')
+    chromosome = models.ForeignKey(Chromosome, related_name='chromo_gene', blank=True, null=True)
     name = models.CharField(max_length=64)
     common_name = models.CharField(max_length=100, blank=True, null=True)
     geneid = models.IntegerField(blank=True, null=True)

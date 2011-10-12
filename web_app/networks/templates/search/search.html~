@@ -14,9 +14,53 @@
 
         {% if query %}
             <h3>Results</h3>
-
+		  {{ result.species_name }}
+		  <br />
+		  {{ result.species_short_name }}
+		  <br />
+		  {{ result }}
+		  <br />
+		  {{ result.object.species_name }}
+		  <br />
+		  {{ result.object.gene_name }}
+		  <br />
+		  {{ result.object.gene_common_name }}
+		  <br />
+		  {{ result.object.gene_type }}
+		  <br />
+		  {{ result.object.gene_strand }}
+		  <br />
+		  {{ result.object.gene_description }}
+		  <br />
+		  {{ result.object.chromosome }}		  
+		  <br />
+		  {{ result.object.chromosome_length }}
+		  <br />
+		  {{ result.object.chromosome_topology }}
+		  <br />
+		  {{ object_list }}
             {% for result in page.object_list %}
                 <p>
+		  {{ result.object.gene_name }}
+		  <br />
+		  {{ result.object.gene_common_name }}
+		  <br />
+		  {{ result.object.gene_type }}
+		  <br />
+		  {{ result.object.gene_strand }}
+		  <br />
+		  {{ result.object.gene_description }}
+		  <br />
+		  {{ result.object.chromosome }}		  
+		  <br />
+		  {{ result.object.chromosome_length }}
+		  <br />
+		  {{ result.object.chromosome_topology }}
+		  <br />
+		  {{ result.object.species_name }}
+		  <br />
+		  {{ result.object.species_short_name }}
+		  <br />
                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
                 </p>
             {% empty %}

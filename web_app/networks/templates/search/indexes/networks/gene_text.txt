@@ -5,3 +5,8 @@
 {{ object.gene_type }}
 {{ object.gene_strand }}
 {{ object.gene_description }}
+{{ object.species_name }}
+{{ object.species_short_name }}
+{{ object.network_name }}
+{{ object.network_description }}
+{{ object.network_created_at }}
