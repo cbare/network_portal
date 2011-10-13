@@ -8,7 +8,9 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'web_app.views.home', name='home'),
     url(r'^about$', 'web_app.views.about', name='about'),
-    
+    url(r'^search', 'web_app.views.search', name='search'),
+    url(r'^network/test/$', 'web_app.networks.views.network_cytoscape_web', name='network'),
+
     url(r'^networks/$', 'web_app.networks.views.networks', name='networks'),
     url(r'^species/(?P<species>.*)$', 'web_app.networks.views.species', name='species'),
     url(r'^species/$', 'web_app.networks.views.species', name='species'),

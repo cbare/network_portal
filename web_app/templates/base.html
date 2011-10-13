@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}Network Portal{% endblock %}</title>
+</head>
+<body>
+
+  <div id="content">
+      {% block content %}{% endblock %}
+  </div>
+
+  <div id="footer">
+      {% block footer %}<p><a href="/">home</a>
+        | <a href="/about">about</a>
+        | <a href="http://systemsbiology.org">Institute for Systems Biology</a>
+        | <a href="http://baliga.systemsbiology.net">Baliga Lab</a></p>
+      {% endblock %}
+  </div>
+</body>
+</html>

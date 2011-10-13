@@ -9,3 +9,9 @@ def home(request):
 
 def about(request):
     return render_to_response('about.html', locals())
+
+def search(request):
+    if request.GET.has_key('q'):
+        search_terms = request.GET['q']
+        results=["...search results here...", "...more search results..."]
+    return render_to_response('search.html', locals())

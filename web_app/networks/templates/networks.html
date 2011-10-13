@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Network Portal</title>
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block content %}
 <h1>Networks</h1>
 
 <table>
@@ -28,6 +24,4 @@
     {% endfor %}
   </tbody>
 </table>
-
-</body>
-</html>
+{% endblock %}

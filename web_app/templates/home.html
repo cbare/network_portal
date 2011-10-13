@@ -1,18 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Network Portal</title>
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block content %}
 <h1>Network Portal</h1>
 
 <p>A database of gene transcription regulatory networks for several microbes. <a href="/about">[more]</a></p>
 
+<h2>Search</h2>
+<form action="/search/" method="get">
+    <input type="text" name="q">
+    <input type="submit" value="Search">
+</form>
+
+<h2>Browse</h2>
 <ul>
   <li><a href="/networks/">Networks</a></li>
   <li><a href="/species/">Species</a></li>
 </ul>
-
-</body>
-</html>
+{% endblock %}

@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Network Portal</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
   <h1>Bicluster {{ bicluster.id }}</h1>
 
   <h2>Genes ({{ genes|length }})</h2>
@@ -53,6 +50,4 @@
   <li>{{ influence.name }}</li>
   {% endfor %}
   </ul>
-
-</body>
-</html>
+{% endblock %}

@@ -7,10 +7,17 @@ from web_app.networks.models import Network
 from web_app.networks.models import Species
 from web_app.networks.models import Bicluster
 
+class Object(object):
+    pass
 
 def networks(request):
     networks = Network.objects.all()
     return render_to_response('networks.html', locals())
+
+def network_cytoscape_web(request):
+    network = Object()
+    network.name = "Test Network"
+    return render_to_response('network_cytoscape_web.html', locals())
 
 def species(request, species=None, species_id=None):
     try:
