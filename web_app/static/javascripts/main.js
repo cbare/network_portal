@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 
-//    $(function() {
+ //   $(function() {
         $("#portal-tabs").tabs();
 	
 	$("#gene-tabs").tabs({
