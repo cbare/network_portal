@@ -93,13 +93,31 @@
           //     }
           // });
 
+          var shapeMapper = {
+              attrName: 'type',
+              entries:  [ { attrValue: 'gene', value: 'ELLIPSE' },
+                          { attrValue: 'bicluster', value: 'ROUNDRECT' },
+                          { attrValue: 'regulator', value: 'TRIANGLE' },
+                          { attrValue: 'motif', value: 'DIAMOND' } ]
+          };
+          
+          var colorMapper = {
+              attrName: 'type',
+              entries:  [ { attrValue: 'gene', value: '#ccffcc' },
+                          { attrValue: 'bicluster', value: '#f7f7f7' },
+                          { attrValue: 'regulator', value: '#ffcccc' },
+                          { attrValue: 'motif', value: '#ccccff'} ]
+          }
+          
           // visual style we will use
           var visualStyle = {
               global: {
-                  backgroundColor: "#ABCFD6"
+                  backgroundColor: "#FFFFFF"
               },
               nodes: {
-                  shape: "ELLIPSE",
+                  shape: { discreteMapper: shapeMapper },
+                  label: { passthroughMapper: { attrName: "name" } },
+                  color: { discreteMapper: colorMapper },
                   borderWidth: 2,
                   labelHorizontalAnchor: "center"
               },
@@ -112,27 +130,9 @@
                   color: "#0B94B1"
               }
           };
-          var forceDirectedLayout = { 
-            name: 'ForceDirected',
-            options: {
-              // drag:          0.4,
-              // gravitation:   -1000,
-              // minDistance:   20,
-              // maxDistance:   900,
-              // mass:          24,
-              // tension:       3,
-              // restLength:    50,
-              // iterations:    300,
-              // maxTime:       3000,
-              // autoStabilize: false,
-              weightAttr:    'weight',
-              minWeight:     0.0,
-              maxWeight:     1.0
-            }
-          };
 
           $.ajax({
-              url: "/static/test.network.xgmml",
+              url: "/network/xmltest/",
               success: function(data){
                   if (typeof data !== "string") { 
                       if (window.ActiveXObject) { // IE 
@@ -142,7 +142,7 @@
                           data = (new XMLSerializer()).serializeToString(data); 
                       } 
                   }
-                  vis.draw({network:data, visualStyle:visualStyle, layout:{name:'Preset'}});
+                  vis.draw({network:data, visualStyle:visualStyle, layout:{name:'ForceDirected'}});
               },
               error: function(){
                   show_msg({

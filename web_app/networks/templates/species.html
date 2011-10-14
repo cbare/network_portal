@@ -4,7 +4,6 @@
   <h1>{{ species.name }}</h1>
 
   <p>taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
-  <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
   
   <h2>Genome:</h2>
   <table>
@@ -27,6 +26,17 @@
       {% endfor %}
     </tbody>
   </table>
+  
+  <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
+  
+  <h3>Transcription Factors</h3>
+  <p>{{ transcription_factors|length }}</p>
+  <p><b>TODO:</b> Link these TFs to the biclusters they regulate.</p>
+  <ul>
+  {% for tf in transcription_factors %}
+    <li><a href="">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
+  {% endfor %}
+  </ul>
 
   {% if species.ucsc_id %}
   <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>

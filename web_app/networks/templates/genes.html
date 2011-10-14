@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Genes</h1>
 
-<p>species: {{ species.name }}</p>
+<p>species: <a href="/species/{{ species.name }}">{{ species.name }}</a></p>
 <p>genes: {{ gene_count }}</p>
 
 <table>

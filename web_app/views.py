@@ -8,6 +8,7 @@ def home(request):
     return render_to_response('home.html', locals())
 
 def about(request):
+    version = "0.0.1"
     return render_to_response('about.html', locals())
 
 def search(request):
