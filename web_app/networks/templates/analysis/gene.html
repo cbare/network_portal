@@ -127,51 +127,6 @@
             }
         );
 
-/******************************
-        vis.addContextMenuItem("Hide first neighbors", "nodes",
-            function (evt) {
-                $select_toggle = 0;
-                // Get the right-clicked node:
-                var rootNode = evt.target;
-        
-                // Get the first neighbors of that node:
-                var fNeighbors = vis.firstNeighbors([rootNode]);
-                var neighborNodes = fNeighbors.neighbors;
-                var nEdges = fNeighbors.edges;
-        
-                // Select the root node and its neighbors:
-                vis.select([rootNode]).select(neighborNodes).select(nEdges);
-
-                var selected = vis.selected();
-                var bypass = { nodes: {}, edges: {} };
-                var props = {
-                              color: "f0f8ff",
-                              labelFontColor: "f0f8ff",
-                              borderColor: "f0f8ff",
-                              selectionBorderColor: "f0f8ff"
-                };
-    
-                for (var i=0; i < selected.length; i++) {
-		    var obj = selected[i];
-		    bypass[obj.group][obj.data.id] = props;
-		}
-		vis.visualStyleBypass(bypass);
-		//vis.deselect();
-                $select_toggle = 1;
-            }
-        );
-
-        // START OF FILTER CODE FOR SHOWING FIRST NEIGHBORS
-        vis.addContextMenuItem("Show hidden", "nodes",
-            function (evt) {
-                $select_toggle = 0;
-		vis.visualStyleBypass(null);
-                $select_toggle = 1;
-            }
-        );
-
-******************************/
-
 	$('#filter :checkbox').click(function() {
 	    var $this = $(this);
 	    if ($this.is(':checked')) {
@@ -208,53 +163,6 @@
 	    });
             $init = 0;
 	}
-
-/******************************
-        function update_lookup(node_id, state) {
-	    //for (var i = 0; i < lookup.length; i++) {
-	    //console.debug("node_id passed in = " + node_id);
-	    //console.debug("state passed in = " + state);
-	    //console.debug("state of lookup = " + lookup);
-	    if($init == 0) {
-	    for (var i in lookup) {
-		//console.debug("key = " + i);
-		//console.debug("value = " + lookup[i]);
-	        //if(node_id == lookup[i]) {
-	        if(lookup.hasOwnProperty(i)) {
-		    // update state
-		    //console.debug("lookup node_id = " + i);
-		    //console.debug("lookup node_id state 1 = " + lookup[node_id]);
-		    //console.debug("lookup      i  state 1 = " + lookup[i]);
-		    lookup[i] = state;
-		} else {
-		    // add node and state to lookup
-		    //console.debug("lookup node_id state 2 = " + lookup[node_id]);
-		    lookup.push(i);
-		    lookup[i] = state;
-		}
-	    }
-	    } else { return; }
-
-	}
-
-
-        vis.filter("nodes", function(node) {
-            var colorMapper = {
-                                attrName: "pathway.2.1",
-        			entries: [ { attrValue: "Bacterial chemotaxis", value: "red" },
-                                           { attrValue: "", value: "#00ff00" },
-                   		           { attrValue: "binding", value: "#0000ff" } ]
-			      };
-            // Set the mapper to a Visual Style;
-	    var style = {
-                          nodes: {
-                                   color: { discreteMapper: colorMapper }
-       			  }
-			}
-            // Set the new style to the Visualization:
-            vis.visualStyle(style);            
-        });
-******************************/
 
         // EVENT HANDLER
         function handle_select(event) {
@@ -1297,7 +1205,7 @@
 
     $.ajax({
         //url: "/images/dvh_portal_files/flagella_inf_motif_union.xgmml",
-        url: "/images/dvh_portal_files/flagella_union.xgmml",
+        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/flagella_union.xgmml",
         success: function(data){
             if (typeof data !== "string") {
                 if (window.ActiveXObject) { // IE
@@ -1327,7 +1235,7 @@
     $.ajax({
         //url: "/images/dvh_portal_files/aminoacid_metabolism.xgmml",
         //url: "/images/dvh_portal_files/biofilm-all.xgmml",
-        url: "/images/dvh_portal_files/biofilm-2.xgmml",
+        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/biofilm-2.xgmml",
         success: function(data){
             if (typeof data !== "string") {
                 if (window.ActiveXObject) { // IE
