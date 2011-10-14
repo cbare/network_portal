@@ -333,6 +333,9 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
   cat("Marking transcription factors...\n")
   tfs <- mark.tfs(con, tfs=predictor.mats$genetic.names, species.id=species.id)
   cat(sprintf("Marked %d transcription factors.\n", length(tfs)))
+  
+  # collect a uniq-ified list of predictors in the network
+  # all.influences <- unique(c(sapply(e.coeffs, function(bicluster.coeffs) { names(bicluster.coeffs$coeffs) }), recursive=T))
 
   bicluster.ids <- get.bicluster.ids(con, network.id)
   gene.ids <- get.gene.ids(con, species.id)
@@ -344,29 +347,39 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
       for (bicluster.coeffs in e.coeffs) {
 
         bicluster.id = bicluster.ids[ bicluster.ids$k == bicluster.coeffs$k, 'id' ]
-
         cat("extracting influences for bicluster", bicluster.id, "\n")
 
         for (predictor in names(bicluster.coeffs$coeffs)) {
 
+          # add influence, if not already present
           # influences can be one of 3 types:
           #  1) combiner, a logical combination of other influences (ef or tf)
+          #     for example: "DVU3334~~DVU0230~~min"
           #  2) gene aka tf for transcription factor
           #  3) ef for environmental factor
-          if (grepl("~~", predictor)) {
-            sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'combiner');", predictor)
-          }
-          else if (predictor %in% rownames(gene.ids)) {
-            gene.id <- gene.ids[predictor, "id"]
-            sql <- sprintf("insert into networks_influence (name, gene_id, type) values ('%s', %d, 'tf');", predictor, gene.id)
+          sql <- sprintf("select id from networks_influence where name = '%s';", predictor)
+          result <- dbGetQuery(con, sql)
+          if (nrow(result)>0) {
+            influence.id <- result[1,1]
           }
           else {
-            sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'ef');", predictor)
+            if (grepl("~~", predictor)) {
+              sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'combiner');", predictor)
+            }
+            else if (predictor %in% rownames(gene.ids)) {
+              gene.id <- gene.ids[predictor, "id"]
+              sql <- sprintf("insert into networks_influence (name, gene_id, type) values ('%s', %d, 'tf');", predictor, gene.id)
+            }
+            else {
+              sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'ef');", predictor)
+            }
+            dbGetQuery(con, sql)
+            influence.id <- dbGetQuery(con, "select lastval();")[1,1]
           }
-          dbGetQuery(con, sql)
 
-          influence.id <- dbGetQuery(con, "select lastval();")[1,1]
-          sql <- sprintf("insert into networks_bicluster_influences (bicluster_id, influence_id) values (%d, %d);", bicluster.id, influence.id)
+          # associate bicluster with predictor
+          sql <- sprintf("insert into networks_bicluster_influences (bicluster_id, influence_id) values (%d, %d);",
+                          bicluster.id, influence.id)
           dbGetQuery(con, sql)
         }
       }
@@ -433,6 +446,23 @@ extract.genes <- function(e) {
   # it would be a good idea to implement this to insert the union of all
   # gene in either the features table or the ratios table.
 }
+
+
+# reset a sequence to zero, not really usefull unless you're OCD about your ids
+reset.sequence <- function(con=NULL, sequence) {
+  # connect to db, if needed
+  if (is.null(con)) {
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    on.exit(function() {
+      dbDisconnect(con)
+      dbUnloadDriver(postgreSQL.driver)
+    })
+  }
+  sql <- sprintf("SELECT setval('%s', 1);", sequence)
+  dbGetQuery(con, sql)
+}
+
 
 # create a translation table between gene name and id for the given species
 get.gene.ids <- function(con, species.id) {
