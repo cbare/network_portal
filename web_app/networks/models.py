@@ -82,11 +82,51 @@ class Bicluster(models.Model):
     def __unicode__(self):
         return "Bicluster " + str(self.k)
 
+class PSSM():
+    def __init__(self):
+        self.positions=[]
+
+    def add_position(self, dict):
+        self.positions.append(dict)
+
+    def get_position(self, p):
+        return self.positions[p]
+    
+    def to_one_letter_string(self):
+        letters = []
+        for p in self.positions:
+            for letter in p.keys():
+                if p[letter] > 0.8:
+                    letters.append(letter.upper())
+                elif p[letter] > 0.4:
+                    letters.append(letter.lower())
+                else:
+                    letters.append('.')
+        return "".join(letters)
+
+    def __len__(self):
+        len(self.positions)
+
 class Motif(models.Model):
     bicluster = models.ForeignKey(Bicluster)
     position = models.IntegerField(blank=True, null=True)
     sites = models.IntegerField(blank=True, null=True)
     e_value = models.FloatField(blank=True, null=True)
+    
+    def pssm(self):
+        from django.db import connection, transaction
+        cursor = connection.cursor()
+
+        # Data retrieval operation - no commit required
+        cursor.execute("select position, a, c, g, t from pssms where motif_id=%s order by position;", [self.id])
+        rows = cursor.fetchall()
+        
+        pssm = PSSM()
+        for row in rows:
+            pssm.add_position({'a':row[1], 'c':row[2], 'g':row[3], 't':row[4]})
+
+        return pssm
+        
 
 # A generalized annotation field. Put annotation on any type of object.
 class Annotation(models.Model):
