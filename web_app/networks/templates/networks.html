@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Networks</h1>
+
+<table>
+  <caption>a complete list of networks in the Network Portal database</caption>
+  <thead>
+    <tr>
+      <th>Network</th>
+      <th>Species</th>
+      <th>Created</th>
+      <th>Size</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for network in networks %}
+    <tr>
+      <td>{{ network.name }}</td>
+      <td><i><a href="/species/{{ network.species.name }}">{{ network.species.name }}</a></i></td>
+      <td>{{ network.created_at|date:"F j, Y" }}</td>
+      <td>{{ network.bicluster_set.count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

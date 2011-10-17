@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Network Portal</h1>
+
+<h2>Search</h2>
+<form action="/search/" method="get">
+    <input type="text" name="q">
+    <input type="submit" value="Search">
+</form>
+
+{% if results %}
+<h3>Search Results</h3>
+  <p>Found {{ results|length }} results for "{{ search_terms }}".</p>
+  <ul>
+      {% for result in results %}
+      <li>{{ result }}</li>
+      {% endfor %}
+      <li><a href="/network/test/">test network</a></li>
+  </ul>
+{% endif %}
+{% endblock %}

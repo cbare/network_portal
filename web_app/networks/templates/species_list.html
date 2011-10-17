@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Species</h1>
+
+<table>
+  <caption>a list of species in the Network Portal database</caption>
+  <thead>
+    <tr>
+      <th>Species</th>
+      <th>Taxonomy id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sp in species %}
+    <tr>
+      <td><i><a href="/species/{{ sp.name }}">{{ sp.name }}</a></i></td>
+      <td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ sp.ncbi_taxonomy_id }}">{{ sp.ncbi_taxonomy_id }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

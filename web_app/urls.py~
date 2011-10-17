@@ -1,19 +1,40 @@
 from django.conf.urls.defaults import patterns, include, url
+<<<<<<< HEAD
 from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+=======
+
+>>>>>>> 17c0501e8d85f60421ccef829d93209af4b58a5e
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
+<<<<<<< HEAD
     # url(r'^$', 'network_portal.views.home', name='home'),
     # url(r'^network_portal/', include('network_portal.foo.urls')),
+=======
+    url(r'^$', 'web_app.views.home', name='home'),
+    url(r'^about$', 'web_app.views.about', name='about'),
+    url(r'^search', 'web_app.views.search', name='search'),
+    url(r'^network/test/$', 'web_app.networks.views.network_cytoscape_web_test', name='network'),
+    url(r'^network/xmltest/$', 'web_app.networks.views.network_as_graphml', name='network'),
+
+    url(r'^networks/$', 'web_app.networks.views.networks', name='networks'),
+    url(r'^species/(?P<species>.*)$', 'web_app.networks.views.species', name='species'),
+    url(r'^species/$', 'web_app.networks.views.species', name='species'),
+    url(r'^genes/(?P<species>.*)$', 'web_app.networks.views.genes', name='genes'),
+    url(r'^genes/', 'web_app.networks.views.genes', name='genes'),
+    url(r'^bicluster/(?P<bicluster_id>\d+)$', 'web_app.networks.views.bicluster', name='biclusters'),
+>>>>>>> 17c0501e8d85f60421ccef829d93209af4b58a5e
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+<<<<<<< HEAD
 
     # kmf: adding haystack search URLconf
     (r'^search/', include('haystack.urls')),
@@ -25,5 +46,10 @@ urlpatterns = patterns('',
     (r'^analysis/motif/$', 'networks.views.motif'),
     (r'^analysis/function/$', 'networks.views.function'),
 
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_URL }),
+    #(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_URL }),
+
 )
+urlpatterns += staticfiles_urlpatterns()
+=======
+)
+>>>>>>> 17c0501e8d85f60421ccef829d93209af4b58a5e

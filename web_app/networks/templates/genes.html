@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Genes</h1>
+
+<p>species: <a href="/species/{{ species.name }}">{{ species.name }}</a></p>
+<p>genes: {{ gene_count }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Common name</th>
+      <th>Type</th>
+      <th>Gene ID</th>
+      <th>Chromosome</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Strand</th>
+      <th>Description</th>
+      <th>TF</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for gene in genes %}
+    <tr>
+      <td>{{ gene.name }}</td>
+      <td>{{ gene.common_name|default_if_none:"" }}</td>
+      <td>{{ gene.type }}</td>
+      <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>
+      <td>{{ gene.chromosome.name }}</td>
+      <td>{{ gene.start }}</td>
+      <td>{{ gene.end }}</td>
+      <td>{{ gene.strand }}</td>
+      <td>{{ gene.description }}</td>
+      <td>{{ gene.transcription_factor }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

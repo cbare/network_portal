@@ -1,9 +1,23 @@
 Initializing the DB
 
+# Start PostgreSQL server
+sudo su postgres -c '/opt/local/lib/postgresql/bin/postgres -D /opt/local/var/db/postgres/defaultdb'
+cnt-z
+bg
+
+# or
+su -c 'pg_ctl start -D /opt/local/var/db/postgres/defaultdb -l postgreslog' postgres
+
+# start postgres client
+/opt/local/lib/postgresql/bin/psql -U postgres
+
+
 1) create DB, create user, grant privileges
     * create database network_portal;
-    * create user testuser with login password 'example';
-    * grant all privileges on network_portal to testuser;
+    * create user network_portal_user with login password 'example';
+    * grant all privileges on database network_portal to network_portal_user;
+    * grant all privileges on all tables in schema public to network_portal_user;
+    * grant all privileges on all sequences in schema public to network_portal_user;
 
 2) create tables
     * python manage.py syncdb

@@ -1,18 +1,9 @@
 Network portal
 ==============
 
-A Rails 3 web-app for archiving and exploring gene-regulatory networks as
+A web-app for archiving and exploring gene-regulatory networks as
 produced by the cMonkey and Inferelator algorithms.
 
 (see: baliga.systemsbiology.net/cmonkey)
 
-This is a prototype, likely to be abandoned.
-
-It's only capabilities are to show test networks in cytoscape web with or
-without nice jQuery UI.
-
-= Show canned example network in Cytoscape Web
-url: localhost:3000/network/
-
-= 
 
