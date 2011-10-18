@@ -15,6 +15,7 @@ from web_app.networks.models import Network
 from web_app.networks.models import Species
 from web_app.networks.models import Bicluster
 import networkx as nx
+import sys, traceback
 
 
 class Object(object):
@@ -100,8 +101,12 @@ def species(request, species=None, species_id=None):
         chromosomes = species.chromosome_set.all()
         return render_to_response('species.html', locals())
     except (ObjectDoesNotExist, AttributeError):
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_stack()
+        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
         if species:
-            raise Http404("Couldn't find species: " + species)
+            raise Http404("Couldn't find species: " + str(species))
         elif species_id:
             raise Http404("Couldn't find species with id=" + species_id)
         else:

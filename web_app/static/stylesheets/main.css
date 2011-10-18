@@ -1,3 +1,28 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#wrap {
+    min-width: 780px;
+    max-width: 1260px;
+    margin: 10px auto;
+}
+
+/*html>body #wrap {
+    height: 100%;
+}*/
+
+html>body #header-wrap {
+    position: fixed;
+    z-index: 10;
+}
+
+/*html>body #page {
+    height: 100%;
+}*/
+
 body {
   margin: 0;
   margin-bottom: 25px;
@@ -6,6 +31,10 @@ body {
   font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
   font-size: 13px;
   color: #333;
+}
+
+body>div#header {
+    position: fixed;
 }
 
 h1 {
@@ -67,18 +96,28 @@ a  {
 }
 
 
-#header, #place-holder {
+#place-holder {
   padding-left: 75px;
   padding-right: 30px;
 }
 
+#header-wrap {
+    position: fixed;
+    padding-bottom: 10px;
+    background-color: #F0F0F0; 
+    width: 906px;
+    margin-left: 100px;
+    /*opacity: 0.8;*/
+}
+
 #header {
-  background-image: url("/images/network_portal_logo.png");
-  background-repeat: no-repeat;
-  background-position: top left;
-  height: 64px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid #ccc;
+    /*background-image: url("/static/images/network_portal_logo.png");*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: top left;*/
+    height: 115px;
+    /*padding-bottom: 25px;*/
+    border-bottom: 1px solid #ccc;
+    /*width: 850px;*/
 }
 
 #header h1, #header h2 {margin: 0}
@@ -86,6 +125,51 @@ a  {
   color: #888;
   font-weight: normal;
   font-size: 16px;
+}
+
+#header-content {
+    float: left;
+    width: 905px;
+}
+
+#inner-left {
+    background-image: url("/static/images/isblogo.gif");
+    background-repeat: no-repeat;
+    float: left;
+    width: 200px;
+    height: 64px;
+}
+
+#inner-middle {
+    float: left;
+    width: 450px;
+    text-align: center;
+    padding-top: 5.5em;
+}
+
+#inner-right {
+    float: right;
+    width: 174px;
+}
+
+#menu {
+    width: 860px;
+    padding-top: 10px;
+    padding-right: 10px;
+    text-align: center;
+}
+
+#menu-link {
+    padding-left: 10px;
+    padding-right: 10px;
+    display: inline;
+    width: 70px;
+    font-size: 15px;
+}
+
+#container {
+    padding-top: 150px;
+    /*height: 100%;*/
 }
 
 #sidebar ul {

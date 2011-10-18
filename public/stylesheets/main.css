@@ -86,6 +86,21 @@ a  {
   font-size: 16px;
 }
 
+#inner-left {
+    float: left;
+    width: 200px;
+}
+
+#inner-middle {
+    width: 200px;
+    left: 200px;
+}
+
+#inner-right {
+    float: right;
+    width: 200px;
+}
+
 #sidebar ul {
   margin-left: 0;
   padding-left: 0;
