@@ -132,7 +132,7 @@
           };
 
           $.ajax({
-              url: "/network/xmltest/",
+              url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}",
               success: function(data){
                   if (typeof data !== "string") { 
                       if (window.ActiveXObject) { // IE 

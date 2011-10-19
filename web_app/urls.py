@@ -9,10 +9,14 @@ urlpatterns = patterns('',
     url(r'^$', 'web_app.views.home', name='home'),
     url(r'^about$', 'web_app.views.about', name='about'),
     url(r'^search', 'web_app.views.search', name='search'),
+
     url(r'^network/test/$', 'web_app.networks.views.network_cytoscape_web_test', name='network'),
     url(r'^network/xmltest/$', 'web_app.networks.views.network_as_graphml', name='network'),
 
     url(r'^networks/$', 'web_app.networks.views.networks', name='networks'),
+    url(r'^network/graphml', 'web_app.networks.views.network_as_graphml', name='network'),
+    url(r'^network', 'web_app.networks.views.network_cytoscape_web', name='network'),
+
     url(r'^species/(?P<species>.*)$', 'web_app.networks.views.species', name='species'),
     url(r'^species/$', 'web_app.networks.views.species', name='species'),
     url(r'^genes/(?P<species>.*)$', 'web_app.networks.views.genes', name='genes'),

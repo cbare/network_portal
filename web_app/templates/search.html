@@ -11,12 +11,12 @@
 
 {% if results %}
 <h3>Search Results</h3>
-  <p>Found {{ results|length }} results for "{{ search_terms }}".</p>
+  <p>Found {{ results|length }} results for "{{ q }}".</p>
   <ul>
       {% for result in results %}
-      <li>{{ result }}</li>
+      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
       {% endfor %}
-      <li><a href="/network/test/">test network</a></li>
   </ul>
+  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
 {% endif %}
 {% endblock %}
