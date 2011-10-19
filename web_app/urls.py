@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^network/xmltest/$', 'web_app.networks.views.network_as_graphml', name='network'),
 
     url(r'^networks/$', 'web_app.networks.views.networks', name='networks'),
+    url(r'^network/(?P<network_id>\d+)$', 'web_app.networks.views.network', name='network'),
     url(r'^network/graphml', 'web_app.networks.views.network_as_graphml', name='network'),
     url(r'^network', 'web_app.networks.views.network_cytoscape_web', name='network'),
 
@@ -29,3 +30,4 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
+

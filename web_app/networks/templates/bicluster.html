@@ -2,6 +2,9 @@
 
 {% block content %}
   <h1>Bicluster {{ bicluster.id }}</h1>
+  
+  <p>residual: {{ bicluster.residual }}</p>
+  <p><a href="/network?biclusters={{ bicluster.id }}">view as network</a></p>
 
   <h2>Genes ({{ genes|length }})</h2>
   <table>

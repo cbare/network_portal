@@ -41,4 +41,11 @@
   {% if species.ucsc_id %}
   <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
   {% endif %}
+  
+  <h3>Networks</h3>
+  <ul>
+  {% for network in species.network_set.all %}
+  <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
+  {% endfor %}</ul>
+
 {% endblock %}

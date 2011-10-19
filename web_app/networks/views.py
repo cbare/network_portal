@@ -17,6 +17,11 @@ def networks(request):
     networks = Network.objects.all()
     return render_to_response('networks.html', locals())
 
+def network(request, network_id=None):
+    network = Network.objects.get(id=network_id)
+    biclusters = network.bicluster_set.all()
+    return render_to_response('network.html', locals())
+
 def network_cytoscape_web_test(request):
     network = Object()
     network.name = "Test Network"

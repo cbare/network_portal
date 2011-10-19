@@ -16,7 +16,7 @@
   <tbody>
     {% for network in networks %}
     <tr>
-      <td>{{ network.name }}</td>
+      <td><a href="/network/{{ network.id }}">{{ network.name }}</a></td>
       <td><i><a href="/species/{{ network.species.name }}">{{ network.species.name }}</a></i></td>
       <td>{{ network.created_at|date:"F j, Y" }}</td>
       <td>{{ network.bicluster_set.count }}</td>

@@ -6,3 +6,4 @@ config/database.yml
 *.pyc
 solr/data/*
 public/tb_all_network.xgmml
+solr/conf/dataimport.properties
