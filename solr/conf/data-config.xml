@@ -1,0 +1,24 @@
+<dataConfig>
+    <dataSource driver="org.postgresql.Driver" url="jdbc:postgresql:network_portal" user="dj_ango" password="django" />
+    <document>
+        <entity name="species"
+                query="select * from networks_species;">
+            <field column="name" name="name" />
+            <field column="short_name" name="name" />
+            <field column="ncbi_taxonomy_id" name="taxonomy_id" />
+        </entity>
+        <entity name="bicluster"
+                query="select * from networks_bicluster;">
+                <field column="id" name="bicluster_id" />
+            <entity name="bicluster_gene"
+                    query="select gene_id from networks_bicluster_genes where bicluster_id='${bicluster.id}'">
+                <entity name="gene"
+                        query="select * from networks_gene where id='${bicluster_gene.gene_id}'">
+                    <field name="gene_name" column="name" />
+                    <field name="gene_common_name" column="common_name" />
+                    <field name="text" column="description" />
+                </entity>
+            </entity>
+        </entity>
+    </document>
+</dataConfig>

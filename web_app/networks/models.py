@@ -95,17 +95,20 @@ class PSSM():
     def to_one_letter_string(self):
         letters = []
         for p in self.positions:
+            max_letter = 'a'
             for letter in p.keys():
-                if p[letter] > 0.8:
-                    letters.append(letter.upper())
-                elif p[letter] > 0.4:
-                    letters.append(letter.lower())
-                else:
-                    letters.append('.')
+                if p[letter] > p[max_letter]:
+                    max_letter = letter
+            if p[max_letter] > 0.8:
+                letters.append(max_letter.upper())
+            elif p[max_letter] > 0.5:
+                letters.append(max_letter)
+            else:
+                letters.append('.')
         return "".join(letters)
 
     def __len__(self):
-        len(self.positions)
+        return len(self.positions)
 
 class Motif(models.Model):
     bicluster = models.ForeignKey(Bicluster)

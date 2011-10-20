@@ -15,7 +15,7 @@ from web_app.networks.models import Network
 from web_app.networks.models import Species
 from web_app.networks.models import Bicluster
 import networkx as nx
-import sys, traceback
+import re
 
 
 class Object(object):
@@ -39,15 +39,29 @@ def networks(request):
     networks = Network.objects.all()
     return render_to_response('networks.html', locals())
 
+def network(request, network_id=None):
+    network = Network.objects.get(id=network_id)
+    biclusters = network.bicluster_set.all()
+    return render_to_response('network.html', locals())
+
 def network_cytoscape_web_test(request):
     network = Object()
     network.name = "Test Network"
+    network.bicluster_ids = [2,152,299]
+    return render_to_response('network_cytoscape_web.html', locals())
+
+def network_cytoscape_web(request):
+    network = Object()
+    network.name = "Test Network"
+    if request.GET.has_key('biclusters'):
+        network.bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
     return render_to_response('network_cytoscape_web.html', locals())
 
 def network_as_graphml(request):
-    bicluster_ids = [2,152,299]
+    if request.GET.has_key('biclusters'):
+        bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
     biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
-    
+
     # compile set of genes in all requested biclusters
     genes = set()
     influences = set()
@@ -56,7 +70,7 @@ def network_as_graphml(request):
         influences.update(b.influences.all())
         print "influences = %d" % (len(influences),)
         print influences
-    
+
     # build networkx graph
     graph = nx.Graph()
     for gene in genes:
@@ -70,13 +84,13 @@ def network_as_graphml(request):
         for inf in bicluster.influences.all():
             graph.add_edge(bicluster, "inf:%d" % (inf.id))
             print ">>> " + str(inf)
-    
+
     # write graphml to response
     writer = nx.readwrite.graphml.GraphMLWriter(encoding='utf-8',prettyprint=True)
     writer.add_graph_element(graph)
     response = HttpResponse(content_type='application/xml')
     writer.dump(response)
-    
+
     return response
 
 def species(request, species=None, species_id=None):

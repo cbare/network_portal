@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ network.name }}</h1>
+
+<p>Species: <a href="/species/{{ network.species.name }}">{{ network.species.name }}</a></p>
+<p>Data source: {{ network.data_source }}</p>
+
+<p>What other network info do we need? link to PDF/SVG of cMonkey stats?</p>
+
+<table>
+  <caption>a list of biclusters in the network</caption>
+  <thead>
+    <tr>
+      <th>k</th>
+      <th>genes</th>
+      <th>residual</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bicluster in biclusters %}
+    <tr>
+      <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.k }}</a></td>
+      <td>{{ bicluster.genes.count }}</td>
+      <td>{{ bicluster.residual }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
