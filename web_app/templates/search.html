@@ -17,6 +17,6 @@
       <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
       {% endfor %}
   </ul>
-  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
+  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
 {% endif %}
 {% endblock %}
