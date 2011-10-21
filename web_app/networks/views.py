@@ -1,3 +1,11 @@
+# Create your views here.
+#from django.shortcuts import get_object_or_404, render_to_response
+#from django.http import HttpResponseRedirect, HttpResponse
+#from django.core.urlresolvers import reverse
+#from django.template import RequestContext 
+from web_app.networks.models import Gene
+
+
 from django.http import HttpResponse
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,10 +16,25 @@ from web_app.networks.models import Species
 from web_app.networks.models import Bicluster
 import networkx as nx
 import re
+import sys, traceback
 
 
 class Object(object):
     pass
+
+def gene(request):
+    #return HttpResponse("testing gene")
+    return render_to_response('analysis/gene.html')
+
+# def network(request):
+#     return HttpResponse("testing network")
+
+def motif(request):
+    return HttpResponse("testing motif")
+
+def function(request):
+    return HttpResponse("testing function")
+
 
 def networks(request):
     networks = Network.objects.all()
@@ -93,8 +116,12 @@ def species(request, species=None, species_id=None):
         chromosomes = species.chromosome_set.all()
         return render_to_response('species.html', locals())
     except (ObjectDoesNotExist, AttributeError):
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_stack()
+        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
         if species:
-            raise Http404("Couldn't find species: " + species)
+            raise Http404("Couldn't find species: " + str(species))
         elif species_id:
             raise Http404("Couldn't find species with id=" + species_id)
         else:
@@ -130,5 +157,3 @@ def bicluster(request, bicluster_id=None):
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
     return render_to_response('bicluster.html', locals())
-
-

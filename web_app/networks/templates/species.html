@@ -1,51 +1,55 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <h1>{{ species.name }}</h1>
 
-  <p>taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
+<div id="page">
+  <div id="content">
+    <h1>{{ species.name }}</h1>
+
+    <p>taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
   
-  <h2>Genome:</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Chromosome</th>
-        <th>Length</th>
-        <th>Topology</th>
-        <th>Refseq</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for chr in chromosomes %}
-      <tr>
-        <td>{{ chr.name }}</td>
-        <td>{{ chr.length }}</td>
-        <td>{{ chr.topology }}</td>
-        <td>{% if chr.refseq %}<a href="http://www.ncbi.nlm.nih.gov/nuccore/{{ chr.refseq }}">{{ chr.refseq }}</a>{% endif %}</td>
-      </tr>
+    <h2>Genome:</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Chromosome</th>
+          <th>Length</th>
+          <th>Topology</th>
+          <th>Refseq</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for chr in chromosomes %}
+        <tr>
+          <td>{{ chr.name }}</td>
+          <td>{{ chr.length }}</td>
+          <td>{{ chr.topology }}</td>
+          <td>{% if chr.refseq %}<a href="http://www.ncbi.nlm.nih.gov/nuccore/{{ chr.refseq }}">{{ chr.refseq }}</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
+    
+    <h3>Transcription Factors</h3>
+    <p>{{ transcription_factors|length }}</p>
+    <p><b>TODO:</b> Link these TFs to the biclusters they regulate.</p>
+    <ul>
+      {% for tf in transcription_factors %}
+      <li><a href="">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
       {% endfor %}
-    </tbody>
-  </table>
+    </ul>
+    
+    {% if species.ucsc_id %}
+    <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
+    {% endif %}
   
-  <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
-  
-  <h3>Transcription Factors</h3>
-  <p>{{ transcription_factors|length }}</p>
-  <p><b>TODO:</b> Link these TFs to the biclusters they regulate.</p>
-  <ul>
-  {% for tf in transcription_factors %}
-    <li><a href="">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
-  {% endfor %}
-  </ul>
+    <h3>Networks</h3>
+    <ul>
+    {% for network in species.network_set.all %}
+    <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
+    {% endfor %}</ul>
 
-  {% if species.ucsc_id %}
-  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
-  {% endif %}
-  
-  <h3>Networks</h3>
-  <ul>
-  {% for network in species.network_set.all %}
-  <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
-  {% endfor %}</ul>
-
+  </div><!-- End #content -->
+</div><!-- End #page -->
 {% endblock %}

@@ -1,0 +1,478 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#wrap {
+    min-width: 780px;
+    max-width: 1260px;
+    margin: 10px auto;
+}
+
+body {
+  margin: 0;
+  margin-bottom: 25px;
+  padding: 0;
+  background-color: #f0f0f0;
+  font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
+  font-size: 13px;
+  color: #333;
+}
+
+body>div#header {
+    position: fixed;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+a  {
+    color: #03c
+}
+
+#page {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+}
+
+
+#content {
+  background-color: white;
+  border: 3px solid #aaa;
+  padding: 25px;
+  /* standard width is between 800px and 1024px depending on avg 
+     audience monitor size */
+  width: 850px;
+  position: relative;
+  margin: 0 auto;
+}
+
+#sidebar {
+  width: 175px;
+}
+
+#footer {
+  clear: both;
+  color: #aaa;
+  font-size: small;
+  padding-top: 36pt;
+  text-align: center;
+  margin-left: -150px;
+}
+
+#footer a {
+  color: #aaa;
+  text-decoration: none;
+}
+#footer a:hover {
+  color: #aaa;
+  background-color: #f0f0f0;
+  text-decoration: none;
+}
+
+
+#place-holder {
+  padding-left: 75px;
+  padding-right: 30px;
+}
+
+#header-wrap {
+    position: relative;
+    padding-bottom: 10px;
+    background-color: #F0F0F0; 
+    width: 100%;
+}
+
+#header {
+    height: 115px;
+    border-bottom: 1px solid #ccc;
+}
+
+#header h1, #header h2 {margin: 0}
+#header h2 {
+  color: #888;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+#header-content {
+    width: 905px;
+    position: relative;
+    height: 115px;
+    border-bottom: 1px solid #ccc;
+    margin: 0 auto;
+}
+
+#inner-left {
+    background-image: url("/static/images/isblogo.gif");
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 64px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#inner-middle {
+    width: 450px;
+    text-align: center;
+    padding-top: 5.5em;
+    position: absolute;
+    left: 200px;
+    top: -15px;
+}
+
+#inner-right {
+    width: 174px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#menu {
+    width: 860px;
+    padding-top: 10px;
+    text-align: center;
+    position: relative;
+    margin: 0 auto;
+}
+
+#menu-link {
+    padding-left: 10px;
+    padding-right: 10px;
+    display: inline;
+    width: 70px;
+    font-size: 15px;
+}
+
+#container {
+    position: relative;
+    width: 100%;
+}
+
+#sidebar ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+#sidebar ul h3 {
+  margin-top: 25px;
+  font-size: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+#sidebar li {
+  list-style-type: none;
+}
+#sidebar ul.links li {
+  margin-bottom: 5px;
+}
+
+#place-holder li {
+  margin-top: 12pt;
+}
+
+#portal-tabs {
+    /*width: 500px;*/
+}
+
+#gene-group-1, #gene-group-2, #bicluster-group-1, #bicluster-group-2, #organism-group-1, #organism-group-2, #organism-group-3, #organism-group-4 {
+    display: table;
+}
+
+#motif-group-1, #motif-group-2  {
+    display: table;
+    width: 100%;
+}
+
+#bicluster-results, #network-results, #regulator-results, #motif-results {
+    padding-left: 10px;
+}
+
+#match-count, #motif {
+    display: table-cell;
+    width: 110px;
+    padding-right: 20px;
+}
+
+#organism {
+    display: table-cell;
+    width: 140px; /*110px;*/
+    text-align: left;
+}
+
+#function {
+    display: table-cell;
+    width: 110px;
+    padding-right: 10px;
+    padding-left: 10px;
+    text-align: center;
+}
+
+.first {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#bicluster.bi-special {
+    padding-left: 0px;
+    width: 300px;
+}
+
+#bicluster {
+    display: table-cell;
+    width: 110px;
+    padding-right: 20px;
+    padding-left: 20px;
+    text-align: center;
+}
+
+.homology-title, .interaction-title, .network-title, .summary-title, .related-title, .gene-function-title, .function-title {
+    width: 170px;
+}
+
+#gene-view, #network-view, #function-view, #motif-view {
+    display: table-cell;
+    width: 100px;
+}
+
+#add-to-cart {
+    padding-left: 20px;
+}
+
+/*
+#organism {
+    text-align: left;
+    vertical-align: bottom;
+}
+*/
+
+#match-count, #gene-view, #add-to-cart, #network-view, #function-view, #motif-view {
+    text-align: center;
+    vertical-align: top;
+}
+
+#regulator-results, #motif-results, #organism.title {
+    text-align: center;
+}
+
+#add-to-cart {
+    display: table-cell;
+    width: 100px;
+}
+
+.title, #match-count.title, #add-to-cart.title {
+    text-decoration: underline;
+    vertical-align: bottom;
+}
+
+.row-item, #organism.row-item {
+    vertical-align: top;
+}
+
+.gene-title, .bicluster-title {
+    vertical-align: top;
+}
+
+#icon {
+    display: table;
+    margin-left: 25px; /*35px;*/
+}
+
+#cell-item {
+    display: block;
+    height: 30px;
+}
+
+.motif-title {
+    width: 110px;
+}
+
+#organism-match {
+    display: table-cell;
+    width: 200px;
+}
+
+#motif-results #motif-view {
+    padding-left: 20px;
+}
+
+span.gene-title, span.bicluster-title, span.organism-title, span.motif-title, span.function-title, span.homology-title, span.interaction-title, span.network-title, span.summary-title, span.related-title, span.gene-function-title {
+    display: block;
+    /*text-align: right;*/
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.expanded {
+    background: url("../images/portal_icons/down_arrow.png") no-repeat;
+    height: 27px;
+}
+
+.collapsed {
+    background: url("../images/portal_icons/right_arrow.png") no-repeat;    
+    height: 27px;
+}
+
+#organism-list {
+    display: table-cell;
+    width: 150px;
+    text-align: left;
+}
+
+#count-list {
+    display: table-cell;
+    width: 50px;
+    text-align: left;
+}
+
+#name, #count {
+    display: table-cell;
+}
+
+#subhead {
+    height: 35px;
+    margin: 0px;
+}
+
+#name #subhead, #count #subhead {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#item-title {
+    padding-left: 25px;
+}
+
+#test.ui-tabs-nav, #test .ui-state-active {
+    background-color: #666;
+    border-color: #666
+}
+
+.expand_all {
+    background: none;
+    cursor: pointer;
+    height: 40px;
+    color: #2E4174;
+    font-size: 16px;
+    font-style: italic;
+}
+
+.active {
+    background: url("../images/portal_icons/down_arrow.png") no-repeat;
+    height: 27px;
+}
+
+#gene-tabs {
+    width: auto;
+    height: auto;
+}
+
+#note { 
+    width: 100%; 
+    height: 50%; 
+    background-color: #f0f0f0; 
+    overflow: auto;  
+}
+
+p { 
+    padding: 0 0.5em; 
+    margin: 0; 
+}
+
+p:first-child { 
+    padding-top: 0.5em; 
+}
+
+#network-summary {
+    margin: 0px;
+    padding: 3px 3px 0px 3px;
+    overflow: auto;
+    height: 150px;
+}
+
+#network-caption {
+    text-align: left;
+    color: blue;
+}
+
+#cols {
+    background-color: white;
+}
+
+th {
+    color:#000;
+    background-color: #ddd; 
+    background: url(http://baliga.systemsbiology.net/dvh/themes/mix_and_match/images/nav-bg-gray.gif);
+}
+
+/* NOTE: I commented out a line for .ui-tabs-hide in the main jquery css file 
+to make the following work how we'd like */
+.ui-tabs-hide {
+    position: absolute;
+    left: -10000px;
+    /*z-index: 1;*/
+}
+
+/* for FF issue */
+@-moz-document url-prefix() {
+    .ui-tabs-hide {
+	visibility: hidden;
+	position: static;
+	left: 0px;
+	margin: -15px;
+	height: 0px;
+    }
+}
+
+#cytoscapeweb {
+    width: 755px;
+    height: 550px;
+}
+
+#cytoscapeweb2 {
+    width: 755px;
+    height: 550px;
+}
+
+/* enrichment table */
+#enrich {
+    width: 700px;
+}
+
+/*related networks table */
+#related {
+    width: 600px;
+}
+
+#residual, #weight, #residual2, #weight2 {
+    border: 0px;
+    color: #f6931f;
+    font-weight: bold;
+    background: none;
+}
+
+#filter-section, #filter-section2 {
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+#filter-1, #filter-3 {
+    width: 300px;
+}
+
+#filter-2, #filter-4 {
+    width: 365px;
+    position: relative;
+    left: 250px;
+    top: -20px;
+}
+
+#filter-2 input.ui-button, #filter-4 input.ui-button {
+    font-size: 12px;
+}

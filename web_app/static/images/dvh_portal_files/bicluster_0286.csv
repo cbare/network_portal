@@ -1,0 +1,28 @@
+ID,locusId,accession,GI,scaffoldId,start,stop,strand,name,desc,COG,COGFun,COGDesc,TIGRFam,TIGRRoles,GO,EC,ECDesc
+DVU0045,208973,YP_009270.1,46578462,1944,52097,51576,-,DVU0045,flagellar biosynthesis protein, FliO, putative (TIGR),COG3190,N,Flagellar biogenesis protein,TIGR03500 flagellar biosynthetic protein FliO [fliO],,GO:0043064,GO:0016021,GO:0019861,,
+DVU0044,208972,YP_009269.1,46578461,1944,51547,50840,-,fliP,flagellar biosynthetic protein fliP (TIGR),COG1338,NU,Flagellar biosynthesis pathway, component FliP,TIGR01103 flagellar biosynthetic protein FliP [fliP],Cellular processes:Chemotaxis and motility,GO:0009306,GO:0016020,GO:0004806,3.1.1.3,Triacylglycerol lipase.
+DVU1961,207431,YP_011178.1,46580370,1944,2038542,2038039,-,cheW-3,chemotaxis protein CheW (TIGR),COG835,NT,Chemotaxis signal transduction protein,,,GO:0006935,GO:0007165,GO:0005622,GO:0004871,,
+DVU2445,207938,YP_011657.1,46580849,1944,2550352,2550227,-,DVU2445,hypothetical protein (TIGR),,,,,,,,
+DVU2444,207937,YP_011656.1,46580848,1944,2550254,2549361,-,flaB3,flagellin (TIGR),COG1344,N,Flagellin and related hook-associated proteins,,,GO:0001539,GO:0009420,GO:0005198,,
+DVU1880,207346,YP_011097.1,46580289,1944,1949405,1948764,-,DVU1880,hypothetical protein (TIGR),,,,,,,,
+DVU1854,207319,YP_011071.1,46580263,1944,1921449,1922141,+,DVU1854,hypothetical protein (TIGR),,,,,,,,
+DVU3234,208757,YP_012444.1,46581636,1944,3403671,3402880,-,DVU3234,flagellar biosynthetic protein FliR (TIGR),COG1684,NU,Flagellar biosynthesis pathway, component FliR,TIGR01400 flagellar biosynthetic protein FliR [fliR],Cellular processes:Chemotaxis and motility,GO:0006605,GO:0016021,GO:0019861,,
+DVU1442,206886,YP_010661.1,46579853,1944,1518983,1519357,+,DVU1442,flagellin FlaG, putative (TIGR),COG1334,N,Uncharacterized flagellar protein FlaG,,,,,
+DVU0317,209251,YP_009541.1,46578733,1944,361423,361286,-,DVU0317,hypothetical protein (TIGR),,,,,,,,
+DVU3232,208754,YP_012442.1,46581634,1944,3401606,3399495,-,flhA,flagellar biosynthetic protein FlhA (TIGR),COG1298,NU,Flagellar biosynthesis pathway, component FlhA,TIGR01398 flagellar biosynthesis protein FlhA [flhA],Cellular processes:Chemotaxis and motility,GO:0009306,GO:0015031,GO:0016021,GO:0019861,,
+DVU3002,208515,YP_012213.1,46581405,1944,3114029,3112881,-,DVU3002,conserved domain protein (TIGR),,,,,,GO:0008152,GO:0008168,,
+DVU2991,208504,YP_012202.1,46581394,1944,3098789,3099880,+,DVU2991,hypothetical protein (TIGR),,,,,,,,
+DVU2065,207538,YP_011278.1,46580470,1944,2146116,2145907,-,DVU2065,hypothetical protein (TIGR),,,,,,,,
+DVU1963,207433,YP_011180.1,46580372,1944,2041039,2040758,-,DVU1963,hypothetical protein (TIGR),,,,,,,,
+DVU1805,207270,YP_011023.1,46580215,1944,1868457,1869920,+,DVU1805,GGDEF domain protein (TIGR),COG2199,T,FOG: GGDEF domain,TIGR00254 diguanylate cyclase (GGDEF) domain,Signal transduction:Other,,,
+DVU1444,206888,YP_010663.1,46579855,1944,1522374,1521577,-,flgD,basal-body rod modification protein FlgD (TIGR),COG1843,N,Flagellar hook capping protein,,,,,
+DVU1443,206887,YP_010662.1,46579854,1944,1521519,1519825,-,flgE,flagellar hook protein FlgE (TIGR),COG1749,N,Flagellar hook protein FlgE,TIGR03506 fagellar hook-basal body proteins,,GO:0001539,GO:0030694,GO:0009288,GO:0003774,GO:0005198,,
+DVU1441,206885,YP_010660.1,46579852,1944,1518711,1517815,-,flaB1,flagellin (TIGR),COG1344,N,Flagellin and related hook-associated proteins,,,GO:0001539,GO:0009420,GO:0005198,,
+DVU0518,209456,YP_009741.1,46578933,1944,592050,592514,+,DVU0518,hypothetical protein (TIGR),,,,,,GO:0009296,GO:0019861,,
+DVU0410,209346,YP_009634.1,46578826,1944,459836,459231,-,DVU0410,hypothetical protein (TIGR),,,,,,,,
+DVU0320,209254,YP_009544.1,46578736,1944,363902,363642,-,DVU0320,conserved hypothetical protein (TIGR),,,,,,,,
+DVU0318,209252,YP_009542.1,46578734,1944,361450,362013,+,DVU0318,TPR domain protein (TIGR),,,,,,GO:0005488,,
+DVU0307,209241,YP_009531.1,46578723,1944,351441,352937,+,DVU0307,flagella basal body rod domain protein (TIGR),COG1749,N,Flagellar hook protein FlgE,TIGR03506 fagellar hook-basal body proteins,,GO:0001539,GO:0030694,GO:0009288,GO:0003774,GO:0005198,,
+DVU0043,208971,YP_009268.1,46578460,1944,50823,50554,-,fliQ,flagellar biosynthetic protein FliQ (TIGR),COG1987,NU,Flagellar biosynthesis pathway, component FliQ,TIGR01402 flagellar biosynthetic protein FliQ [fliQ],Cellular processes:Chemotaxis and motility,GO:0009306,GO:0016021,GO:0019861,,
+motif_0286_2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+motif_0286_1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA

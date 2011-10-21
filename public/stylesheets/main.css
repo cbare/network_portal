@@ -1,11 +1,9 @@
-
-
 body {
   margin: 0;
   margin-bottom: 25px;
   padding: 0;
   background-color: #f0f0f0;
-  font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
+  font-family: "Helvetica Neue", "Arial", "Helvetica", "Lucida Grande", "Bitstream Vera Sans", "Verdana";
   font-size: 13px;
   color: #333;
 }
@@ -86,6 +84,21 @@ a  {
   color: #888;
   font-weight: normal;
   font-size: 16px;
+}
+
+#inner-left {
+    float: left;
+    width: 200px;
+}
+
+#inner-middle {
+    width: 200px;
+    left: 200px;
+}
+
+#inner-right {
+    float: right;
+    width: 200px;
 }
 
 #sidebar ul {

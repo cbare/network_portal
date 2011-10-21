@@ -7,3 +7,4 @@ config/database.yml
 solr/data/*
 public/tb_all_network.xgmml
 solr/conf/dataimport.properties
+*~

@@ -1,22 +1,26 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h1>Network Portal</h1>
 
-<h2>Search</h2>
-<form action="/search/" method="get">
-    <input type="text" name="q">
-    <input type="submit" value="Search">
-</form>
+<div id="page">
+  <div id="content">
+    <!--<h1>Network Portal</h1>-->
 
-{% if results %}
-<h3>Search Results</h3>
-  <p>Found {{ results|length }} results for "{{ q }}".</p>
-  <ul>
+    <h1>Search</h1>
+    <form action="/search/" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Search">
+    </form>
+    
+    {% if results %}
+    <h3>Search Results</h3>
+    <p>Found {{ results|length }} results for "{{ search_terms }}".</p>
+    <ul>
       {% for result in results %}
       <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
       {% endfor %}
-  </ul>
-  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
-{% endif %}
+    </ul>
+    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+    {% endif %}
+  </div><!-- End #content -->
+</div><!-- End #page -->
 {% endblock %}
