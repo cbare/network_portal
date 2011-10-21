@@ -33,6 +33,9 @@ class Network(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField()
     
+    def get_biclusters_regulated_by(regulator):
+        biclusters = Bicluster.objects.filter(influences__name__contains=regulator)
+    
     def __unicode__(self):
         return self.name
     

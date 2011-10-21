@@ -36,7 +36,7 @@
     <p><b>TODO:</b> Link these TFs to the biclusters they regulate.</p>
     <ul>
       {% for tf in transcription_factors %}
-      <li><a href="">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
+      <li><a href="/search/?q=regulator%3A{{ tf.name }}">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
       {% endfor %}
     </ul>
     

@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script type="text/javascript">
+  // fill in the search box with example search terms
+  $(document).ready(function() {
+    $("#example1").click(function(event) {
+      $("#search_box").val($("#example1").text());
+    });
+  });
+</script>
+
 <div id="page">
   <div id="content">
     <!--<h1>Network Portal</h1>-->
@@ -9,7 +18,7 @@
 
     <h2>Search</h2>
     <form action="/search/" method="get">
-      <input type="text" name="q">
+      <input type="text" name="q" id="search_box">
       <input type="submit" value="Search">
     </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>

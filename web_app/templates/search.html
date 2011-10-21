@@ -1,25 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script type="text/javascript">
+  // fill in the search box with example search terms
+  $(document).ready(function() {
+    $("#example1").click(function(event) {
+      $("#search_box").val($("#example1").text());
+    });
+  });
+</script>
+
 <div id="page">
   <div id="content">
     <!--<h1>Network Portal</h1>-->
 
     <h1>Search</h1>
     <form action="/search/" method="get">
-      <input type="text" name="q">
+      <input type="text" name="q" id="search_box">
       <input type="submit" value="Search">
     </form>
+    <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>
     
-    {% if results %}
-    <h3>Search Results</h3>
-    <p>Found {{ results|length }} results for "{{ search_terms }}".</p>
-    <ul>
-      {% for result in results %}
-      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
-      {% endfor %}
-    </ul>
-    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+    {% if q %}
+      <h3>Search Results</h3>
+      {% if results %}
+      <p>Found {{ results|length }} results for &ldquo;{{ q }}&rdquo;.</p>
+      <ul>
+        {% for result in results %}
+        <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
+        {% endfor %}
+      </ul>
+      <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+    {% else %}
+      <p>No results for query &ldquo;{{ q }}&rdquo;</p>
+      {% endif %}
     {% endif %}
   </div><!-- End #content -->
 </div><!-- End #page -->
