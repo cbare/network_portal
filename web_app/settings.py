@@ -124,14 +124,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'web_app.networks',
-    # adding haystack for solr integration
-    'haystack',
 )
-
-HAYSTACK_SITECONF = 'web_app.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'solr'
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
-
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
