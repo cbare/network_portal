@@ -8,6 +8,7 @@ $(function() {
     function log(message) {
              $("<div />").text(message).prependTo("#log");
              $("#log").scrollTop(0);
+             $("<input />").text(message).appendTo("#test");
     }
 
     $("#artist").autocomplete({
@@ -34,6 +35,9 @@ $(function() {
         minLength: 1,
         select: function (event, ui) {
 		console.debug("log event, ui: " + ui.item.label);
+		//console.debug("log ui item: " + ui.item.toSource());
+                //$("#test").val(ui.item.label);
+                $("#artist").val(ui.item.label);
 		log (ui.item.label ?
                        "Selected: " + ui.item.label :
                        "Nothing selected, input was " + this.value);
@@ -48,14 +52,35 @@ $(function() {
     <div class="demo">
 
       <div class="ui-widget">
-	<label for="artist">Genes: </label>
+	<h1>Search</h1>
+	<form action="/search/" method="get">
+	  <input type="text" name="q" id="artist">
+	  <input type="submit" value="Search">
+	</form>
+	
+<!--	<label for="artist">Search: </label>
 	<input id="artist" />
+-->
       </div>
       
-      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
+<!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
 	Result:
 	<div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
       </div>
+-->
+
+    {% if results %}
+    <h3>Search Results</h3>
+    <p>Found {{ results|length }} results for "{{ q }}".</p>
+    <ul>
+      {% for result in results %}
+      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
+      {% endfor %}
+      <li><a href="/network/test/">test network</a></li>
+    </ul>
+    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
+    {% endif %}
+
       
     </div><!-- End demo -->
   </div>
