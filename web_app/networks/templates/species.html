@@ -31,9 +31,7 @@
     
     <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
     
-    <h3>Transcription Factors</h3>
-    <p>{{ transcription_factors|length }}</p>
-    <p><b>TODO:</b> Link these TFs to the biclusters they regulate.</p>
+    <h3>Transcription Factors ({{ transcription_factors|length }})</h3>
     <ul>
       {% for tf in transcription_factors %}
       <li><a href="/search/?q=regulator%3A{{ tf.name }}">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
@@ -45,10 +43,14 @@
     {% endif %}
   
     <h3>Networks</h3>
+    {% if species.network_set.count > 0 %}
     <ul>
     {% for network in species.network_set.all %}
     <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
     {% endfor %}</ul>
+    {% else %}
+    <p>No networks for this species, yet.</p>
+    {% endif %}
 
   </div><!-- End #content -->
 </div><!-- End #page -->
