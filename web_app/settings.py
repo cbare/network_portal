@@ -112,6 +112,14 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'networks/templates').replace('\\','/'),
 )
 
+# kmf: adding context processors
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    'django.core.context_processors.static',
+    'django.core.context_processors.debug',
+    'django.contrib.auth.context_processors.auth',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

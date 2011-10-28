@@ -1,5 +1,8 @@
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
+<!-- THIS TEMPLATE BASE IS FOR A PAGE THAT HAS NO SIDEBAR; 
+     IT DOESN'T HAVE A VERTICAL LINE DOWN THE MIDDLE OF #CONTENT 
+     WHICH IS DUE TO wrap.gif -->
 <!DOCTYPE html>
 <meta http-equiv="Content-Type" content="text/javascript; charset=UTF-8" />
 <html>
@@ -19,8 +22,9 @@
   <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/collapsing_divs.js"></script>
 </head>
+
 <body>
-  <div id="wrap">
+  <div id="wrap-no-line">
     <div id="header">
       <h1 id="logo-text"></h1>
       <p id="slogan"></p>
@@ -39,13 +43,13 @@
 	<li class="{% active request "^/$" %}"><a href="/">Home</a></li>
 	<li class="{% active request "^/search" %}"><a href="/search">Search</a></li>
 	<li class="{% active request "^/species" %}"><a href="/species">Species</a></li>
-	<li class="{% active request "^/analysis" %}"><a href="/analysis/gene">Analysis Example</a></li>
+	<li class="{% active request "^/analysis/gene" %}"><a href="/analysis/gene">Analysis Example</a></li>
       </ul>
     </div><!-- end #nav-->
 
     <div id="content">
       {% block content %}
-
+      
       {% endblock %}
     </div><!-- #content -->
     <div id="footer">

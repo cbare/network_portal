@@ -1,8 +1,7 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block content %}
-<div id="page">
-  <div id="content">
+<div id="main">
     <h1>Bicluster {{ bicluster.id }}</h1>
   
     <p>residual: {{ bicluster.residual }}</p>
@@ -55,6 +54,5 @@
       <li>{{ influence.name }}</li>
       {% endfor %}
     </ul>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
 {% endblock %}

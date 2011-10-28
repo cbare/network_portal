@@ -2,10 +2,12 @@ from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 import search as s
 
 def home(request):
-    return render_to_response('home.html', locals())
+    #return render_to_response('home.html', locals())
+    return render_to_response('home.html', {}, context_instance=RequestContext(request))
 
 def about(request):
     version = "0.0.1"

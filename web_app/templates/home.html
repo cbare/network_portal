@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="page">
-  <div id="content">
-    <!--<h1>Network Portal</h1>-->
+<div id="main">
 
     <p>A database of gene transcription regulatory networks for several microbes. <a href="/about">[more]</a></p>
 
@@ -20,6 +18,52 @@
       <li><a href="/species/">Species</a></li>
       <li>Functions?</li>
     </ul>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
+    <div id="sidebar">
+      <h3>About</h3>
+      <strong>Network Portal</strong>aims to provide a comprehensive resource for analyzing and visualizing biological networks.
+      <br />
+      Network Portal was developed in <a href="http://baliga.systemsbiology.net/">Baliga Lab</a> at
+      <a href="http://systemsbiology.org">Institute for Systems Biology</a>
+
+      <h3>Portal News</h3>
+      <ul class="sidemenu">
+	<li>
+	  <a href="species.html">New species available<br />
+	    <span>D. vulgaris hildenborough
+	    </span>
+	  </a>
+	</li>
+	<li>
+	  <a href="network.html">New network available<br />
+	    <span>D. vulgaris Network is now available
+	    </span>
+	  </a>
+	</li>
+      </ul>
+      
+      <h3>Portal Statistics</h3>
+      <table>
+	<tr>
+	  <th>Species</th>
+	  <th>Networks</th>
+	  <th>Users</th>
+	</tr>
+	<tr>
+	  <td><a href="species">3</a></td>
+	  <td><a href="networks">3</a></td>
+	  <td><a href="users.html">5</a></td>	  
+	</tr>
+	<tr>
+	  <th>Biclusters</th>
+	  <th>Regulators</th>
+	  <th>Motifs</th>
+	</tr>
+	<tr>
+	  <td><a href="biclusters.html">349</a></td>
+	  <td><a href="regulators.html">29</a></td>
+	  <td><a href="motifs.html">30</a></td>
+	</tr>
+      </table>
+    </div><!-- end #sidebar -->
 {% endblock %}

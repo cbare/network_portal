@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
@@ -1264,8 +1264,7 @@
 
 </script>
 
-<div id="page">
-  <div id="content">
+<div id="main" class="sub-page">
     <h1>Network Analysis View</h1>
     <p>Flagellar Assembly</p>
     <div id="gene-tabs">
@@ -1496,6 +1495,5 @@
       </div><!-- END GENE -->
 
     </div><!-- END GENE-TABS -->
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
 {% endblock %}

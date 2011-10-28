@@ -1,8 +1,7 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
-<div id="page">
-  <div id="content">
+<div id="main">
     <h1>Networks</h1>
 
     <table>
@@ -18,7 +17,7 @@
       <tbody>
 	{% for network in networks %}
 	<tr>
-	  <td>{{ network.name }}</td>
+	  <td><a href="/network/{{ network.id }}">{{ network.name }}</a></td>
 	  <td><i><a href="/species/{{ network.species.name }}">{{ network.species.name }}</a></i></td>
 	  <td>{{ network.created_at|date:"F j, Y" }}</td>
 	  <td>{{ network.bicluster_set.count }}</td>
@@ -26,7 +25,6 @@
 	{% endfor %}
       </tbody>
     </table>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
 {% endblock %}
 

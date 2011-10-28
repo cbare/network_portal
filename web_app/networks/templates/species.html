@@ -1,8 +1,9 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
 
-<div id="page">
-  <div id="content">
+<div id="main" class="sub-page">
     <h1>{{ species.name }}</h1>
 
     <p>taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
@@ -41,9 +42,8 @@
     </ul>
     
     {% if species.ucsc_id %}
-    <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
+    <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="{{ STATIC_PREFIX }}images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
     {% endif %}
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
 {% endblock %}
 

@@ -5,7 +5,7 @@
 #from django.template import RequestContext 
 from web_app.networks.models import Gene
 
-
+from django.template import RequestContext
 from django.http import HttpResponse
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,7 +23,8 @@ class Object(object):
 
 def gene(request):
     #return HttpResponse("testing gene")
-    return render_to_response('analysis/gene.html')
+    #return render_to_response('analysis/gene.html')
+    return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
 
 def network(request):
     return HttpResponse("testing network")

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
@@ -8,20 +8,14 @@ $(function() {
     function log(message) {
              $("<div />").text(message).prependTo("#log");
              $("#log").scrollTop(0);
-             $("<input />").text(message).appendTo("#test");
     }
 
     $("#artist").autocomplete({
         source: function( request, response ) {
                 $.ajax({
-                        //url:      "http://localhost:8983/solr/select/?wt=json&json.wrf=?",
                         url:      "http://localhost:8983/solr/suggest/?wt=json&json.wrf=?",
                         dataType: "jsonp",
                         data: { q: request.term
-                                //terms: true,
-                                //qt: "testAutoComplete",
-                                //'terms.prefix': request.term,
-                                //'terms.fl': "name_auto"
                         },
                         success: function( data ) {
                                  response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
@@ -35,8 +29,6 @@ $(function() {
         minLength: 1,
         select: function (event, ui) {
 		console.debug("log event, ui: " + ui.item.label);
-		//console.debug("log ui item: " + ui.item.toSource());
-                //$("#test").val(ui.item.label);
                 $("#artist").val(ui.item.label);
 		log (ui.item.label ?
                        "Selected: " + ui.item.label :
@@ -47,9 +39,8 @@ $(function() {
 });
 </script>
 
-<div id="page">
-  <div id="content">
-    <div class="demo">
+<div id="main" class="sub-page">
+    <!--<div class="demo">-->
 
       <div class="ui-widget">
 	<h1>Search</h1>
@@ -58,56 +49,34 @@ $(function() {
 	  <input type="submit" value="Search">
 	</form>
 	
-<!--	<label for="artist">Search: </label>
-	<input id="artist" />
--->
+	<!--	<label for="artist">Search: </label>
+		<input id="artist" />
+	-->
       </div>
       
-<!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
+      <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
 	Result:
 	<div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
       </div>
--->
+      -->
 
-    {% if results %}
-    <h3>Search Results</h3>
-    <p>Found {{ results|length }} results for "{{ q }}".</p>
-    <ul>
-      {% for result in results %}
-      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
-      {% endfor %}
-      <li><a href="/network/test/">test network</a></li>
-    </ul>
-    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
-    {% endif %}
-
+<!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">-->
+        <div id="search-results">
+	{% if results %}
+	<h3>Search Results</h3>
+	<!--<div class="ui-widget-content">-->
+	  <p>Found {{ results|length }} results for "{{ q }}".</p>
+	  <ul>
+	    {% for result in results %}
+	    <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
+	    {% endfor %}
+	    <li><a href="/network/test/">test network</a></li>
+	  </ul>
+	  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
+	  {% endif %}
+	<!--</div>-->
+      </div>
       
-    </div><!-- End demo -->
-  </div>
-</div>
-<!--<div id="page">
-  <div id="content">
--->
-    <!--<h1>Network Portal</h1>-->
-<!--    <h1>Search</h1>
-    <form action="/search/" method="get">
-      <input type="text" name="q">
-      <input type="submit" value="Search">
-    </form>
-    
-    {% if results %}
-    <h3>Search Results</h3>
-    <p>Found {{ results|length }} results for "{{ q }}".</p>
-    <ul>
-      {% for result in results %}
-      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
-      {% endfor %}
-      <li><a href="/network/test/">test network</a></li>
-    </ul>
-    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
-    {% endif %}
-
-  </div>--><!-- End #content -->
-<!--</div>--><!-- End #page -->
-
+    <!-- </div><!-- End demo -->
+</div><!-- End #main -->
 {% endblock %}
