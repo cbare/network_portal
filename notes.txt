@@ -3,8 +3,32 @@ Network portal project notes
 
 This is a log file of the steps used to create the Network Portal app.
 
-===
+=== TODO
+
+  - move networkX out of networks.views
+  - dvh_portal_files does not belong in images
+  - portal icons? is that part of dvh_portal_files?
+  - where does this belong? web_app/networks/templates/analysis
+
+  - deploy temporarily to EC2, script this process
+
+  - tab-ify search results page
+  - add decoration to cytoscape web network page
+  - add controls to cytoscape web network page
+  - add regulator search field to Solr
+  - search returns genes
+  - search returns species
+  - add synonyms table. Species, genes, functions can have synonyms
+
+  - add function to Django models and DB
+    - genes have function, biclusters have functional enrichment
+  - search returns genes / biclusters by function
 
 
-extra DB setup in django/networks/sql
+  - analysis shopping cart
+  - export networks and data in various formats
+
+  - import Halo network
+  - import Methanococcus network
+  - limit searches to one species
 

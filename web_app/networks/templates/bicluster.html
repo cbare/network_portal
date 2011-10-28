@@ -1,58 +1,56 @@
 {% extends "base2.html" %}
-
 {% block content %}
+
 <div id="main">
-    <h1>Bicluster {{ bicluster.id }}</h1>
-  
-    <p>residual: {{ bicluster.residual }}</p>
-    <p><a href="/network?biclusters={{ bicluster.id }}">view as network</a></p>
-    
-    <h2>Genes ({{ genes|length }})</h2>
-    <table>
-      <thead>
-	<tr>
-          <th>Name</th>
-          <th>Common name</th>
-          <th>Type</th>
-          <th>Gene ID</th>
-          <th>Chromosome</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Strand</th>
-          <th>Description</th>
-          <th>TF</th>
-	</tr>
-      </thead>
-      <tbody>
-	{% for gene in genes %}
-	<tr>
-          <td>{{ gene.name }}</td>
-          <td>{{ gene.common_name|default_if_none:"" }}</td>
-          <td>{{ gene.type }}</td>
-          <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>
-          <td>{{ gene.chromosome.name }}</td>
-          <td>{{ gene.start }}</td>
-          <td>{{ gene.end }}</td>
-          <td>{{ gene.strand }}</td>
-          <td>{{ gene.description }}</td>
-          <td>{{ gene.transcription_factor }}</td>
-	</tr>
-	{% endfor %}
-      </tbody>
-    </table>
-    
-    <h2>Conditions ({{ conditions|length }})</h2>
-    <ul>
-      {% for condition in conditions %}
-      <li>{{ condition.name }}</li>
+  <h1>Bicluster {{ bicluster.id }}</h1>
+  <p>residual: {{ bicluster.residual }}</p>
+  <p><a href="/network?biclusters={{ bicluster.id }}">view as network</a></p>
+  <h2>Genes ({{ genes|length }})</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Common name</th>
+        <th>Type</th>
+        <th>Gene ID</th>
+        <th>Chromosome</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Strand</th>
+        <th>Description</th>
+        <th>TF</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gene in genes %}
+      <tr>
+        <td>{{ gene.name }}</td>
+        <td>{{ gene.common_name|default_if_none:"" }}</td>
+        <td>{{ gene.type }}</td>
+        <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>
+        <td>{{ gene.chromosome.name }}</td>
+        <td>{{ gene.start }}</td>
+        <td>{{ gene.end }}</td>
+        <td>{{ gene.strand }}</td>
+        <td>{{ gene.description }}</td>
+        <td>{{ gene.transcription_factor }}</td>
+      </tr>
       {% endfor %}
-    </ul>
-    
-    <h2>Influences</h2>
-    <ul>
-      {% for influence in influences %}
-      <li>{{ influence.name }}</li>
-      {% endfor %}
-    </ul>
+    </tbody>
+  </table>
+
+  <h2>Conditions ({{ conditions|length }})</h2>
+  <ul>
+    {% for condition in conditions %}
+    <li>{{ condition.name }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Influences</h2>
+  <ul>
+    {% for influence in influences %}
+    <li>{{ influence.name }}</li>
+    {% endfor %}
+  </ul>
 </div><!-- End #main -->
 {% endblock %}

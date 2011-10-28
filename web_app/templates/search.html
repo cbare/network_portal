@@ -40,43 +40,49 @@ $(function() {
 </script>
 
 <div id="main" class="sub-page">
-    <!--<div class="demo">-->
+  <!--<div class="demo">-->
 
-      <div class="ui-widget">
-	<h1>Search</h1>
-	<form action="/search/" method="get">
-	  <input type="text" name="q" id="artist">
-	  <input type="submit" value="Search">
-	</form>
-	
-	<!--	<label for="artist">Search: </label>
+  <div class="ui-widget">
+    <h1>Search</h1>
+    <form action="/search/" method="get">
+      <input type="text" name="q" id="artist">
+      <input type="submit" value="Search">
+    </form>
+    <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
+    <!--	<label for="artist">Search: </label>
 		<input id="artist" />
-	-->
-      </div>
-      
-      <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
-	Result:
-	<div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
-      </div>
-      -->
+		-->
+  </div>
+  
+  <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
+	    Result:
+	    <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+  </div>
+  -->
 
-<!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">-->
-        <div id="search-results">
-	{% if results %}
-	<h3>Search Results</h3>
-	<!--<div class="ui-widget-content">-->
-	  <p>Found {{ results|length }} results for "{{ q }}".</p>
-	  <ul>
-	    {% for result in results %}
-	    <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
-	    {% endfor %}
-	    <li><a href="/network/test/">test network</a></li>
-	  </ul>
-	  <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network</a></p>
-	  {% endif %}
-	<!--</div>-->
-      </div>
-      
-    <!-- </div><!-- End demo -->
+  <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">-->
+  <div id="search-results">
+
+    {% if q %}
+    <h3>Search Results</h3>
+    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>
+    <p>[Search results will be tabbed. For now, results are in terms of biclusters.]</p>
+
+    {% if results %}
+    <!--<div class="ui-widget-content">-->
+    <p>Found {{ results|length }} results for "{{ q }}".</p>
+    <ul>
+      {% for result in results %}
+      <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
+      {% endfor %}
+    </ul>
+    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+    {% else %}
+    <p>No results for query &ldquo;{{ q }}&rdquo;</p>
+    {% endif %}
+    {% endif %}
+    <!--</div>-->
+  </div>
+  <!-- </div><!-- End demo -->
 </div><!-- End #main -->
 {% endblock %}

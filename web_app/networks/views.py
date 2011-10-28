@@ -16,18 +16,18 @@ from web_app.networks.models import Species
 from web_app.networks.models import Bicluster
 import networkx as nx
 import re
+import sys, traceback
 
 
 class Object(object):
     pass
 
 def gene(request):
-    #return HttpResponse("testing gene")
     #return render_to_response('analysis/gene.html')
     return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
 
-def network(request):
-    return HttpResponse("testing network")
+# def network(request):
+#     return HttpResponse("testing network")
 
 def motif(request):
     return HttpResponse("testing motif")

@@ -1,21 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="page">
-  <div id="content">
-    <h1>About the Network Portal</h1>
-    <p>version: {{version}}</p>
-    <p>The Network Portal is a database of gene transcription regulatory networks, 
-      enabling exploration, annotation and comparative analysis...</p>
-    
-    <h2>Credits</h2>
-    <p>...</p>
-    
-    <h2>Tools</h2>
-    <p>...</p>
-    
-    <h2>Source</h2>
-    <p>...</p>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+<div id="main">
+  <h1>About the Network Portal</h1>
+  <p>version: {{version}}</p>
+  <p>The Network Portal is a database of gene transcription regulatory networks, 
+    enabling exploration, annotation and comparative analysis...</p>
+  
+  <h2>Credits</h2>
+  <p>The Network Portal is developed in the <a href="http://baliga.systemsbiology.net">Baliga Lab</a>
+    at the <a href="http://systemsbiology.org">Institute for Systems Biology</a>.</p>
+  
+  <h2>Tools</h2>
+  <p>Python, Django, NetworkX, Solr, PostgeSQL, Cytoscape Web, jQuery, the R project</p>
+  
+  <h2>Source</h2>
+  <p>...</p>
+</div><!-- End #main -->
 {% endblock %}

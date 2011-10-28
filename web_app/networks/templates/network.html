@@ -1,5 +1,6 @@
 {% extends "base2.html" %}
 {% block content %}
+
 <div id="main">
   <h1>{{ network.name }}</h1>
 
@@ -12,20 +13,20 @@
     <caption>a list of biclusters in the network</caption>
     <thead>
       <tr>
-	<th>k</th>
-	<th>genes</th>
-	<th>residual</th>
+        <th>k</th>
+        <th>genes</th>
+        <th>residual</th>
       </tr>
     </thead>
     <tbody>
       {% for bicluster in biclusters %}
       <tr>
-	<td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.k }}</a></td>
-	<td>{{ bicluster.genes.count }}</td>
-	<td>{{ bicluster.residual }}</td>
+        <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.k }}</a></td>
+        <td>{{ bicluster.genes.count }}</td>
+        <td>{{ bicluster.residual }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-</div>
+</div><!-- End #main -->
 {% endblock %}

@@ -4,10 +4,8 @@ $(document).ready(function() {
    //    this.id = "current";
    //});
 
-
  //   $(function() {
-   
-     $("#portal-tabs").tabs();
+        $("#portal-tabs").tabs();
 	
 	$("#gene-tabs").tabs({
 	    cache: true

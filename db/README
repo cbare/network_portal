@@ -1,5 +1,8 @@
 Initializing the DB
 
+Database schema is created by django's syncdb command, which creates a table for each
+model plus the extra DB setup in django/networks/sql.
+
 # Start PostgreSQL server
 sudo su postgres -c '/opt/local/lib/postgresql/bin/postgres -D /opt/local/var/db/postgres/defaultdb'
 cnt-z
@@ -7,6 +10,9 @@ bg
 
 # or
 su -c 'pg_ctl start -D /opt/local/var/db/postgres/defaultdb -l postgreslog' postgres
+
+# or on Ubuntu
+sudo /etc/init.d/postgresql restart
 
 # start postgres client
 /opt/local/lib/postgresql/bin/psql -U postgres
@@ -30,4 +36,16 @@ su -c 'pg_ctl start -D /opt/local/var/db/postgres/defaultdb -l postgreslog' post
     * set of genes needs to contain all genes for which cMonkey has
       expression data and will place in biclusters
     * see scripts/insert_genes.py
+
+
+
+Note: Watch out for this error on Ubuntu/Debian:
+
+FATAL:  Ident authentication failed for user "postgres"
+
+You might see a line that says something like "local all all ident" in your pg_hba.conf file. What the 'ident' means is postgres uses you shell account name to log you in. Specifying the user on the command line "psql -U postgres" doesn't help. Either change "ident" in the pg_hba.conf to "md5" or "trust" and restart postgres, or just do what it wants: "sudo -u postgres psql". More on this can be found here:
+
+http://www.depesz.com/index.php/2007/10/04/ident/
+
+
 

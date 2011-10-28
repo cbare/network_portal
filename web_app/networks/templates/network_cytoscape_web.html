@@ -1,7 +1,10 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>{{ network.name }}</title>
+  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/main.css">  
 
   <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
   <script type="text/javascript" src="/static/javascripts/main.js"></script>
@@ -160,6 +163,9 @@
 <body>
   <div id="cytoscapeweb">
     Cytoscape Web
+  </div>
+  <div id="menu">
+    <a href="/">home</a> | <a href="/search">search</a> | [controls to be added here or in sidebar]
   </div>
 </body>
 </html>
