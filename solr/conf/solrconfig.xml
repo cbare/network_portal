@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
 <!-- 
      For more details about configurations options that may appear in
      this file, see http://wiki.apache.org/solr/SolrConfigXml. 
@@ -32,7 +49,7 @@
     -->
   <luceneMatchVersion>LUCENE_34</luceneMatchVersion>
 
-  <!-- lib directives can be used to instruct Solr to load Jars
+  <!-- lib directives can be used to instruct Solr to load an Jars
        identified and use them to resolve any "plugins" specified in
        your solrconfig.xml or schema.xml (ie: Analyzers, Request
        Handlers, etc...).
@@ -46,12 +63,30 @@
        
               <lib dir="./lib" />
     -->
-  <lib dir="${solr.install.dir}/contrib/extraction/lib" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-cell-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-clustering-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-extras-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/contrib/clustering/lib/" />
+  <!-- A dir option by itself adds any files found in the directory to
+       the classpath, this is useful for including all jars in a
+       directory.
+    -->
+  <lib dir="../../contrib/extraction/lib" />
+  <!-- When a regex is specified in addition to a directory, only the
+       files in that directory which completely match the regex
+       (anchored on both ends) will be included.
+    -->
+  <lib dir="../../dist/" regex="apache-solr-cell-\d.*\.jar" />
+  <lib dir="../../dist/" regex="apache-solr-clustering-\d.*\.jar" />
+  <lib dir="../../dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
+
+  <!-- If a dir option (with or without a regex) is used and nothing
+       is found that matches, it will be ignored
+    -->
+  <lib dir="../../contrib/clustering/lib/" />
+  <lib dir="/total/crap/dir/ignored" /> 
+  <!-- an exact path can be used to specify a specific file.  This
+       will cause a serious error to be logged if it can't be loaded.
+    -->
+  <!--
+  <lib path="../a-jar-that-does-not-exist.jar" /> 
+  -->
   
   <!-- Data Directory
 
@@ -805,12 +840,13 @@
      -->
   </requestHandler>
 
-   <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+  <!-- from cbare  -->
+  <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
     <lst name="defaults">
-        <str name="config">data-config.xml</str>
+      <str name="config">data-config.xml</str>
     </lst>
   </requestHandler>
-
+  <!-- end cbare -->
 
   <!-- XML Update Request Handler.  
        
@@ -1288,6 +1324,27 @@
     -->
   <searchComponent name="terms" class="solr.TermsComponent"/>
 
+  <!-- Karen added the autoSuggest -->
+  <requestHandler name="/autoSuggest" class="solr.SearchHandler">
+    <arr name="components">
+      <str>terms</str>
+    </arr>
+  </requestHandler>
+
+  <requestHandler name="testAutoComplete" class="solr.SearchHandler">
+     <!-- default values for query parameters -->
+    <lst name="defaults">
+ 		  <str name="defType">dismax</str>
+ 		  <str name="qf">name_auto</str>
+ 		  <str name="pf">name_auto</str>
+ 		  <str name="qs">1</str>
+ 		  <str name="ps">0</str>
+ 		  <str name="tie">0.1</str>
+ 		  <str name="fq">type:Gene</str>
+    </lst>
+  </requestHandler>  
+  <!-- end Karen -->
+
   <!-- A request handler for demonstrating the terms component -->
   <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
      <lst name="defaults">
@@ -1298,6 +1355,39 @@
     </arr>
   </requestHandler>
 
+  <!-- start Karen -->
+  <searchComponent class="solr.SpellCheckComponent" name="suggest">
+    <lst name="spellchecker">
+      <str name="name">suggest</str>
+      <str name="classname">org.apache.solr.spelling.suggest.Suggester</str>
+      <str name="lookupImpl">org.apache.solr.spelling.suggest.tst.TSTLookup</str>
+      <!-- Alternatives to lookupImpl: 
+           org.apache.solr.spelling.suggest.fst.FSTLookup   [finite state automaton]
+           org.apache.solr.spelling.suggest.jaspell.JaspellLookup [default, jaspell-based]
+           org.apache.solr.spelling.suggest.tst.TSTLookup   [ternary trees]
+      -->
+      <str name="field">name_auto</str>  <!-- the indexed field to derive suggestions from -->
+      <float name="threshold">0.005</float>
+      <str name="buildOnCommit">true</str>
+      <!--
+	  <str name="sourceLocation">american-english</str>
+      -->
+    </lst>
+  </searchComponent>
+  <requestHandler class="org.apache.solr.handler.component.SearchHandler" name="/suggest">
+    <lst name="defaults">
+      <str name="spellcheck">true</str>
+      <str name="spellcheck.dictionary">suggest</str>
+      <str name="spellcheck.onlyMorePopular">true</str>
+      <str name="spellcheck.count">10</str>
+      <str name="spellcheck.collate">true</str>
+    </lst>
+    <arr name="components">
+      <str>suggest</str>
+    </arr>
+  </requestHandler>  
+  
+  <!-- end Karen -->
 
   <!-- Query Elevation Component
 
