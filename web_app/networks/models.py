@@ -59,6 +59,7 @@ class Gene(models.Model):
     strand = models.CharField(max_length=1, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     transcription_factor = models.BooleanField(default=False)
+    functions = models.ManyToManyField('Function', through='Gene_Function')
     
     def __unicode__(self):
         return self.name
@@ -142,6 +143,33 @@ class Annotation(models.Model):
     description = models.TextField(blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
 
+# alternate names for genes, species, maybe influences or functions
+class Synonym(models.Model):
+    target_id = models.IntegerField()
+    target_type = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=64, blank=True, null=True)
 
+# functions as defined by some system
+# type sepcifies the naming system, type in {GO, COG, KEGG, etc.}
+# native_id is the id within the naming system, GO_ID, Kegg pathway ID, etc.
+# genes can have functions, biclusters can be enriched for functions
+class Function(models.Model):
+    native_id = models.CharField(max_length=64, blank=True, null=True)
+    name = models.CharField(max_length=255)
+    namespace = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=64, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
+# a function attributes
+class Function_Attributes(models.Model):
+    function = models.ForeignKey(Function, related_name='attributes')
+    type = models.CharField(max_length=64, blank=True, null=True)
+    value = models.CharField(max_length=255, blank=True, null=True)
+    target_id = models.IntegerField(blank=True, null=True)
+
+class Gene_Function(models.Model):
+    function = models.ForeignKey(Function)
+    gene = models.ForeignKey(Gene)
+    source = models.CharField(max_length=255, blank=True, null=True)
 
