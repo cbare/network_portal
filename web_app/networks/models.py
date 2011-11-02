@@ -162,11 +162,10 @@ class Function(models.Model):
     description = models.TextField(blank=True, null=True)
 
 # a function attributes
-class Function_Attributes(models.Model):
+class Function_Relationships(models.Model):
     function = models.ForeignKey(Function, related_name='attributes')
-    type = models.CharField(max_length=64, blank=True, null=True)
-    value = models.CharField(max_length=255, blank=True, null=True)
-    target_id = models.IntegerField(blank=True, null=True)
+    target = models.ForeignKey(Function, related_name='+')
+    type = models.CharField(max_length=255, blank=True, null=True)
 
 class Gene_Function(models.Model):
     function = models.ForeignKey(Function)
