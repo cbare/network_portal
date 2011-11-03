@@ -4,6 +4,7 @@
 <div id="main">
   <p>A database of gene transcription regulatory networks for several microbes. <a href="/about">[more]</a></p>
 
+<!--
   <h2>Search</h2>
   <form action="/search/" method="get">
     <input type="text" name="q">
@@ -17,6 +18,57 @@
     <li><a href="/species/">Species</a></li>
     <li>Functions?</li>
   </ul>
+
+  <h2>...</h2>
+-->
+  <div id="facet-display">
+    <!-- start ajax-solr tutorial code mods -->
+    <h2>Current Selection</h2>
+    <ul id="selection"></ul>
+
+    <h2>Search</h2>
+    <span id="search_help">(press ESC to close suggestions)</span>
+    <ul id="search">
+      <input type="text" id="query" name="query"/>
+    </ul>
+
+    <h2>Browse</h2>
+    <div id="browse">
+      <h2>Species</h2>
+      <div class="tagcloud" id="species_name"></div>
+
+      <h2>Species Short Name</h2>
+      <div class="tagcloud" id="species_short_name"></div>
+
+      <h2>Condition Name</h2>
+      <div class="tagcloud" id="condition_name"></div>
+
+      <h2>Network Name</h2>
+      <div class="tagcloud" id="network_name"></div>
+
+      <h2>Influence Name</h2>
+      <div class="tagcloud" id="influence_name"></div>
+
+      <h2>Influence Type</h2>
+      <div class="tagcloud" id="influence_type"></div>
+      
+      <h2>Gene Common Name</h2>
+      <div class="tagcloud" id="gene_common_name"></div>
+
+      <h2>Gene Name</h2>
+      <div class="tagcloud" id="gene_name"></div>
+    </div><!-- End #browse -->
+    <h2>Results</h2>
+    <div id="result">
+      <div id="navigation">
+	<ul id="pager"></ul>
+	<div id="pager-header"></div>
+      </div>
+      <div id="docs">
+      </div>
+    </div>
+    <!-- end ajax-solr tutorial code mods -->
+  </div><!-- End #facet-display -->
 </div><!-- End #main -->
 <div id="sidebar">
   <h3>About</h3>

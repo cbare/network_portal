@@ -168,9 +168,12 @@ input, select, textarea {
 }
 option { padding-right: 0.5em; } 
 
+/*
 #name, #email, #message, #website{
 	width: 455px;
 }
+*/
+
 input.button { 
 	font: bold 12px Arial, Sans-serif; 
 	height: 30px;
@@ -692,4 +695,144 @@ to make the following work how we'd like */
     padding: 15px 25px 25px 20px;
     border: 1px solid #EEE8E1;
     background: #FAF7F5;
+}
+
+/* taken from ajax-solr reuters example */
+#pager, #pager-header {
+    display: inline;
+}
+
+#pager li, .links li {
+    list-style-type: none;
+    display: inline;
+}
+
+.tagcloud {
+    padding: 10px 15px 0;
+}
+
+.tagcloud_item {
+    float: left;
+    display: block;
+    margin-right: 4px;
+    color: #6998f0;
+}
+
+.tagcloud_item:hover {
+    color: #f00;
+}
+
+/* tagcloud */
+a.tagcloud_size_0 {
+    font-size: 80%;
+}
+
+a.tagcloud_size_1 {
+    font-size: 90%;
+}
+
+a.tagcloud_size_2 {
+    font-size: 100%;
+}/*Rst*/
+
+a.tagcloud_size_3 {
+    font-size: 110%;
+}
+
+a.tagcloud_size_4 {
+    font-size: 120%;
+}
+
+a.tagcloud_size_5 {
+    font-size: 130%;
+}
+
+a.tagcloud_size_6 {
+    font-size: 140%;
+}
+
+a.tagcloud_size_7 {
+    font-size: 150%
+}
+
+a.tagcloud_size_8 {
+    font-size: 160%;
+}
+
+a.tagcloud_size_9 {
+    font-size: 170%;
+}
+
+a.tagcloud_size_10 {
+    font-size: 180%;
+}
+
+#selection {
+    padding: 10px 15px 0;
+}
+
+#selection li {
+    list-style-type: none;
+}
+
+#search input {
+    width: 350px;
+}
+
+}
+#search_help {
+    font-size: 80%;
+}
+
+#facet-display {
+    float: left;
+    width: 500px;
+    padding: 0 0 10px 10px;
+}
+
+#facet-display h2 {
+/*    font-size: 13px;*/
+    padding-top: 20px;
+    clear: left;
+}
+
+#browse h2 {
+    font-size: 1.5em;
+    color: #2F3C51; /*#A9A298;*/
+    margin-left: 10px;
+}
+#key {
+    font-weight: bold;
+}
+
+#value1 {
+    text-decoration: underline;
+}
+
+#navigation {
+    border-bottom: 1px solid black;
+}
+
+#navigation ul {
+    margin-left: -10px;
+}
+
+#result {
+    text-align: justify;
+}
+
+#result-value {
+    padding-left: 15px;
+}
+
+#result h2 {
+    padding: 15px 0 5px 0;
+    color: #B4241B;
+    font-size: 20px;
+    font-weight: 100;
+    letter-spacing: -2px;
+}
+
+#docs {
+    padding-left: 10px;
 }
