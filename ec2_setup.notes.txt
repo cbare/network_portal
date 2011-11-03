@@ -139,7 +139,8 @@ sudo ln -s solr/lib/postgresql-9.1-901.jdbc4.jar /usr/share/solr/WEB-INF/lib/
 
 /usr/share/jetty$ sudo -u jetty java -jar /usr/share/jetty/start.jar
 
-
+cd /home/ubuntu/network_portal/apache-solr-3.4.0/example
+java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.4.0/" -jar start.jar
 
 
 

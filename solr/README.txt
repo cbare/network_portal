@@ -26,9 +26,8 @@ in the current working directory for a jetty install. We'll pass the
 other two as JVM system properties on the command line.
 
 > cd my_projects/apache-solr-3.4.0/example/
-> java -Dsolr.solr.home="my_projects/network_portal/network_portal/solr"
-       -Dsolr.install.dir="my_projects/network_portal/apache-solr-3.4.0/"
-       -jar start.jar
+> export network_portal_home=[path to project]
+> java -Dsolr.solr.home="${network_portal_home}/network_portal/solr" -Dsolr.install.dir="${network_portal_home}/apache-solr-3.4.0/" -jar start.jar
 
 ...and when Solr is started connect to 
 

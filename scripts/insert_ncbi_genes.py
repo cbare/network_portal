@@ -1,30 +1,12 @@
+##
+## load gene annotations from NCBI into postgres
+##
 import sys
 import psycopg2
 import argparse
 import re
-
-
-# like a javascript object, just assign any properties
-class OpenStruct:
-    def __init__(self, **dic):
-        self.__dict__.update(dic)
-
-    def __getattr__(self, key):
-        if key in self.__dict__:
-            return self.__dict__[key]
-        else:
-            return None
-#            raise AttributeError, key
-
-    def __setattr__(self, key, value):
-        self.__dict__[key] = value
-        return value
-    
-    def __str__(self):
-        result = "<"
-        result += ", ".join( ["%s:%s" % (str(key), str(self.__dict__[key])) for key in self.__dict__] )
-        result += ">"
-        return result
+from species import species_dict
+from open_struct import OpenStruct
 
 
 # the database table networks_gene looks like this:
@@ -187,23 +169,6 @@ def get_chromosome_names(species=None, species_id=None):
     finally:
         if (cur): cur.close()
         if (con): con.close()
-
-class Species:
-    def __init__(self, name, chromosome_map):
-        self.name = name
-        self.chromosome_map = chromosome_map
-
-
-# define names and chromosome names for known species. Add new species here as needed.
-species_dict = {}
-species_dict['hal'] = Species("Halobacterium salinarum NRC-1",
-                              {'chromosome':'chromosome', 'pNRC100':'pNRC100', 'pNRC200':'pNRC200'})
-species_dict['halo'] = species_dict['hal']
-species_dict['dvu'] = Species("Desulfovibrio vulgaris Hildenborough",
-                              {'chromosome':'chromosome', 'pDV':'pDV'})
-species_dict['dvh'] = species_dict['dvu']
-species_dict['mmp'] = Species("Methanococcus maripaludis S2",
-                              {'chromosome':'chromosome'})
 
 
 
