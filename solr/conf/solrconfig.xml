@@ -755,7 +755,7 @@
          <str name="facet.query">price:[* TO 500]</str>
          <str name="facet.query">price:[500 TO *]</str>
        </lst>
-      -->
+    -->
     <!-- If the default list of SearchComponents is not desired, that
          list can either be overridden completely, or components can be
          prepended or appended to the default list.  (see below)
@@ -805,6 +805,8 @@
        <str name="facet">on</str>
        <str name="facet.field">cat</str>
        <str name="facet.field">manu_exact</str>
+       <!--<str name="facet.field">gene_common_name</str>-->
+       <!--<str name="facet.field">name</str>-->
        <str name="facet.query">ipod</str>
        <str name="facet.query">GB</str>
        <str name="facet.mincount">1</str>
