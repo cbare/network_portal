@@ -24,3 +24,26 @@ select f1.name as function, f2.name as subcategory
 from networks_function f1 join networks_function_relationships r on f1.id=r.function_id
 join networks_function f2 on r.target_id=f2.id where r.type='parent';
 
+
+select * from networks_function
+where id in (
+  select function_id from networks_function_relationships
+  where type='parent' and target_id=(
+    select id from networks_function
+    where name='Nucleotide and nucleoside interconversions'
+    and type='tigr' and namespace='tigr role'));
+
+delete from networks_function_relationships
+  where function_id in (select id from networks_function where type='tigr');
+
+delete from networks_gene_function
+  where function_id in (select id from networks_function where type='tigr');
+  
+delete from networks_function where type='tigr';
+
+delete from networks_function_relationships
+  where function_id in (select id from networks_function where native_id='Accession')
+  or target_id in (select id from networks_function where native_id='Accession');
+
+
+
