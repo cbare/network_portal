@@ -1,56 +1,95 @@
 {% extends "base2.html" %}
 {% block content %}
 
-<div id="main">
-  <h1>Bicluster {{ bicluster.id }}</h1>
-  <p>residual: {{ bicluster.residual }}</p>
-  <p><a href="/network?biclusters={{ bicluster.id }}">view as network</a></p>
-  <h2>Genes ({{ genes|length }})</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Common name</th>
-        <th>Type</th>
-        <th>Gene ID</th>
-        <th>Chromosome</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Strand</th>
-        <th>Description</th>
-        <th>TF</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for gene in genes %}
-      <tr>
-        <td>{{ gene.name }}</td>
-        <td>{{ gene.common_name|default_if_none:"" }}</td>
-        <td>{{ gene.type }}</td>
-        <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>
-        <td>{{ gene.chromosome.name }}</td>
-        <td>{{ gene.start }}</td>
-        <td>{{ gene.end }}</td>
-        <td>{{ gene.strand }}</td>
-        <td>{{ gene.description }}</td>
-        <td>{{ gene.transcription_factor }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div id="bicluster-top">
+  <div class="post-top">
+    <div id="top-tabs">
+      <ul>
+	<li><a class="name" href="#tab-main">Bicluster 0034</a>|</li>
+	<li><a class="network" href="#tab-network">Network</a>|</li>
+	<li><a class="bicluster" href="#tab-bicluster">Biclusters</a>|</li>
+	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
+	<li><a class="function" href="#tab-function">Functions</a>|</li>
+	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
+	<li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li>
+	<li><a class="help" href="#tab-help">Help</a></li>
+      </ul>
 
-  <h2>Conditions ({{ conditions|length }})</h2>
-  <ul>
-    {% for condition in conditions %}
-    <li>{{ condition.name }}</li>
-    {% endfor %}
-  </ul>
+      <div id="tab-main">
+	<div id="main">
+	  <img src="{{ STATIC_PREFIX }}images/cluster0034.png">
+	</div>
+	<div id="sidebar">
+	  <h4>Summary</h4>
+	  <table>
+	    <tr>
+	      <th class="help">Organism</th>
+	    </tr>
+	    <tr>
+	      <td><a href="desulfovibrio">Desulfovibrio vulgaris</a></td>
+	    </tr>
+	  </table>
+	  <table>
+	    <tr>
+	      <th class="help">Residual</th>
+	      <th>Genes</th>
+	      <th>Conditions</th>
+	    </tr>
+	    <tr>
+	      <td><a href="bicluster_residual">0.44</a></td>
+	      <td><a href="bicluster_genes">21</a></td>
+	      <td><a href="bicluster_conditions">374</a></td>
+	    </tr>
+	  </table>
+	  <table>
+	    <tr>
+	      <th>Motif 1 Evalue</th>
+	      <th>Motif 2 Evalue</th>
+	    </tr>
+	    <tr>
+	      <td><a href="pssm_1">1.4e-14</a></td>
+	      <td><a href="pssm_2">0.15</td></a>
+	    </tr>
+	  </table>
+	  <table>
+	    <tr>
+	      <th>Regulators</th>
+	      <th>Process</th>
+	    </tr>
+	    <tr>
+	      <td><a href="pssm_1">Fur</a></td>
+	      <td><a href="pssm_2">Iron homeostasis</td></a>
+	    </tr>
+	    <tr>
+	      <td><a href="pssm_1">AraC</a></td>
+	      <td><a href="pssm_2">Arabinose metabolism</td></a>
+	    </tr>
+	  </table>
+	</div><!-- #sidebar -->
+      </div>
+      <div id="tab-network">
+	testing network tab
+      </div>
+      <div id="tab-bicluster">
+	testing bicluster tab
+      </div>
+      <div id="tab-motif">
+	MOTIF tab
+      </div>
+      <div id="tab-function">
+	FUNCTION tab
+      </div>
+      <div id="tab-gene">
+	GENE tab
+      </div>
+      <div id="tab-add-cart">
+	add cart tab
+      </div>
+      <div id="tab-help">
+	HELP tab
+      </div>
+    </div><!-- #top-tabs -->
+  </div><!-- #post-top -->
+</div><!-- #bicluster-top-->
 
-  <h2>Influences</h2>
-  <ul>
-    {% for influence in influences %}
-    <li>{{ influence.name }}</li>
-    {% endfor %}
-  </ul>
-</div><!-- End #main -->
 {% endblock %}

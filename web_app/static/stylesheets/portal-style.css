@@ -216,9 +216,9 @@ input.button {
 #header {
 	position: relative;
 	width: 952px;
-	height: 138px;
+	height: 99px; /*138px;*/
 	background:url('../images/portal-logo_01.jpg') no-repeat;	
-	color: #fff;	
+	color: #ffff;	
 	padding: 0;	
 	margin: 0;	
 }
@@ -265,32 +265,32 @@ input.button {
  
  /* Alternative top-menu */
 
-.underlinemenu{
-font-weight: bold;
-width: 100%;
+.underlinemenu {
+    font-weight: bold;
+    width: 100%;
 }
 
 .underlinemenu ul{
-padding: 6px 0 -20px 0; /*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
-float:right;
-margin: 0;
-text-align: right; //set value to "left", "center", or "right"*/
+    padding: 6px 0 -20px 0; /*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
+    float:right;
+    margin: 0;
+    text-align: right; //set value to "left", "center", or "right"*/
 }
 
 .underlinemenu ul li{
-display: inline;
+    display: inline;
 }
 
 .underlinemenu ul li a{
-color: #fff;
-padding: 0px 4px 4px 3px; /*top padding is 6px, bottom padding is 4px*/
-margin-right: 10px; /*spacing between each menu link*/
-text-decoration: none;
-border-bottom: 3px solid orange; /*bottom border is 3px*/
+    color: #51432F; /*#fff;*/
+    padding: 0px 4px 4px 3px; /*top padding is 6px, bottom padding is 4px*/
+    margin-right: 10px; /*spacing between each menu link*/
+    text-decoration: none;
+    border-bottom: 3px solid orange; /*bottom border is 3px*/
 }
 
 .underlinemenu ul li a:hover, .underlinemenu ul li a.selected{
-border-bottom-color: black;
+    border-bottom-color: black;
 }
 
 
@@ -343,12 +343,23 @@ border-bottom-color: black;
 }
 
 /* Main Column */
+#tab-main #main {
+	float: left;
+	width: 535px;
+	padding: 10px; 
+	margin-left: 20px; /*0 0 0 40px;*/
+	display: inline;	
+}
+
 #main {
 	float: left;
 	width: 535px;
-	padding: 0; margin: 0 0 0 40px;
+	padding: 0; 
+	margin: 0 0 0 40px;
 	display: inline;	
+
 }
+
 #main h2 {
 	font: bold 2.0em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
 	color: #51432F; 
@@ -369,6 +380,14 @@ border-bottom-color: black;
     width: 873px;
 }
 
+#tab-main #sidebar {
+	float: right;
+	width: 285px;
+	padding-top: 10px; 
+	margin: 0; /*0 45px 0 0;*/
+	display: inline;	
+}
+
 #sidebar {
 	float: right;
 	width: 285px;
@@ -376,6 +395,7 @@ border-bottom-color: black;
 	margin: 0 45px 0 0;
 	display: inline;	
 }
+
 #sidebar h3 {
 	color: #51432F; 
 	font: bold 1.9em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
@@ -384,6 +404,16 @@ border-bottom-color: black;
 	padding: 5px 0 5px 7px; 
 	margin: 10px 0 5px 10px; 	
 	border-bottom: 1px solid #E4F2C8;	
+}
+
+#sidebar h4 {
+    border-bottom: 1px solid #E4F2C8;
+    color: #51432F;
+    font: bold 1.6em 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
+    letter-spacing: -0.5px;
+    margin: 0 0 5px 10px;
+    padding: 5px 0 5px 7px;
+    text-transform: none;
 }
 
 /* sidebar menu */
@@ -445,8 +475,10 @@ border-bottom-color: black;
 	font: 1em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;	
 }
 #search form#qsearch .btn{
-	width: 24px; height: 24px;				
+	width: 24px; 
+	height: 24px;				
 }
+
 #sidebar form#qsearch label {
 	display: none;
 }
@@ -775,13 +807,20 @@ a.tagcloud_size_10 {
     list-style-type: none;
 }
 
-#search input {
-    width: 350px;
+#search {
+    margin: 0;
+    padding-left: 10px;
 }
 
+#search input {
+    width: 350px;
+    background: url("../images/search.gif") no-repeat scroll 0 2px;
+    background-position: right;
 }
+
 #search_help {
     font-size: 80%;
+    padding-left: 10px;
 }
 
 #facet-display {
@@ -796,10 +835,15 @@ a.tagcloud_size_10 {
     clear: left;
 }
 
+#browse {
+    padding-left: 10px;
+}
+
 #browse h2 {
     font-size: 1.5em;
     color: #2F3C51; /*#A9A298;*/
     margin-left: 10px;
+    font-style: italic;
 }
 #key {
     font-weight: bold;
@@ -835,4 +879,92 @@ a.tagcloud_size_10 {
 
 #docs {
     padding-left: 10px;
+}
+
+#bicluster-top { 
+    clear: both;
+    padding: 0 10px 60px;
+    width: 952px;
+    height: 500px;
+}
+
+.post-top {
+    background: none repeat scroll 0 0 #FAF7F5;
+    border: 1px solid #EEE8E1;
+    color: #929657;
+    margin: 0 31px 10px 11px;
+    padding: 8px 0;
+    height: 20px;
+    position: relative;
+}
+
+.post-top .name {
+    background: none repeat scroll 0 2px #FAF7F5;
+    color: #51432F;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0 2px 0 5px;
+    padding: 7px 7px 7px 0;
+}
+
+.post-top a.network {
+    background: url("../images/network.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.bicluster {
+    background: url("../images/bicluster.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.motif {
+    background: url("../images/motif.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.function {
+    background: url("../images/function.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.genes {
+    background: url("../images/genes.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.cart {
+    background: url("../images/cart.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.post-top a.help {
+    background: url("../images/question.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    display: inline;
+}
+
+#top-tabs {
+    position: absolute;
+    top: -3px;
+}
+
+#top-tabs ul, ol {
+    padding: 0;
 }

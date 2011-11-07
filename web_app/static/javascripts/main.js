@@ -5,6 +5,7 @@ $(document).ready(function() {
    //});
 
  //   $(function() {
+        $("#top-tabs").tabs();
         $("#portal-tabs").tabs();
 	
 	$("#gene-tabs").tabs({

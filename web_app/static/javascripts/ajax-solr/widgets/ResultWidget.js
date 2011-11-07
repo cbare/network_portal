@@ -29,7 +29,8 @@ AjaxSolr.ResultWidget = AjaxSolr.AbstractWidget.extend({
     $(this.target).empty();
     for (var i = 0, l = this.manager.response.response.docs.length; i < l; i++) {
       var doc = this.manager.response.response.docs[i];
-      $(this.target).append(AjaxSolr.theme('result', doc, AjaxSolr.theme('snippet', doc)));
+      // kmf added l as a passed parameter to the following call
+      $(this.target).append(AjaxSolr.theme('result', doc, l, AjaxSolr.theme('snippet', doc)));
 
       var items = [];
       items = items.concat(this.facetLinks('species', doc.species_name));

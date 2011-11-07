@@ -24,16 +24,13 @@
 -->
   <div id="facet-display">
     <!-- start ajax-solr tutorial code mods -->
-    <h2>Current Selection</h2>
-    <ul id="selection"></ul>
-
     <h2>Search</h2>
     <span id="search_help">(press ESC to close suggestions)</span>
     <ul id="search">
-      <input type="text" id="query" name="query"/>
+      <input type="text" id="query" name="query" />
     </ul>
 
-    <h2>Browse</h2>
+    <h2>Browse By:</h2>
     <div id="browse">
       <h2>Species</h2>
       <div class="tagcloud" id="species_name"></div>
@@ -41,11 +38,19 @@
       <h2>Species Short Name</h2>
       <div class="tagcloud" id="species_short_name"></div>
 
+      <h2>Networks</h2>
+      <div class="tagcloud" id="network_name"></div>
+
+      <h2>Functions</h2>
+      <div class="tagcloud" id="function_name"></div>
+
+      <h2>Regulators</h2>
+      <div class="tagcloud" id="regulator_name"></div>
+
+
+<!--
       <h2>Condition Name</h2>
       <div class="tagcloud" id="condition_name"></div>
-
-      <h2>Network Name</h2>
-      <div class="tagcloud" id="network_name"></div>
 
       <h2>Influence Name</h2>
       <div class="tagcloud" id="influence_name"></div>
@@ -58,7 +63,12 @@
 
       <h2>Gene Name</h2>
       <div class="tagcloud" id="gene_name"></div>
+-->
     </div><!-- End #browse -->
+
+    <h2>Current Selection</h2>
+    <ul id="selection"></ul>
+
     <h2>Results</h2>
     <div id="result">
       <div id="navigation">
@@ -73,7 +83,7 @@
 </div><!-- End #main -->
 <div id="sidebar">
   <h3>About</h3>
-  <strong>Network Portal</strong>aims to provide a comprehensive resource for analyzing and visualizing biological networks.
+  <strong>Network Portal</strong> aims to provide a comprehensive resource for analyzing and visualizing biological networks.
   <br />
   Network Portal was developed in <a href="http://baliga.systemsbiology.net/">Baliga Lab</a> at
   <a href="http://systemsbiology.org">Institute for Systems Biology</a>
