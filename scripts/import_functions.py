@@ -12,8 +12,8 @@ examples:
 python import_functions.py --kegg-pathways ../../data/ko00001.keg
 python import_functions.py --go-terms ../../data/gene_ontology_ext.obo.txt
 python import_functions.py --cogs ../../data/COG_whog
-python import_functions.py --tigrfams-by-role ../../data/tigrfams_by_role.txt
-python import_functions.py --tigrfams ../../data/cmr_tigrfam_table.txt
+python import_functions.py --tigrfams ../../data/tigrfam_table.txt
+python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
 python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
 python import_functions.py --species dvu --genome-info ../../data/dvu/genomeInfo.microbesonline.txt
 """
@@ -318,6 +318,52 @@ def read_tigrfams(filename):
             tigrfams.append(tigrfam)
 
     return tigrfams
+
+
+def read_tigr_roles(filename):
+    """
+    Reads a truly loony file format that stores the tigrfam mainrole/subrole hierarchy.
+    Returns a tuple containing a list of mainroles whose children are subroles and
+    a dictionary from tigr role id to tigr roles, which can be used with the file
+    TIGRFAMS_ROLE_LINK to attach TIGRFams to roles.
+    """
+    mainroles = []
+    mainroles_by_name = {}
+    mainroles_by_id = {}
+    roles_by_id = {}
+    with open(filename, 'r') as f:
+        for line in f:
+            fields = line.rstrip("\n").split("\t")
+            role = OpenStruct()
+            role.tigr_role_id = int(fields[1])
+            role.type = fields[2].rstrip(':')
+            role.name = fields[3]
+            if role.type=='mainrole':
+                if role.name not in mainroles_by_name:
+                    mainroles.append(role)
+                    mainroles_by_name[role.name] = role
+                    role.children = []
+                mainroles_by_id[role.tigr_role_id] = mainroles_by_name[role.name]
+            elif role.type=='sub1role':
+                roles_by_id[role.tigr_role_id] = role
+            else:
+                raise "Unknown role type: " + role.type
+    # add subroles to main roles
+    for id in roles_by_id:
+        mainroles_by_id[id].children.append(roles_by_id[id])
+    return (mainroles, roles_by_id,)
+
+
+def read_tigrfam_role_links(filename):
+    """
+    Read a two-column file linking TIGRFam IDs to role IDs.
+    """
+    links = {}
+    with open(filename, 'r') as f:
+        for line in f:
+            fields = line.rstrip("\n").split("\t")
+            links[fields[0]] = int(fields[1])
+    return links
 
 
 def read_cogs(filename):
@@ -732,7 +778,6 @@ def insert_tigrfams(tigrfams):
 
         added_count = 0
         for tigrfam in tigrfams:
-            # since this may be used after insert_tigrfams_by_role, we
             # check if each term is in the DB first.
             if tigrfam.id not in tigr_function_ids:
                 cur.execute("""
@@ -749,6 +794,91 @@ def insert_tigrfams(tigrfams):
         print "Added %d TIGRFams to the DB." % (added_count,)
 
         con.commit()
+
+    finally:
+        if (cur): cur.close()
+        if (con): con.close()
+
+
+def insert_tigr_roles(mainroles):
+    """
+    Insert mainroles and subroles from the TIGR role hierarchy into the DB.
+    Updates roles by adding .function_id attribute, later used to link TIGRFams
+    with roles. [SNEAKY SIDE EFFECT]
+    """
+    con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+    cur = None
+
+    try:
+        cur = con.cursor()
+
+        count_mainroles = 0
+        count_sub1roles = 0
+        for mainrole in mainroles:
+            cur.execute("""
+                insert into networks_function 
+                (name, type, namespace)
+                values (%s, %s, %s) RETURNING id;""",
+                (mainrole.name,
+                 'tigr',
+                 'tigr mainrole' ,))
+            mainrole.function_id = cur.fetchone()[0]
+            count_mainroles += 1
+
+            for sub1role in mainrole.children:
+                cur.execute("""
+                    insert into networks_function 
+                    (name, type, namespace)
+                    values (%s, %s, %s) RETURNING id;""",
+                    (sub1role.name,
+                     'tigr',
+                     'tigr sub1role' ,))
+                sub1role.function_id = cur.fetchone()[0]
+                count_sub1roles += 1
+
+                # link role to mainrole
+                cur.execute("""
+                    insert into networks_function_relationships
+                    (function_id, target_id, type)
+                    values (%s, %s, %s)
+                    """,
+                    (sub1role.function_id, mainrole.function_id, 'parent'))
+
+        con.commit()
+        print "Inserted %d main roles and %d subroles" % (count_mainroles, count_sub1roles,)
+
+    finally:
+        if (cur): cur.close()
+        if (con): con.close()
+
+
+def insert_tigrfam_role_associations(links, roles_by_id):
+    """
+    Associate TIGRFams with TIGR roles using the SNEAKY SIDE EFFECT from
+    insert_tigr_roles, which adds function_ids to the roles.
+    """
+    con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+    cur = None
+    
+    try:
+        cur = con.cursor()
+
+        tigr_function_ids = get_function_id_lookup_table(cur, 'tigr')
+        
+        for tigrfam_id in links:
+            role = roles_by_id[links[tigrfam_id]]
+            tigrfam_function_id = tigr_function_ids[tigrfam_id]
+            
+            # link tigrfam to role
+            cur.execute("""
+                insert into networks_function_relationships
+                (function_id, target_id, type)
+                values (%s, %s, %s)
+                """,
+                (tigrfam_function_id, role.function_id, 'parent'))
+        
+        con.commit()
+        print "Linked %d TIGRFams with roles." % (len(links),)
 
     finally:
         if (cur): cur.close()
@@ -922,7 +1052,9 @@ def main():
     parser.add_argument('--go-terms', metavar='GO_TERMS_FILE', help='Gene Ontology OBO file')
     parser.add_argument('--genome-info', metavar='MICROBES_ONLINE_GENOME_INFO_FILE', help='map genes to COG, GO and TIGR functions')
     parser.add_argument('--tigrfams-by-role', metavar='TIGRFAMS_FILE', help='import TIGRFams by role file')
-    parser.add_argument('--tigrfams', metavar='TIGRFAMS_FILE', help='import TIGRFams from flat file file')
+    parser.add_argument('--tigrfams', metavar='TIGRFAMS_FILE', help='import TIGRFams from flat file')
+    parser.add_argument('--tigr-roles', metavar='TIGR_ROLE_NAMES_FILE', help='import TIGR roles from flat file')
+    parser.add_argument('--tigrfam-role-links', metavar='TIGRFAMS_ROLE_LINK_FILE', help='put TIGRFams into their place in the role hierarchy')
     parser.add_argument('--cogs', metavar='COGS_FILE', help='import COG functions')
     parser.add_argument('-s', '--species', help='for example, hal for halo')
     parser.add_argument('--test', action='store_true', help='Print list functions, rather than adding them to the db')
@@ -930,7 +1062,8 @@ def main():
     args = parser.parse_args()
     
     if not ( args.kegg_pathways or args.kegg_gene_pathways or args.go_terms or 
-             args.genome_info or args.tigrfams or args.tigrfams_by_role or args.cogs or args.list_species ):
+             args.genome_info or args.tigrfams or args.tigrfams_by_role or
+             args.cogs or args.list_species or args.tigr_roles or args.tigrfam_role_links):
         print parser.print_help()
         return
     
@@ -987,6 +1120,32 @@ def main():
                 print tigrfam.id + " " + tigrfam.name
         else:
             insert_tigrfams(tigrfams)
+
+    if args.tigr_roles:
+        [mainroles, roles_by_id] = read_tigr_roles(args.tigr_roles)
+        if args.test:
+            for mainrole in mainroles:
+                print mainrole.name
+                for role in mainrole.children:
+                    print "-  " + role.name
+            for id in roles_by_id:
+                print str(id) + " " + roles_by_id[id].name
+        else:
+            insert_tigr_roles(mainroles)
+
+    if args.tigrfam_role_links:
+        links = read_tigrfam_role_links(args.tigrfam_role_links)
+        if args.test:
+            for tigrfam_id in links:
+                if 'roles_by_id' in vars():
+                    print tigrfam_id + " " + str(links[tigrfam_id]) + " " + roles_by_id[links[tigrfam_id]].name
+                else:
+                    print tigrfam_id + " " + str(links[tigrfam_id])
+        else:
+            if 'roles_by_id' in vars():
+                insert_tigrfam_role_associations(links, roles_by_id)
+            else:
+                raise Exception("Need --tigr-roles to associate TIGRFams with roles")
 
     # import COG functional classes
     if args.cogs:
