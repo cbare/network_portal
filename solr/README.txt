@@ -33,6 +33,8 @@ other two as JVM system properties on the command line.
 
 http://localhost:8983/solr/
 
+To reindex do:
+http://localhost:8983/solr/dataimport?command=full-import
 
 
 Basic Directory Structure
