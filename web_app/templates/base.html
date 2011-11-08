@@ -1,72 +1,79 @@
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
 <!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/javascript; charset=UTF-8" />
 <html>
-<head>
-  <title>{% block title %}Network Portal{% endblock %}</title>
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/main.css">  
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/jquery.wijmo.wijdialog.css">
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/jquery.wijmo-open.1.4.0.css">
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-1.5.1.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-ui-1.8.14.custom.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}wijmo-open/js/jquery.wijmo-open.1.4.0.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/json2.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/collapsing_divs.js"></script>
-</head>
-<body>
-  <div id="wrap">
-    <div id="header-wrap">
-      <!--<div id="header">-->
-        <div id="header-content">
-          <div id="inner-left">
-            <a href="http://systemsbiology.org"><img src="/static/images/isblogo.gif" alt="ISB" /></a>
-          </div>
-          <div id="inner-middle">
-            <h1>Network Portal</h1>
-          </div>
-          <div id="inner-right">
-            <a href="http://baliga.systemsbiology.net"><img src="/static/images/baliga_logo_sm.png" alt="Baliga Lab" /></a>     
-          </div>
-        </div><!-- #header-content -->
-      <!--</div> --><!-- #header-->
-      <div id="menu">
-        <div id="menu-link">
-          <a href="/">home</a>
-        </div>
-        | 
-        <div id="menu-link">
-          <a href="/about">about</a>
-        </div>
-        | 
-        <div id="menu-link">
-          <a href="/search">search</a>
-        </div>
-        | 
-        <div id="menu-link">
-          <a href="/networks/">networks</a>
-        </div>
-        | 
-        <div id="menu-link">
-          <a href="/analysis/gene">analysis example</a>
-        </div>
-      </div><!-- #menu-->
-    </div><!-- #header-wrap -->
-    <div id="container">
-      {% block content %}{% endblock %}
-    </div><!-- #container -->
+  <head>
+    <title>{% block title %}Network Portal{% endblock %}</title>
+    <!--  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/main.css">-->
+    <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/portal-style.css">  
+    <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
+    <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
 
-    <div id="footer">
-      {% block footer %}<p><a href="/">home</a>
-        | <a href="/about">about</a>
-        | <a href="http://systemsbiology.org">Institute for Systems Biology</a>
-        | <a href="http://baliga.systemsbiology.net">Baliga Lab</a></p>
-      {% endblock %}
-    </div><!-- #footer -->
-  </div><!-- #wrap -->
-</body>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-ui-1.8.14.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/json2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/Core.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/AbstractManager.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/managers/Manager.jquery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/Parameter.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/ParameterStore.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/AbstractWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/widgets/ResultWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/widgets/jquery/PagerWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/helpers/jquery/ajaxsolr.theme.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/core/AbstractFacetWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/widgets/TagcloudWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/widgets/CurrentSearchWidget.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}javascripts/jquery-autocomplete/jquery.autocomplete.css" media="screen" />
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-autocomplete/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/ajax-solr/widgets/AutocompleteWidget.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.livequery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/facets.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/facets.theme.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/collapsing_divs.js"></script>
+  </head>
+  <body>
+    <div id="wrap">
+      <div id="header">
+	<h1 id="logo-text"></h1>
+	<p id="slogan"></p>
+	<div id="underlinemenu" class="underlinemenu">
+	  <ul>
+	    <li><a href="/about">About</a></li>
+	    <li><a href="contact">Contact</a></li>
+	    <li><a href="login" id="selected">Login</a></li>
+	  </ul>
+	</div>
+      </div><!-- end #header-->
+
+      {% load nav_tags %}
+      <div id="nav">
+	<ul>
+	  <li class="{% active request "^/$" %}"><a href="/">Home</a></li>
+	  <li class="{% active request "^/search" %}"><a href="/search">Search</a></li>
+	  <li class="{% active request "^/species" %}"><a href="/species">Species</a></li>
+	  <li class="{% active request "^/analysis" %}"><a href="/analysis/gene">Analysis Example</a></li>
+	</ul>
+      </div><!-- end #nav-->
+
+      <div id="content">
+	{% block content %}
+
+	{% endblock %}
+      </div><!-- #content -->
+      <div id="footer">
+	{% block footer %}
+	<p>
+	  &copy; <a href="http://baliga.systemsbiology.net/" title="Baliga Lab">Baliga Lab</a>
+          | <a href="http://systemsbiology.org" title="ISB">Institute for Systems Biology</a>
+          | <a href="/">Home</a></p>
+	{% endblock %}
+      </div><!-- end #footer -->
+    </div><!-- end #wrap -->
+  </body>
 </html>

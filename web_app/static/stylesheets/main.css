@@ -103,7 +103,7 @@ a  {
 #header-content {
     width: 905px;
     position: relative;
-    height: 115px;
+    height: 175px; /*115px;*/
     border-bottom: 1px solid #ccc;
     margin: 0 auto;
 }
@@ -119,12 +119,12 @@ a  {
 }
 
 #inner-middle {
-    width: 450px;
+    width: 670px; /*450px;*/
     text-align: center;
     padding-top: 5.5em;
     position: absolute;
-    left: 200px;
-    top: -15px;
+    left: 95px; /*200px;*/
+    top: -80px; /*-15px;*/
 }
 
 #inner-right {

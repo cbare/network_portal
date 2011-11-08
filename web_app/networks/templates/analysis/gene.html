@@ -1,8 +1,9 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
 
+<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
 <script type="text/javascript">
 
     var div_id = "cytoscapeweb";
@@ -1264,8 +1265,7 @@
 
 </script>
 
-<div id="page">
-  <div id="content">
+<div id="main" class="sub-page">
     <h1>Network Analysis View</h1>
     <p>Flagellar Assembly</p>
     <div id="gene-tabs">
@@ -1496,6 +1496,5 @@
       </div><!-- END GENE -->
 
     </div><!-- END GENE-TABS -->
-  </div><!-- End #content -->
-</div><!-- End #page -->
+</div><!-- End #main -->
 {% endblock %}

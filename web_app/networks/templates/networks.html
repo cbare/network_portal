@@ -1,21 +1,20 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
-<div id="page">
-  <div id="content">
-    <h1>Networks</h1>
+<div id="main">
+  <h1>Networks</h1>
 
-    <table>
-      <caption>a complete list of networks in the Network Portal database</caption>
-      <thead>
+  <table>
+    <caption>a complete list of networks in the Network Portal database</caption>
+    <thead>
       <tr>
         <th>Network</th>
         <th>Species</th>
         <th>Created</th>
         <th>Size</th>
       </tr>
-      </thead>
-      <tbody>
+    </thead>
+    <tbody>
       {% for network in networks %}
       <tr>
         <td><a href="/network/{{ network.id }}">{{ network.name }}</a></td>
@@ -24,8 +23,8 @@
         <td>{{ network.bicluster_set.count }}</td>
       </tr>
       {% endfor %}
-      </tbody>
-    </table>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+    </tbody>
+  </table>
+</div><!-- End #main -->
 {% endblock %}
+

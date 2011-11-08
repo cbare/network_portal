@@ -1,7 +1,11 @@
 $(document).ready(function() {
 
+   //$("#nav li").click(function() {
+   //    this.id = "current";
+   //});
 
  //   $(function() {
+        $("#top-tabs").tabs();
         $("#portal-tabs").tabs();
 	
 	$("#gene-tabs").tabs({

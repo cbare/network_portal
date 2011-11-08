@@ -2,33 +2,130 @@
 
 {% block content %}
 
-<script type="text/javascript">
-  // fill in the search box with example search terms
-  $(document).ready(function() {
-    $("#example1").click(function(event) {
-      $("#search_box").val($("#example1").text());
-    });
-  });
-</script>
+<div id="main">
+  <p>A database of gene transcription regulatory networks for several microbes. <a href="/about">[more]</a></p>
 
-<div id="page">
-  <div id="content">
-    <!--<h1>Network Portal</h1>-->
+<!--
+  <h2>Search</h2>
+  <form action="/search/" method="get">
+    <input type="text" name="q">
+    <input type="submit" value="Search">
+  </form>
 
-    <p>A database of gene transcription regulatory networks for several microbes. <a href="/about">[more]</a></p>
+  <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>    
+  <h2>Browse</h2>
+  <ul>
+    <li><a href="/networks/">Networks</a></li>
+    <li><a href="/species/">Species</a></li>
+    <li>Functions?</li>
+  </ul>
 
+  <h2>...</h2>
+-->
+  <div id="facet-display">
+    <!-- start ajax-solr tutorial code mods -->
     <h2>Search</h2>
-    <form action="/search/" method="get">
-      <input type="text" name="q" id="search_box">
-      <input type="submit" value="Search">
-    </form>
-    <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>
-    
-    <h2>Browse</h2>
-    <ul>
-      <li><a href="/networks/">Networks</a></li>
-      <li><a href="/species/">Species</a></li>
+    <span id="search_help">(press ESC to close suggestions)</span>
+    <ul id="search">
+      <input type="text" id="query" name="query" />
     </ul>
-  </div><!-- End #content -->
-</div><!-- End #page -->
+
+    <h2>Browse By:</h2>
+    <div id="browse">
+      <h2>Species</h2>
+      <div class="tagcloud" id="species_name"></div>
+
+      <h2>Species Short Name</h2>
+      <div class="tagcloud" id="species_short_name"></div>
+
+      <h2>Networks</h2>
+      <div class="tagcloud" id="network_name"></div>
+
+      <h2>Functions</h2>
+      <div class="tagcloud" id="function_name"></div>
+
+      <h2>Regulators</h2>
+      <div class="tagcloud" id="regulator_name"></div>
+
+
+<!--
+      <h2>Condition Name</h2>
+      <div class="tagcloud" id="condition_name"></div>
+
+      <h2>Influence Name</h2>
+      <div class="tagcloud" id="influence_name"></div>
+
+      <h2>Influence Type</h2>
+      <div class="tagcloud" id="influence_type"></div>
+      
+      <h2>Gene Common Name</h2>
+      <div class="tagcloud" id="gene_common_name"></div>
+
+      <h2>Gene Name</h2>
+      <div class="tagcloud" id="gene_name"></div>
+-->
+    </div><!-- End #browse -->
+
+    <h2>Current Selection</h2>
+    <ul id="selection"></ul>
+
+    <h2>Results</h2>
+    <div id="result">
+      <div id="navigation">
+	<ul id="pager"></ul>
+	<div id="pager-header"></div>
+      </div>
+      <div id="docs">
+      </div>
+    </div>
+    <!-- end ajax-solr tutorial code mods -->
+  </div><!-- End #facet-display -->
+</div><!-- End #main -->
+<div id="sidebar">
+  <h3>About</h3>
+  <strong>Network Portal</strong> aims to provide a comprehensive resource for analyzing and visualizing biological networks.
+  <br />
+  Network Portal was developed in <a href="http://baliga.systemsbiology.net/">Baliga Lab</a> at
+  <a href="http://systemsbiology.org">Institute for Systems Biology</a>
+
+  <h3>Portal News</h3>
+  <ul class="sidemenu">
+    <li>
+      <a href="species.html">New species available<br />
+	<span>D. vulgaris hildenborough
+	</span>
+      </a>
+    </li>
+    <li>
+      <a href="network.html">New network available<br />
+	<span>D. vulgaris Network is now available
+	</span>
+      </a>
+    </li>
+  </ul>
+  
+  <h3>Portal Statistics</h3>
+  <table>
+    <tr>
+      <th>Species</th>
+      <th>Networks</th>
+      <th>Users</th>
+    </tr>
+    <tr>
+      <td><a href="species">3</a></td>
+      <td><a href="networks">3</a></td>
+      <td><a href="users.html">5</a></td>	  
+    </tr>
+    <tr>
+      <th>Biclusters</th>
+      <th>Regulators</th>
+      <th>Motifs</th>
+    </tr>
+    <tr>
+      <td><a href="biclusters.html">349</a></td>
+      <td><a href="regulators.html">29</a></td>
+      <td><a href="motifs.html">30</a></td>
+    </tr>
+  </table>
+</div><!-- end #sidebar -->
 {% endblock %}

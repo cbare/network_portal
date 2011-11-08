@@ -27,7 +27,7 @@ class Chromosome(models.Model):
         return self.name
 
 class Network(models.Model):
-    species = models.ForeignKey(Species)
+    species = models.ForeignKey(Species, related_name='speciesfk')
     name = models.CharField(max_length=255)
     data_source = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
