@@ -8,14 +8,31 @@ that read particular file formats and return lists or hierarchies of
 objects. Then, there are a corresponding bunch of methods that take the
 objects produced by the readers and insert them into the database.
 
-examples:
-python import_functions.py --kegg-pathways ../../data/ko00001.keg
-python import_functions.py --go-terms ../../data/gene_ontology_ext.obo.txt
-python import_functions.py --cogs ../../data/COG_whog
-python import_functions.py --tigrfams ../../data/tigrfam_table.txt
-python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
-python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
-python import_functions.py --species dvu --genome-info ../../data/dvu/genomeInfo.microbesonline.txt
+To totally rebuild all functional data in the DB, first drop the existing
+tables. WARNING: don't drop synonyms if there is other data in there.
+drop table networks_function_relationships CASCADE;
+drop table networks_gene_function CASCADE;
+drop table networks_function CASCADE;
+drop table networks_synonym CASCADE;
+vacuum;
+
+Recreate the tables
+> python manage.py syncdb
+
+Next, run the script in this sequence to load up KEGG, GO, COG and TIGR functions,
+and link dvu (dvu=DvH), mmp and halo genes to functions.
+
+> python import_functions.py --kegg-pathways ../../data/ko00001.keg
+> python import_functions.py --go-terms ../../data/gene_ontology_ext.obo.txt
+> python import_functions.py --cogs ../../data/COG_whog
+> python import_functions.py --tigrfams ../../data/tigrfam_table.txt
+> python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
+> python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
+> python import_functions.py --species dvu --genome-info ../../data/dvu/genomeInfo.microbesonline.txt
+> python import_functions.py --species mmp --genome-info ../../data/mmp/genomeInfo.microbesonline.txt
+> python import_functions.py --species hal --genome-info ../../data/hal/genomeInfo.microbesonline.txt
+
+Note that the genomeInfo file for dvu produces some "unknown gene" warnings. We should add those genes.
 """
 
 import argparse
@@ -254,8 +271,10 @@ def read_go_terms(filename):
     return terms
 
 
+# no longer used
 def read_tigrfams_by_role(filename):
     """
+    This is no longer used!
     Reads the hierarchical structure of TIGRFams organized into categories called roles.
     Returns a nested list structure of roles and sub-roles that hold tigrfams.
     Downloaded file from here: http://cmr.jcvi.org/tigr-scripts/CMR/shared/EvidenceList.cgi?ev_type=TIGRFAM&order_type=role
@@ -645,6 +664,7 @@ def insert_go_terms(terms):
         #               xref }
         count_is_a = 0
         count_relationships = 0
+        count_synonyms = 0
         for term in terms:
             function_id = ids[term.id]
             if 'is_a' in term:
@@ -677,15 +697,16 @@ def insert_go_terms(terms):
                         values (%s, %s, %s, %s)
                         """,
                         (function_id, 'function', alt_id, 'go:alt_id',))
+                    count_synonyms += 1
 
         con.commit()
-        print "Inserted %d is_a relationships and %d other relationships." % (count_is_a, count_relationships,)
+        print "Inserted %d is_a relationships, %d synonyms (alt_id's) and %d other relationships." % (count_is_a, count_synonyms, count_relationships,)
 
     finally:
         if (cur): cur.close()
         if (con): con.close()
 
-
+# no longer used
 def insert_tigrfams_by_role(tigrfams):
     """
     Insert TIGRFams organized by role.
@@ -1051,21 +1072,24 @@ def main():
     parser.add_argument('--kegg-gene-pathways', metavar='GENE_KEGG_PATHWAY_FILE', help='map genes to KEGG pathways')
     parser.add_argument('--go-terms', metavar='GO_TERMS_FILE', help='Gene Ontology OBO file')
     parser.add_argument('--genome-info', metavar='MICROBES_ONLINE_GENOME_INFO_FILE', help='map genes to COG, GO and TIGR functions')
-    parser.add_argument('--tigrfams-by-role', metavar='TIGRFAMS_FILE', help='import TIGRFams by role file')
     parser.add_argument('--tigrfams', metavar='TIGRFAMS_FILE', help='import TIGRFams from flat file')
-    parser.add_argument('--tigr-roles', metavar='TIGR_ROLE_NAMES_FILE', help='import TIGR roles from flat file')
-    parser.add_argument('--tigrfam-role-links', metavar='TIGRFAMS_ROLE_LINK_FILE', help='put TIGRFams into their place in the role hierarchy')
+    parser.add_argument('--tigr-roles', metavar='TIGR_ROLE_NAMES_FILE', help='import TIGR roles from flat file. Use with tigrfam-role-links')
+    parser.add_argument('--tigrfam-role-links', metavar='TIGRFAMS_ROLE_LINK_FILE', help='put TIGRFams into their place in the role hierarchy. Use with tigr-roles')
     parser.add_argument('--cogs', metavar='COGS_FILE', help='import COG functions')
     parser.add_argument('-s', '--species', help='for example, hal for halo')
     parser.add_argument('--test', action='store_true', help='Print list functions, rather than adding them to the db')
     parser.add_argument('--list-species', action='store_true', help='Print list of known species. You might have to add one.')
     args = parser.parse_args()
     
-    if not ( args.kegg_pathways or args.kegg_gene_pathways or args.go_terms or 
-             args.genome_info or args.tigrfams or args.tigrfams_by_role or
-             args.cogs or args.list_species or args.tigr_roles or args.tigrfam_role_links):
+    if not ( args.kegg_pathways or args.kegg_gene_pathways or args.go_terms or args.genome_info or
+             args.tigrfams or args.tigr_roles or args.tigrfam_role_links or
+             args.cogs or args.list_species):
         print parser.print_help()
         return
+    
+    # these should occur together
+    if (args.tigrfam_role_links is None) ^ (args.tigr_roles is None):
+        raise Exception("Use --tigr-roles and --tigrfam-role-links together!")
     
     if args.species:
         print "species = " + args.species
@@ -1103,14 +1127,6 @@ def main():
                 print str(term)
         else:
             insert_go_terms(terms)
-
-    # import TIGRFams from hierarchical file
-    if args.tigrfams_by_role:
-        tigrfams = read_tigrfams_by_role(args.tigrfams_by_role)
-        if args.test:
-            print_tigrfams_by_role(tigrfams)
-        else:
-            insert_tigrfams_by_role(tigrfams)
     
     # import TIGRFams from flat file
     if args.tigrfams:
@@ -1121,6 +1137,7 @@ def main():
         else:
             insert_tigrfams(tigrfams)
 
+    # import tigr roles (to be used along with tigrfam_role_links)
     if args.tigr_roles:
         [mainroles, roles_by_id] = read_tigr_roles(args.tigr_roles)
         if args.test:
@@ -1133,6 +1150,7 @@ def main():
         else:
             insert_tigr_roles(mainroles)
 
+    # link tigrfams to roles (to be used along with tigr_roles)
     if args.tigrfam_role_links:
         links = read_tigrfam_role_links(args.tigrfam_role_links)
         if args.test:
