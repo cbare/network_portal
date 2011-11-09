@@ -30,14 +30,13 @@
     </tbody>
   </table>
   
-  <p>genes: <a href="/genes/{{ species.name }}">{{ gene_count }}</a></p>
-  
-  <h3>Transcription Factors ({{ transcription_factors|length }})</h3>
-  <ul>
+  <p>Genes: <a href="/genes/{{ species.short_name }}">{{ gene_count }}</a><br>
+     Transcription Factors: <a href="/genes/{{ species.short_name }}?filter=tf">{{ transcription_factors|length }}</a></p>
+  <!-- <ul>
     {% for tf in transcription_factors %}
     <li><a href="/search/?q=regulator%3A{{ tf.name }}">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
     {% endfor %}
-  </ul>
+  </ul> -->
   
   {% if species.ucsc_id %}
   <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>

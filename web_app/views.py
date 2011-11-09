@@ -13,6 +13,9 @@ def about(request):
     version = "0.0.1"
     return render_to_response('about.html', locals())
 
+def contact(request):
+    return render_to_response('contact.html', locals())
+
 def search(request):
     if request.GET.has_key('q'):
         q = request.GET['q']

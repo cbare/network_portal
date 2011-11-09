@@ -26,9 +26,6 @@ def gene(request):
     #return render_to_response('analysis/gene.html')
     return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
 
-# def network(request):
-#     return HttpResponse("testing network")
-
 def motif(request):
     return HttpResponse("testing motif")
 
@@ -139,7 +136,15 @@ def genes(request, species=None, species_id=None):
         elif request.GET.has_key('id'):
                 species_id = request.GET['id']
                 species = Species.objects.get(id=species_id)
-        genes = species.gene_set.all()
+        
+        # handle filters or just get all genes for the species
+        if request.GET.has_key('filter'):
+            filter = request.GET['filter']
+            if filter == 'tf':
+                genes = species.gene_set.filter(transcription_factor=True)
+        else:
+            genes = species.gene_set.all()
+        
         gene_count = len(genes)
         return render_to_response('genes.html', locals())
     except (ObjectDoesNotExist, AttributeError):
