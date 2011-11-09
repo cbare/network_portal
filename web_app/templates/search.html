@@ -10,10 +10,10 @@ $(function() {
              $("#log").scrollTop(0);
     }
 
-    $("#artist").autocomplete({
+    $("#search_box").autocomplete({
         source: function( request, response ) {
                 $.ajax({
-                        url:      "http://localhost:8983/solr/suggest/?wt=json&json.wrf=?",
+                        url:      "http://" + window.location.hostname + ":8983/solr/suggest/?wt=json&json.wrf=?",
                         dataType: "jsonp",
                         data: { q: request.term
                         },
@@ -29,13 +29,18 @@ $(function() {
         minLength: 1,
         select: function (event, ui) {
 		console.debug("log event, ui: " + ui.item.label);
-                $("#artist").val(ui.item.label);
+                $("#search_box").val(ui.item.label);
 		log (ui.item.label ?
                        "Selected: " + ui.item.label :
                        "Nothing selected, input was " + this.value);
         }
     });
 
+    $(document).ready(function() {
+      $("#example1").click(function(event) {
+        $("#search_box").val($("#example1").text());
+      });
+    });
 });
 </script>
 
@@ -45,7 +50,7 @@ $(function() {
   <div class="ui-widget">
     <h1>Search</h1>
     <form action="/search/" method="get">
-      <input type="text" name="q" id="artist">
+      <input type="text" name="q" id="search_box">
       <input type="submit" value="Search">
     </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
