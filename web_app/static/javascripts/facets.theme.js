@@ -68,7 +68,8 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
     }
     var total_output = '<table><tr><th>Bicluster ID</th><th>Species</th><th>Network</th></tr>';
     for (i = 0; i < max; i++) {
-      total_output += '<tr><td>' + bicl[i] + '</td><td>' + specu[i] + '</td><td>' +  netwu[i] + '</td></tr>';
+      // using species array instead of specu
+      total_output += '<tr><td><a href="/bicluster/' + bicl[i] + '">' + bicl[i] + '</a></td><td><a href="/species/' + species[i] + '">' + species[i] + '</a></td><td>' +  netwu[i] + '</td></tr>';
     }
 
     total_output += '</table>';
