@@ -47,3 +47,56 @@ delete from networks_function_relationships
 
 
 
+
+# link influences with genes
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ni.name=ng.name
+where ni.type='tf';
+
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ng.name = split_part(ni.name, '~~', 1)
+where ni.type='combiner';
+
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ng.name = split_part(ni.name, '~~', 2)
+where ni.type='combiner';
+
+
+# check for pairs of influence names like A~~B~~OP <-> B~~A~~OP 
+select * from networks_influence ni1 join networks_influence ni2 on ni1.name = split_part(ni2.name, '~~', 2) || '~~' || split_part(ni2.name, '~~', 1) || '~~' || split_part(ni2.name, '~~', 3);
+
+
+# get genes directly regulated by tf DVU3142
+select ni.name, bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where ni.name='DVU3142' and ni.type='tf';
+
+# get genes indirectly regulated by tf DVU3142
+select ni.name, bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where ni.type='combiner' and ni.id in (
+  select from_influence_id
+  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+  where ni.name='DVU3142');
+
+# get all biclusters (of any network) that are regulated by a given gene
+select bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where (ni.type='tf' and ni.name='DVU3142')
+or (ni.type='combiner' and ni.id in (
+  select from_influence_id
+  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+  where ni.name='DVU3142'));
+
+# get all biclusters of a specific network that are regulated by a given gene
+select nb.*
+from networks_bicluster nb
+     join networks_bicluster_influences bi on nb.id=bi.bicluster_id
+     join networks_influence ni on bi.influence_id=ni.id
+where nb.network_id=1
+and ((ni.type='tf' and ni.gene_id=3127)
+  or (ni.type='combiner' and ni.id in (
+    select from_influence_id
+    from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+    where ni.gene_id=3127)));
+

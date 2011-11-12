@@ -162,3 +162,11 @@ def bicluster(request, bicluster_id=None):
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
     return render_to_response('bicluster.html', locals())
+
+def regulated_by(request, regulator=None):
+    gene = Gene.objects.get(name=regulator)
+    network = Network.objects.get(id=1)
+    biclusters = gene.regulated_biclusters(network)
+    bicluster_ids = [bicluster.id for bicluster in biclusters]
+    return render_to_response('biclusters.html', locals())
+

@@ -1,0 +1,27 @@
+{% extends "base2.html" %}
+{% block content %}
+
+<p>regulator = {{ regulator }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bicluster</th>
+      <th>genes</th>
+      <th>residual</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bicluster in biclusters %}
+    <tr>
+      <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.k }}</a></td>
+      <td>{{ bicluster.genes.count }}</td>
+      <td>{{ bicluster.residual }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+
+{% endblock %}

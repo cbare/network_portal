@@ -10,9 +10,12 @@ class Species(models.Model):
     ucsc_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField()
     
+    def transcription_factors(self):
+        return self.gene_set.filter(transcription_factor=True)
+    
     def __unicode__(self):
         return self.name
-
+    
     class Meta:
         ordering = ['name']
 
@@ -61,6 +64,26 @@ class Gene(models.Model):
     transcription_factor = models.BooleanField(default=False)
     functions = models.ManyToManyField('Function', through='Gene_Function')
     
+    def regulated_biclusters(self, network):
+        """
+        Return biclusters regulated by this gene.
+        """
+        if not self.transcription_factor:
+            return []
+        else:
+            return Bicluster.objects.raw("""
+            select nb.*
+            from networks_bicluster nb
+                 join networks_bicluster_influences bi on nb.id=bi.bicluster_id
+                 join networks_influence ni on bi.influence_id=ni.id
+            where nb.network_id=%s
+            and ((ni.type='tf' and ni.gene_id=%s)
+            or (ni.type='combiner' and ni.id in (
+              select from_influence_id
+              from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+              where ni.gene_id=%s)));
+            """, (network.id, self.id, self.id,))
+    
     def __unicode__(self):
         return self.name
 
@@ -68,9 +91,18 @@ class Gene(models.Model):
         ordering = ['name']
 
 class Influence(models.Model):
+    """
+    Influences can be transcription factors, environmental factors or
+    combinations of other influences. If the influence is a
+    transcription factor, the gene field links to the entry in the gene table. If
+    the influence is a combination of TFs, the individual TFs will be linked
+    through the Influence_Combinations table.
+    """
     name = models.CharField(max_length=255)
     gene = models.ForeignKey(Gene, blank=True, null=True)
-    type = models.CharField(max_length=255, blank=True, null=True)
+    operation = models.CharField(max_length=32, blank=True, null=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
+    parts = models.ManyToManyField('self')
     
     def __unicode__(self):
         return self.name
@@ -81,12 +113,16 @@ class Bicluster(models.Model):
     residual = models.FloatField(blank=True, null=True)
     conditions = models.ManyToManyField(Condition)
     genes = models.ManyToManyField(Gene)
-    influences = models.ManyToManyField(Influence)
+    influences = models.ManyToManyField(Influence, symmetrical=False)
     
     def __unicode__(self):
         return "Bicluster " + str(self.k)
 
 class PSSM():
+    """
+    Position specific scoring matrix. Not a Django model 'cause one PSSM is
+    not a single in the DB but several (one row persition).
+    """
     def __init__(self):
         self.positions=[]
 
@@ -151,7 +187,7 @@ class Synonym(models.Model):
     type = models.CharField(max_length=64, blank=True, null=True)
 
 # functions as defined by some system
-# type sepcifies the naming system, type in {GO, COG, KEGG, etc.}
+# type specifies the naming system {GO, COG, KEGG, etc.}
 # native_id is the id within the naming system, GO_ID, Kegg pathway ID, etc.
 # genes can have functions, biclusters can be enriched for functions
 class Function(models.Model):
@@ -161,9 +197,11 @@ class Function(models.Model):
     type = models.CharField(max_length=64, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
-# a function attributes
 class Function_Relationships(models.Model):
-    function = models.ForeignKey(Function, related_name='attributes')
+    """
+    Define relationships among functions, such as the GO hierarchy or the categories/subcategories of KEGG.
+    """
+    function = models.ForeignKey(Function, related_name='relationships')
     target = models.ForeignKey(Function, related_name='+')
     type = models.CharField(max_length=255, blank=True, null=True)
 
