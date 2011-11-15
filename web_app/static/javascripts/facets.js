@@ -21,7 +21,7 @@ var Manager;
       }
     }));
 
-    var fields = [ 'species_name', 'species_short_name', 'condition_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ];
+    var fields = [ 'species_name', 'bi_species_name', 'bi_species_short_name', 'species_short_name', 'condition_name', 'species_network_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ];
     for (var i = 0, l = fields.length; i < l; i++) {
       Manager.addWidget(new AjaxSolr.TagcloudWidget({
         id: fields[i],
@@ -37,13 +37,13 @@ var Manager;
       id: 'text',
       target: '#search',
       field: 'text',
-      fields: [ 'species_name', 'species_short_name', 'condition_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ] //[ 'name', 'gene_common_name', 'gene_name' ]
+      fields: [ 'species_name', 'species_short_name', 'condition_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name', 'text' ] //[ 'name', 'gene_common_name', 'gene_name', 'text' ]
     }));
     Manager.init();
     Manager.store.addByValue('q', '*:*');
     var params = {
       facet: true,
-      'facet.field': [ 'species_name', 'species_short_name', 'condition_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ], //[ 'name', 'gene_common_name', 'gene_name' ],
+      'facet.field': [ 'species_name', 'bi_species_name', 'bi_species_short_name', 'species_short_name', 'condition_name', 'species_network_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ], //[ 'name', 'gene_common_name', 'gene_name' ],
       'facet.limit': 20,
       'facet.mincount': 1,
       'f.topics.facet.limit': 50,
