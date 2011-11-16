@@ -72,9 +72,14 @@
        files in that directory which completely match the regex
        (anchored on both ends) will be included.
     -->
-  <lib dir="../../dist/" regex="apache-solr-cell-\d.*\.jar" />
-  <lib dir="../../dist/" regex="apache-solr-clustering-\d.*\.jar" />
-  <lib dir="../../dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
+    <!-- invoke java -Dsolr.install.dir=[my_path]/apache-solr-3.4.0 start.jar
+         so that we can find these jars. - cbare -->
+    <lib dir="${solr.install.dir}/contrib/extraction/lib" />
+    <lib dir="${solr.install.dir}/dist/" regex="apache-solr-cell-\d.*\.jar" />
+    <lib dir="${solr.install.dir}/dist/" regex="apache-solr-clustering-\d.*\.jar" />
+    <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
+    <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-extras-\d.*\.jar" />
+    <lib dir="${solr.install.dir}/contrib/clustering/lib/" />
 
   <!-- If a dir option (with or without a regex) is used and nothing
        is found that matches, it will be ignored

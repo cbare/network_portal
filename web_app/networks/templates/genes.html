@@ -3,8 +3,13 @@
 
 <div id="main">
   <h1>Genes</h1>
-  <p>species: <a href="/species/{{ species.name }}">{{ species.name }}</a></p>
-  <p>genes: {{ gene_count }}</p>
+  <p>species: <a href="/species/{{ species.short_name }}">{{ species.name }}</a><br>
+  {% if filter == 'tf' %}
+  transcription factors: {{ gene_count }}
+  {% else %}
+  genes: {{ gene_count }}
+  {% endif %}
+  </p>
 
   <table>
     <thead>

@@ -11,9 +11,7 @@ from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from django.db.models import Q
-from web_app.networks.models import Network
-from web_app.networks.models import Species
-from web_app.networks.models import Bicluster
+from web_app.networks.models import *
 import networkx as nx
 import re
 import sys, traceback
@@ -25,9 +23,6 @@ class Object(object):
 def gene(request):
     #return render_to_response('analysis/gene.html')
     return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
-
-# def network(request):
-#     return HttpResponse("testing network")
 
 def motif(request):
     return HttpResponse("testing motif")
@@ -139,7 +134,15 @@ def genes(request, species=None, species_id=None):
         elif request.GET.has_key('id'):
                 species_id = request.GET['id']
                 species = Species.objects.get(id=species_id)
-        genes = species.gene_set.all()
+        
+        # handle filters or just get all genes for the species
+        if request.GET.has_key('filter'):
+            filter = request.GET['filter']
+            if filter == 'tf':
+                genes = species.gene_set.filter(transcription_factor=True)
+        else:
+            genes = species.gene_set.all()
+        
         gene_count = len(genes)
         return render_to_response('genes.html', locals())
     except (ObjectDoesNotExist, AttributeError):
@@ -157,3 +160,48 @@ def bicluster(request, bicluster_id=None):
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
     return render_to_response('bicluster.html', locals())
+
+def regulated_by(request, regulator=None):
+    gene = Gene.objects.get(name=regulator)
+    network = Network.objects.get(id=1)
+    biclusters = gene.regulated_biclusters(network)
+    bicluster_ids = [bicluster.id for bicluster in biclusters]
+    return render_to_response('biclusters.html', locals())
+
+def functions(request, type):
+    
+    # info for a function system:
+    # name, top_level_categories, link to home, link to term, citation, version?,
+    
+    if type==None or type=="":
+        pass
+    elif type=='go':
+        # top level GO terms
+        # GO:0003674 | molecular_function
+        # GO:0005575 | cellular_component
+        # GO:0008150 | biological_process
+        system = "GO Gene Ontology"
+        functions = Function.objects.filter(native_id__in=['GO:0003674', 'GO:0005575', 'GO:0008150'])
+    elif type=='kegg':
+        system = "KEGG Pathways"
+        functions = Function.objects.filter(type='kegg',namespace='kegg category')
+    elif type=='cog':
+        system = "COG Clusters of Orthologous Genes/Groups"
+        functions = Function.objects.filter(type='cog',namespace='cog category')
+    elif type=='tigr':
+        system = "TIGRFam"
+        functions = Function.objects.filter(type='tigr',namespace='tigr mainrole')
+    else:
+        raise Exception("Unknown type of function: " + type)
+    return render_to_response('functions.html', locals())
+
+def function(request, name):
+    function = None
+    if re.match("\d+", name):
+        function = Function.objects.get(id=name)
+    if function is None:
+        function = Function.objects.get(native_id=name)
+    if function is None:
+        function = Function.objects.get(name=name)
+    return render_to_response('function.html', locals())
+    

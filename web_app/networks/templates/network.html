@@ -28,5 +28,21 @@
       {% endfor %}
     </tbody>
   </table>
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>Influences</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tf in network.species.transcription_factors %}
+      <tr>
+        <td><a href="/regulated_by/{{ tf.name }}">{{ tf.name }}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div><!-- End #main -->
 {% endblock %}

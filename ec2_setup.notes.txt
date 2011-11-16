@@ -144,6 +144,29 @@ java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.i
 
 
 
+Reverse Proxy Solr through Apache
+---------------------------------
+cd /etc/apache2/mods-enabled/
+sudo ln -s ../mods-available/proxy_http.load .
+sudo ln -s ../mods-available/proxy.load .
+
+In /etc/apache2/httpd.conf
+<IfModule mod_proxy.c>
+  ProxyRequests Off
+
+  <Proxy *>
+  Order deny,allow
+  Allow from all
+  </Proxy>
+
+  ProxyPass /solr/select http://localhost:8983/solr/select
+  ProxyPassReverse /solr/select http://localhost:8983/solr/select
+
+  ProxyPass /solr/suggest http://localhost:8983/solr/suggest
+  ProxyPassReverse /solr/suggest http://localhost:8983/solr/suggest
+</IfModule>
+
+
 
 
 

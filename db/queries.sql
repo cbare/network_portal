@@ -18,3 +18,104 @@ where bg1.gene_id < bg2.gene_id
 group by bg1.gene_id, bg2.gene_id
 order by cooccurrence desc
 limit 20;
+
+
+select f1.name as function, f2.name as subcategory
+from networks_function f1 join networks_function_relationships r on f1.id=r.function_id
+join networks_function f2 on r.target_id=f2.id where r.type='parent';
+
+
+select * from networks_function
+where id in (
+  select function_id from networks_function_relationships
+  where type='parent' and target_id=(
+    select id from networks_function
+    where name='Nucleotide and nucleoside interconversions'
+    and type='tigr' and namespace='tigr role'));
+
+delete from networks_function_relationships
+  where function_id in (select id from networks_function where type='tigr');
+
+delete from networks_gene_function
+  where function_id in (select id from networks_function where type='tigr');
+  
+delete from networks_function where type='tigr';
+
+delete from networks_function_relationships
+  where function_id in (select id from networks_function where native_id='Accession')
+  or target_id in (select id from networks_function where native_id='Accession');
+
+
+
+
+# link influences with genes
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ni.name=ng.name
+where ni.type='tf';
+
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ng.name = split_part(ni.name, '~~', 1)
+where ni.type='combiner';
+
+insert into networks_influence_genes (influence_id, gene_id)
+select ni.id, ng.id from networks_influence ni join networks_gene ng on ng.name = split_part(ni.name, '~~', 2)
+where ni.type='combiner';
+
+
+# check for pairs of influence names like A~~B~~OP <-> B~~A~~OP 
+select * from networks_influence ni1 join networks_influence ni2 on ni1.name = split_part(ni2.name, '~~', 2) || '~~' || split_part(ni2.name, '~~', 1) || '~~' || split_part(ni2.name, '~~', 3);
+
+
+# get genes directly regulated by tf DVU3142
+select ni.name, bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where ni.name='DVU3142' and ni.type='tf';
+
+# get genes indirectly regulated by tf DVU3142
+select ni.name, bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where ni.type='combiner' and ni.id in (
+  select from_influence_id
+  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+  where ni.name='DVU3142');
+
+# get all biclusters (of any network) that are regulated by a given gene
+select bi.bicluster_id
+from networks_bicluster_influences bi join networks_influence ni on bi.influence_id=ni.id
+where (ni.type='tf' and ni.name='DVU3142')
+or (ni.type='combiner' and ni.id in (
+  select from_influence_id
+  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+  where ni.name='DVU3142'));
+
+# get all biclusters of a specific network that are regulated by a given gene
+select nb.*
+from networks_bicluster nb
+     join networks_bicluster_influences bi on nb.id=bi.bicluster_id
+     join networks_influence ni on bi.influence_id=ni.id
+where nb.network_id=1
+and ((ni.type='tf' and ni.gene_id=3127)
+  or (ni.type='combiner' and ni.id in (
+    select from_influence_id
+    from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+    where ni.gene_id=3127)));
+
+
+# find GO terms and their parents
+select f.native_id, f.name, f.namespace, f.type, r.id
+from networks_function f left join networks_function_relationships r on f.id=r.function_id
+where f.type='go' and r.type='parent'
+limit 10;
+
+# find top-level GO terms
+select f.native_id, f.name, f.namespace, f.type
+from networks_function f
+where f.type='go' and f.obsolete=false
+and f.id not in (select function_id from networks_function_relationships where type='is_a');
+
+# find child terms of a GO term
+select f.*
+from networks_function f
+where f.type='go'
+and f.id in (select function_id from networks_function_relationships where type='is_a' and target_id=?)
+order by native_id;

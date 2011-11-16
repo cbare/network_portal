@@ -312,6 +312,61 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
 #   return(filename)
 # }
 
+# create a helper function that finds an influence id if it exists or if not, adds it
+# and returns the new id. Creating a closure to encapsulate the connection and gene.ids
+# and allow the function to recursively call itself in the case of combiners.
+# con = database connection
+# gene.ids is a vector of integers named by the gene name
+create.find.or.add.influence <- function(con, gene.ids) {
+  
+  # take the name of a predictor, add it if necessary and return it's id
+  find.or.add.influence <- function(predictor) {
+    # add influence, if not already present
+    # influences can be one of 3 types:
+    #  1) combiner, a logical combination of other influences (ef or tf)
+    #     for example: "DVU3334~~DVU0230~~min"
+    #  2) gene aka tf for transcription factor
+    #  3) ef for environmental factor
+    sql <- sprintf("select id from networks_influence where name = '%s';", predictor)
+    result <- dbGetQuery(con, sql)
+    if (nrow(result)>0) {
+      influence.id <- result[1,1]
+    }
+    else {
+      if (grepl("~~", predictor)) {
+        # grab the operator
+        op <- strsplit(predictor, "~~")[3]
+        sql <- sprintf("insert into networks_influence (name, operation, type) values ('%s', '%s', 'combiner');", predictor, op)
+        dbGetQuery(con, sql)
+        influence.id <- dbGetQuery(con, "select lastval();")[1,1]
+        # the first 2 of these should be genes or environmental factors
+        operands <- strsplit(predictor, "~~")[[1]][1:2]
+        for (operand in operands) {
+          # recursively call this function to add parts of a combiner
+          operand.id <- find.or.add.influence(operand)
+          # link combiner to part
+          sql <- sprintf("insert into networks_influence_parts (from_influence_id, to_influence_id) values ('%d', '%d')", influence.id, operand.id)
+          dbGetQuery(con, sql)
+        }
+      }
+      else if (predictor %in% names(gene.ids)) {
+        gene.id <- gene.ids[predictor]
+        sql <- sprintf("insert into networks_influence (name, gene_id, type) values ('%s', %d, 'tf');", predictor, gene.id)
+        dbGetQuery(con, sql)
+        influence.id <- dbGetQuery(con, "select lastval();")[1,1]
+      }
+      else {
+        sql <- sprintf("insert into networks_influence (name, type) values ('%s', 'ef');", predictor)
+        dbGetQuery(con, sql)
+        influence.id <- dbGetQuery(con, "select lastval();")[1,1]
+      }
+    }
+    return(influence.id)
+  }
+  return(find.or.add.influence)
+}
+
+
 # data is in files like: data/dvu/zzz_dvu_nwInf_coeffs.RData
 #   e.coeffs
 #   expMap
@@ -340,6 +395,8 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
   bicluster.ids <- get.bicluster.ids(con, network.id)
   gene.ids <- get.gene.ids(con, species.id)
   
+  find.or.add.influence <- create.find.or.add.influence(con, gene.ids)
+  
   tryCatch(
     {
       dbBeginTransaction(con)
@@ -350,33 +407,10 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
         cat("extracting influences for bicluster", bicluster.id, "\n")
 
         for (predictor in names(bicluster.coeffs$coeffs)) {
-
-          # add influence, if not already present
-          # influences can be one of 3 types:
-          #  1) combiner, a logical combination of other influences (ef or tf)
-          #     for example: "DVU3334~~DVU0230~~min"
-          #  2) gene aka tf for transcription factor
-          #  3) ef for environmental factor
-          sql <- sprintf("select id from networks_influence where name = '%s';", predictor)
-          result <- dbGetQuery(con, sql)
-          if (nrow(result)>0) {
-            influence.id <- result[1,1]
-          }
-          else {
-            if (grepl("~~", predictor)) {
-              sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'combiner');", predictor)
-            }
-            else if (predictor %in% rownames(gene.ids)) {
-              gene.id <- gene.ids[predictor, "id"]
-              sql <- sprintf("insert into networks_influence (name, gene_id, type) values ('%s', %d, 'tf');", predictor, gene.id)
-            }
-            else {
-              sql <-  sprintf("insert into networks_influence (name, type) values ('%s', 'ef');", predictor)
-            }
-            dbGetQuery(con, sql)
-            influence.id <- dbGetQuery(con, "select lastval();")[1,1]
-          }
-
+          
+          # create influence (and child influences in the case of combiners)
+          influence.id <- find.or.add.influence(predictor)
+          
           # associate bicluster with predictor
           sql <- sprintf("insert into networks_bicluster_influences (bicluster_id, influence_id) values (%d, %d);",
                           bicluster.id, influence.id)

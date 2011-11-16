@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     # url(r'^network_portal/', include('network_portal.foo.urls')),
     url(r'^$', 'web_app.views.home', name='home'),
     url(r'^about$', 'web_app.views.about', name='about'),
+    url(r'^contact$', 'web_app.views.contact', name='contact'),
     url(r'^search', 'web_app.views.search', name='search'),
 
     url(r'^network/test/$', 'web_app.networks.views.network_cytoscape_web_test', name='network'),
@@ -22,11 +23,16 @@ urlpatterns = patterns('',
     url(r'^network/graphml', 'web_app.networks.views.network_as_graphml', name='network'),
     url(r'^network', 'web_app.networks.views.network_cytoscape_web', name='network'),
 
-    url(r'^species/(?P<species>.*)$', 'web_app.networks.views.species', name='species'),
+    url(r'^species/(?P<species>[^/]*)/?$', 'web_app.networks.views.species', name='species'),
     url(r'^species/$', 'web_app.networks.views.species', name='species'),
     url(r'^genes/(?P<species>.*)$', 'web_app.networks.views.genes', name='genes'),
     url(r'^genes/', 'web_app.networks.views.genes', name='genes'),
     url(r'^bicluster/(?P<bicluster_id>\d+)$', 'web_app.networks.views.bicluster', name='biclusters'),
+
+    url(r'^regulated_by/(?P<regulator>.*)$', 'web_app.networks.views.regulated_by', name='regulated by'),
+    
+    url(r'^functions/(?P<type>[^/]*)/?$', 'web_app.networks.views.functions', name='functions'),
+    url(r'^function/(?P<name>[^/]*)/?$', 'web_app.networks.views.function', name='function'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
