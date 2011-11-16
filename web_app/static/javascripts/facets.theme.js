@@ -10,7 +10,6 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
   var output_header = '<table><tr><th>Gene Name</th><th>Common Name</th><th>Function</th><th>Type</th></tr>';
 
   if (doc.doc_type == "GENE") {
-     console.debug("doc: " + doc.toSource());
      total_output += '<tr><td>' + doc.gene_name + '</td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
 
 /*
