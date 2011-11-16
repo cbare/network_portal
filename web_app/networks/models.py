@@ -195,6 +195,7 @@ class Function(models.Model):
     name = models.CharField(max_length=255)
     namespace = models.CharField(max_length=255, blank=True, null=True)
     type = models.CharField(max_length=64, blank=True, null=True)
+    obsolete = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
 
 class Function_Relationships(models.Model):

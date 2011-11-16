@@ -13,7 +13,7 @@ tables. WARNING: don't drop synonyms if there is other data in there.
 drop table networks_function_relationships CASCADE;
 drop table networks_gene_function CASCADE;
 drop table networks_function CASCADE;
-drop table networks_synonym CASCADE;
+delete from networks_synonym where target_type="function";
 vacuum;
 
 Recreate the tables
@@ -24,7 +24,7 @@ and link dvu (dvu=DvH), mmp and halo genes to functions.
 
 > python import_functions.py --kegg-pathways ../../data/ko00001.keg
 > python import_functions.py --go-terms ../../data/gene_ontology_ext.obo.txt
-> python import_functions.py --cogs ../../data/COG_whog
+> python import_functions.py --cog-categories ../../data/cog_categories.txt --cogs ../../data/COG_whog
 > python import_functions.py --tigrfams ../../data/tigrfam_table.txt
 > python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
 > python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
@@ -109,7 +109,8 @@ def read_kegg_pathways(filename):
             elif line.startswith('C'):
                 m = pathway_re.match(line)
                 if m:
-                    subcategory['pathways'].append({'native_id':m.group(1), 'name':m.group(2).replace(',', '')})
+                    pathway = 'path:' + m.group(1)
+                    subcategory['pathways'].append({'native_id':pathway, 'name':m.group(2).replace(',', '')})
                     count_pathways += 1
                 else:
                     raise Exception("Can't parse line: %s" % (line,))
@@ -389,18 +390,41 @@ def read_cogs(filename):
     """
     Read COG functions.
     """
-    cog_re = re.compile(r'\[\w+\]\s+(COG\d+)\s+(.*)')
+    cog_re = re.compile(r'\[(\w+)\]\s+(COG\d+)\s+(.*)')
     cogs = []
     with open(filename, 'r') as f:
         for line in f:
             m = cog_re.match(line)
             if m:
                 cog = OpenStruct()
-                cog.id = m.group(1)
-                cog.description = m.group(2)
+                cog.id = m.group(2)
+                cog.name = m.group(3)
+                cog.parents = m.group(1)
+                cog.namespace = 'cog'
                 cogs.append(cog)
     return cogs
 
+def read_cog_categories(filename):
+    """
+    Read COG functional categories (see http://www.ncbi.nlm.nih.gov/COG/grace/fiew.cgi)
+    """
+    cog_categories = []
+    parent = None
+    with open(filename, 'r') as f:
+        for line in f:
+            c = OpenStruct()
+            if re.match("[A-Z]\t.*", line):
+                fields = line.rstrip("\n").split("\t")
+                c.id = fields[0]
+                c.name = fields[3]
+                c.parents = (parent,)
+                c.namespace = "cog subcategory"
+            else:
+                c.name = line.rstrip("\n")
+                c.namespace = "cog category"
+                parent = c.name
+            cog_categories.append(c)
+    return cog_categories
 
 def insert_kegg_pathways(pathways):
     """
@@ -644,12 +668,13 @@ def insert_go_terms(terms):
         for term in terms:
             cur.execute("""
                 insert into networks_function 
-                (native_id, name, namespace, description, type)
-                values (%s, %s, %s, %s, %s) RETURNING id;""",
+                (native_id, name, namespace, description, obsolete, type)
+                values (%s, %s, %s, %s, %s, %s) RETURNING id;""",
                 (term.id,
                  term.name,
                  term.namespace,
                  term['def'],
+                 True if term.is_obsolete else False,
                  'go',))
             function_id = cur.fetchone()[0]
             ids[term.id] = function_id
@@ -906,7 +931,41 @@ def insert_tigrfam_role_associations(links, roles_by_id):
         if (con): con.close()
 
 
-def insert_cogs(cogs):
+# def insert_cogs(cogs):
+#     """
+#     Takes a list of COG objects as returned by read_cogs with an id and a
+#     description and inserts them into the networks_function table in the DB.
+#     """
+#     con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+#     cur = None
+#     
+#     try:
+#         cur = con.cursor()
+# 
+#         cog_function_ids = get_function_id_lookup_table(cur, 'cog')
+#         if len(cog_function_ids) > 0:
+#             raise Exception("%d COG functions already exists in the database!" % (len(cog_function_ids),))
+# 
+#         count_inserts = 0
+#         for cog in cogs:
+#             cur.execute("""
+#                 insert into networks_function 
+#                 (native_id, name, type, namespace)
+#                 values (%s, %s, %s, %s);""",
+#                 (cog.id,
+#                  cog.name,
+#                  'cog',
+#                  'cog',))
+#             count_inserts += 1
+# 
+#         con.commit()
+#         print "Inserted %d COG functions." % (count_inserts,)
+# 
+#     finally:
+#         if (cur): cur.close()
+#         if (con): con.close()
+
+def insert_cogs(cog_categories):
     """
     Takes a list of COG objects as returned by read_cogs with an id and a
     description and inserts them into the networks_function table in the DB.
@@ -916,30 +975,48 @@ def insert_cogs(cogs):
     
     try:
         cur = con.cursor()
-
-        cog_function_ids = get_function_id_lookup_table(cur, 'cog')
-        if len(cog_function_ids) > 0:
-            raise Exception("%d COG functions already exists in the database!" % (len(cog_function_ids),))
-
+        
+        # cog_function_ids = get_function_id_lookup_table(cur, 'cog')
+        # if len(cog_function_ids) > 0:
+        #     raise Exception("%d COG functions already exists in the database!" % (len(cog_function_ids),))
+        
+        id_map = {}
+        
         count_inserts = 0
-        for cog in cogs:
-            cur.execute("""
-                insert into networks_function 
-                (native_id, name, description, type)
-                values (%s, %s, %s, %s);""",
-                (cog.id,
-                 cog.id,
-                 cog.description,
-                 'cog',))
-            count_inserts += 1
+        for namespace in ['cog category', 'cog subcategory', 'cog']:
+            for cog in cog_categories:
+                if cog.namespace==namespace:
+                    cur.execute("""
+                        insert into networks_function 
+                        (native_id, name, type, namespace)
+                        values (%s, %s, %s, %s) returning id;""",
+                        (cog.id,
+                         cog.name,
+                         'cog',
+                         cog.namespace,))
+                    function_id = cur.fetchone()[0]
+                    if namespace == 'cog category':
+                        id_map[cog.name] = function_id
+                    elif namespace == 'cog subcategory':
+                        id_map[cog.id] = function_id
+                    count_inserts += 1
 
+                    # for subcategories and COGs, add a link to one or more parents
+                    if namespace in ['cog subcategory', 'cog']:
+                        for parent in cog.parents:
+                            cur.execute("""
+                                insert into networks_function_relationships
+                                (function_id, target_id, type)
+                                values (%s, %s, %s)
+                                """,
+                                (function_id, id_map[parent], 'parent'))
+        
         con.commit()
         print "Inserted %d COG functions." % (count_inserts,)
 
     finally:
         if (cur): cur.close()
         if (con): con.close()
-
 
 
 def map_genes_to_go_cog_and_tigr_terms(genes, species):
@@ -1076,6 +1153,7 @@ def main():
     parser.add_argument('--tigr-roles', metavar='TIGR_ROLE_NAMES_FILE', help='import TIGR roles from flat file. Use with tigrfam-role-links')
     parser.add_argument('--tigrfam-role-links', metavar='TIGRFAMS_ROLE_LINK_FILE', help='put TIGRFams into their place in the role hierarchy. Use with tigr-roles')
     parser.add_argument('--cogs', metavar='COGS_FILE', help='import COG functions')
+    parser.add_argument('--cog-categories', metavar='COG_CATEGORIES_FILE', help='import COG functional categories')
     parser.add_argument('-s', '--species', help='for example, hal for halo')
     parser.add_argument('--test', action='store_true', help='Print list functions, rather than adding them to the db')
     parser.add_argument('--list-species', action='store_true', help='Print list of known species. You might have to add one.')
@@ -1083,13 +1161,17 @@ def main():
     
     if not ( args.kegg_pathways or args.kegg_gene_pathways or args.go_terms or args.genome_info or
              args.tigrfams or args.tigr_roles or args.tigrfam_role_links or
-             args.cogs or args.list_species):
+             args.cogs or args.cog_categories or args.list_species):
         print parser.print_help()
         return
     
-    # these should occur together
+    # Tigrfams and TigrRoles should occur together
     if (args.tigrfam_role_links is None) ^ (args.tigr_roles is None):
         raise Exception("Use --tigr-roles and --tigrfam-role-links together!")
+    
+    # COGs and COG categories should occur together
+    if (args.cogs is None) ^ (args.cog_categories is None):
+        raise Exception("Use --cogs and --cog-categories together!")
     
     if args.species:
         print "species = " + args.species
@@ -1165,14 +1247,15 @@ def main():
             else:
                 raise Exception("Need --tigr-roles to associate TIGRFams with roles")
 
-    # import COG functional classes
-    if args.cogs:
+    # import COG functional classes and categories
+    if args.cogs and args.cog_categories:
         cogs = read_cogs(args.cogs)
+        cog_categories = read_cog_categories(args.cog_categories)
         if args.test:
-            for cog in cogs:
-                print "%s %s" % (cog.id, cog.description)
+            for cat in cog_categories:
+                print "%s %s" % (cat.id, cat.name)
         else:
-            insert_cogs(cogs)
+            insert_cogs(cog_categories + cogs)
 
     # map genes to kegg pathways
     if args.kegg_gene_pathways:
