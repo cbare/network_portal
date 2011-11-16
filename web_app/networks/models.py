@@ -1,6 +1,5 @@
-
-
 from django.db import models
+from django.db import connection
 
 
 class Species(models.Model):
@@ -157,19 +156,20 @@ class Motif(models.Model):
     e_value = models.FloatField(blank=True, null=True)
     
     def pssm(self):
-        from django.db import connection, transaction
-        cursor = connection.cursor()
+        try:
+            cursor = connection.cursor()
 
-        # Data retrieval operation - no commit required
-        cursor.execute("select position, a, c, g, t from pssms where motif_id=%s order by position;", [self.id])
-        rows = cursor.fetchall()
+            # Data retrieval operation - no commit required
+            cursor.execute("select position, a, c, g, t from pssms where motif_id=%s order by position;", [self.id])
+            rows = cursor.fetchall()
         
-        pssm = PSSM()
-        for row in rows:
-            pssm.add_position({'a':row[1], 'c':row[2], 'g':row[3], 't':row[4]})
+            pssm = PSSM()
+            for row in rows:
+                pssm.add_position({'a':row[1], 'c':row[2], 'g':row[3], 't':row[4]})
 
-        return pssm
-        
+            return pssm
+        finally:
+            cursor.close()
 
 # A generalized annotation field. Put annotation on any type of object.
 class Annotation(models.Model):
@@ -197,6 +197,72 @@ class Function(models.Model):
     type = models.CharField(max_length=64, blank=True, null=True)
     obsolete = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
+    
+    def child_functions(self):
+        """
+        Get child functions, if there are any.
+        Returns a Django RawQuerySet.
+        """
+        return Function.objects.raw("""
+        select f.*
+        from networks_function f
+        where f.type=%s
+        and f.id in (select function_id from networks_function_relationships where type=%s and target_id=%s)
+        order by native_id;""", (self.type, self.parent_relation(), self.id,))
+    
+    def count_child_functions(self):
+        """
+        Count child functions of this function.
+        """
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                select count(function_id) from networks_function_relationships where type=%s and target_id=%s;""",
+                (self.parent_relation(), self.id,))
+            return cursor.fetchone()[0];
+        finally:
+            cursor.close()
+    
+    def parent_functions(self):
+        return Function.objects.raw("""
+        select f.*
+        from networks_function f
+        where f.type=%s
+        and f.id in (select target_id from networks_function_relationships where type=%s and function_id=%s)
+        order by native_id;""", (self.type, self.parent_relation(), self.id,))
+    
+    def count_parent_functions(self):
+        """
+        Count parent functions of this function.
+        """
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                select count(target_id) from networks_function_relationships where type=%s and function_id=%s;""",
+                (self.parent_relation(), self.id,))
+            return cursor.fetchone()[0];
+        finally:
+            cursor.close()
+    
+    def display_id(self):
+        """
+        Returns the native ID, if one exists, otherwise the database primary key ID.
+        """
+        return self.native_id if self.native_id else self.id
+    
+    def parent_relation(self):
+        if self.type=='go':
+            return 'is_a'
+        else:
+            return 'parent'
+
+    class Meta:
+        ordering = ['native_id']
+    
+    def __unicode__(self):
+        fields = [ self.native_id, self.name, self.namespace, self.type, "obsolete" if self.obsolete else None ]
+        fields = [ field for field in fields if field is not None ]
+        return "Function: " + ", ".join(fields)
 
 class Function_Relationships(models.Model):
     """

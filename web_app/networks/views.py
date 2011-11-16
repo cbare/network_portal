@@ -11,9 +11,7 @@ from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from django.db.models import Q
-from web_app.networks.models import Network
-from web_app.networks.models import Species
-from web_app.networks.models import Bicluster
+from web_app.networks.models import *
 import networkx as nx
 import re
 import sys, traceback
@@ -170,3 +168,40 @@ def regulated_by(request, regulator=None):
     bicluster_ids = [bicluster.id for bicluster in biclusters]
     return render_to_response('biclusters.html', locals())
 
+def functions(request, type):
+    
+    # info for a function system:
+    # name, top_level_categories, link to home, link to term, citation, version?,
+    
+    if type==None or type=="":
+        pass
+    elif type=='go':
+        # top level GO terms
+        # GO:0003674 | molecular_function
+        # GO:0005575 | cellular_component
+        # GO:0008150 | biological_process
+        system = "GO Gene Ontology"
+        functions = Function.objects.filter(native_id__in=['GO:0003674', 'GO:0005575', 'GO:0008150'])
+    elif type=='kegg':
+        system = "KEGG Pathways"
+        functions = Function.objects.filter(type='kegg',namespace='kegg category')
+    elif type=='cog':
+        system = "COG Clusters of Orthologous Genes/Groups"
+        functions = Function.objects.filter(type='cog',namespace='cog category')
+    elif type=='tigr':
+        system = "TIGRFam"
+        functions = Function.objects.filter(type='tigr',namespace='tigr mainrole')
+    else:
+        raise Exception("Unknown type of function: " + type)
+    return render_to_response('functions.html', locals())
+
+def function(request, name):
+    function = None
+    if re.match("\d+", name):
+        function = Function.objects.get(id=name)
+    if function is None:
+        function = Function.objects.get(native_id=name)
+    if function is None:
+        function = Function.objects.get(name=name)
+    return render_to_response('function.html', locals())
+    

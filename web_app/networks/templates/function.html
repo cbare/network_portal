@@ -1,0 +1,49 @@
+{% extends "base2.html" %}
+{% block content %}
+<h2>{{ function.name }}</h2>
+
+<p>
+id: {{ function.native_id }}<br>
+name: {{ function.name }}<br>
+namespace: {{ function.namespace }}<br>
+type: <a href="/functions/{{ function.type }}/">{{ function.type }}</a><br>
+obsolete: {{ function.obsolete }}<br>
+</p>
+
+{% if function.description %}
+<p><b>Description:</b> {{function.description}}</p>
+{% endif %}
+
+{% if function.count_child_functions %}
+<h4>Child Functions</h4>
+<table>
+  <thead>
+    <tr>
+      <th>id</th><th>name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for child_function in function.child_functions %}
+    <tr><td><a href="/function/{{child_function.display_id}}/">{{child_function.display_id}}</a></td><td>{{child_function.name}}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if function.count_parent_functions %}
+<h4>Parent Functions</h4>
+<table>
+  <thead>
+    <tr>
+      <th>id</th><th>name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for parent_function in function.parent_functions %}
+    <tr><td><a href="/function/{{parent_function.display_id}}/">{{parent_function.display_id}}</a></td><td>{{parent_function.name}}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}

@@ -100,3 +100,22 @@ and ((ni.type='tf' and ni.gene_id=3127)
     from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
     where ni.gene_id=3127)));
 
+
+# find GO terms and their parents
+select f.native_id, f.name, f.namespace, f.type, r.id
+from networks_function f left join networks_function_relationships r on f.id=r.function_id
+where f.type='go' and r.type='parent'
+limit 10;
+
+# find top-level GO terms
+select f.native_id, f.name, f.namespace, f.type
+from networks_function f
+where f.type='go' and f.obsolete=false
+and f.id not in (select function_id from networks_function_relationships where type='is_a');
+
+# find child terms of a GO term
+select f.*
+from networks_function f
+where f.type='go'
+and f.id in (select function_id from networks_function_relationships where type='is_a' and target_id=?)
+order by native_id;

@@ -1,0 +1,26 @@
+{% extends "base2.html" %}
+{% block content %}
+
+{% if functions %}
+<h2>{{ system }}</h2>
+
+<ul>
+  {% for function in functions %}
+  <li><a href="/function/{{ function.display_id }}/">{% if function.native_id %}{{ function.native_id }}, {% endif %}{{ function.name }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<h2>Functions</h2>
+
+<p>The Network Portal contains functional annotations for 4 systems:</p>
+
+<ul>
+  <li><a href="/functions/go/">GO Gene Ontology</a></li>
+  <li><a href="/functions/kegg/">KEGG Pathways</a></li>
+  <li><a href="/functions/tigr/">TIGRFam</a></li>
+  <li><a href="/functions/cog/">COG</a></li>
+</ul>
+
+{% endif %}
+
+{% endblock %}
