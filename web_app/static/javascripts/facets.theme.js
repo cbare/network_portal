@@ -4,10 +4,13 @@
 
 var count = 0;
 var total_output = '';
+var total_output_sp = '';
+var tab_output = '';
 // end kmf 
 
 AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
   var output_header = '<table><tr><th>Gene Name</th><th>Common Name</th><th>Function</th><th>Type</th></tr>';
+  var output_header_sp = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
 
   if (doc.doc_type == "GENE") {
      total_output += '<tr><td>' + doc.gene_name + '</td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
@@ -23,6 +26,10 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
 */
   }
 
+  if (doc.doc_type == "SPECIES") {
+    total_output_sp += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+  }
+
   count++;
 
   if (count%10 == 0 || count == l) {
@@ -36,15 +43,24 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
     }
 
     total_output += '</table>';
+    total_output_sp += '</table>';
     var new_total_output = total_output;
+    var new_total_output_sp = total_output_sp;
 
     total_output = '';
+    total_output_sp = '';
 
     if (count == l) {
       count = 0;
     }
 
-    return output_header + new_total_output;
+    tab_output = '<script>$(function() {$("#results-tab").tabs();});</script><div id="results-tab"><ul><li><a href="#tabs-genes">Genes</a></li><li><a href="#tabs-species">Species</a></li></ul>'
+                 + '<div id="tabs-genes"><div id="navigation"><ul id="pager"></ul><div id="pager-header"></div></div>' + output_header 
+		 + new_total_output + '</div><div id="tabs-species">' + output_header_sp + new_total_output_sp + '</div></div>';
+
+    return tab_output;
+
+    //return output_header + new_total_output;
   }
 
 };
@@ -86,8 +102,28 @@ AjaxSolr.theme.prototype.snippet = function (doc) {
   return output;
 };
 
-AjaxSolr.theme.prototype.tag = function (value, weight, handler) {
-  return $('<a href="#" class="tagcloud_item"/>').text(value).addClass('tagcloud_size_' + weight).click(handler);
+AjaxSolr.theme.prototype.checkbox_l = function (text, handler, options) {
+  options = options || {}, options.attributes = options.attributes || {};
+  var attributes = '';
+  for (var i in options.attributes) {
+    attributes += ' '+ i +'="' + options.attributes[i] + '"';
+  }
+  return jQuery('<input type="checkbox" value="' + text + '"' + attributes + '/>').click(handler);
+};
+
+AjaxSolr.theme.prototype.select_link = function (facetText, handler) {
+  var options = {};
+  options.attributes = {};
+  //facetText = facetText.escapeOnce();
+  return jQuery('<label/>').append(AjaxSolr.theme('checkbox_l', facetText, handler, options)).append(facetText);
+};
+
+AjaxSolr.theme.prototype.unselect_link = function (facetText, handler) {
+  var options = {};
+  options.attributes = {};
+  options.attributes.checked = 'checked';
+  //facetText = facetText.escapeOnce();
+  return jQuery('<label/>').append(AjaxSolr.theme('checkbox_l', facetText, handler, options)).append(facetText);
 };
 
 AjaxSolr.theme.prototype.facet_link = function (value, handler) {
@@ -96,6 +132,6 @@ AjaxSolr.theme.prototype.facet_link = function (value, handler) {
 
 AjaxSolr.theme.prototype.no_items_found = function () {
   return 'no items found in current selection';
-};
+};  
 
 })(jQuery);

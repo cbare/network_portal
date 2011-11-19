@@ -28,13 +28,14 @@
       <input type="text" id="query" name="query" />
     </ul>
 
-    <h2>Browse By:</h2>
+    <h2>Narrow By:</h2>
     <div id="browse">
       <h2>Species</h2>
-      <div class="tagcloud" id="species_name"></div>
+      <div class="facet-checkbox" id="species_name"></div>
 
+<!--
       <h2>Species Short Name</h2>
-      <div class="tagcloud" id="species_short_name"></div>
+      <div class="facet-checkbox" id="species_short_name"></div>
 
       <h2>Networks</h2>
       <div class="tagcloud" id="network_name"></div>
@@ -45,8 +46,6 @@
       <h2>Regulators</h2>
       <div class="tagcloud" id="regulator_name"></div>
 
-
-<!--
       <h2>Condition Name</h2>
       <div class="tagcloud" id="condition_name"></div>
 
@@ -69,11 +68,7 @@
 
     <h2>Results</h2>
     <div id="result">
-      <div id="navigation">
-	<ul id="pager"></ul>
-	<div id="pager-header"></div>
-      </div>
-      <div id="docs">
+      <div id="docs">	
       </div>
     </div>
     <!-- end ajax-solr tutorial code mods -->

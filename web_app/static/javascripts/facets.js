@@ -21,9 +21,9 @@ var Manager;
       }
     }));
 
-    var fields = [ 'species_name', 'bi_species_name', 'bi_species_short_name', 'species_short_name', 'condition_name', 'species_network_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ];
+    var fields = [ 'species_name', 'species_short_name'];
     for (var i = 0, l = fields.length; i < l; i++) {
-      Manager.addWidget(new AjaxSolr.TagcloudWidget({
+      Manager.addWidget(new AjaxSolr.CheckboxWidget({
         id: fields[i],
         target: '#' + fields[i],
         field: fields[i]
@@ -37,7 +37,8 @@ var Manager;
       id: 'text',
       target: '#search',
       field: 'text',
-      fields: [ 'species_name', 'species_short_name', 'condition_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name', 'text' ] //[ 'name', 'gene_common_name', 'gene_name', 'text' ]
+      fields: [ 'text' ]
+      //fields: [ 'species_name', 'species_short_name', 'network_name', 'gene_common_name', 'gene_name', 'text' ]
     }));
     Manager.init();
     Manager.store.addByValue('q', '*:*');

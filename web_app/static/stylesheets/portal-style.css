@@ -816,6 +816,18 @@ a.tagcloud_size_10 {
     font-size: 180%;
 }
 
+.facet-checkbox {
+    margin-left: 15px;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.facet-checkbox li {
+    list-style: none;
+}
+
 #selection {
     padding: 10px 15px 0;
 }
