@@ -1,5 +1,7 @@
 from django.db import models
 from django.db import connection
+from helpers import synonym
+import re
 
 
 class Species(models.Model):
@@ -24,6 +26,12 @@ class Chromosome(models.Model):
     length = models.IntegerField()
     topology = models.CharField(max_length=64)
     refseq = models.CharField(max_length=64, blank=True, null=True)
+    
+    def ucsc_id(self):
+        """Get the UCSC id for this chromosome from the synonym table"""
+        ucsc_name = synonym(obj=self, synonym_type='ucsc')
+        print "ucsc_name = %s" % (str(ucsc_name),)
+        return ucsc_name if ucsc_name else self.name
     
     def __unicode__(self):
         return self.name
@@ -62,6 +70,18 @@ class Gene(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     transcription_factor = models.BooleanField(default=False)
     functions = models.ManyToManyField('Function', through='Gene_Function')
+    
+    def functions_by_type(self):
+        """
+        Returns a dictionary with function types as keys and 
+        """
+        functions = self.functions.all()
+        results = {}
+        for function in functions:
+            if function.type not in results:
+                results[function.type] = []
+            results[function.type].append(function)
+        return results
     
     def regulated_biclusters(self, network):
         """
@@ -255,6 +275,24 @@ class Function(models.Model):
             return 'is_a'
         else:
             return 'parent'
+
+    def link_to_term(self, organism=None):
+        if self.type=='go':
+            return "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=%s" % (self.native_id,)
+        elif self.type=='cog':
+            return "http://www.ncbi.nlm.nih.gov/COG/grace/wiew.cgi?%s" % (self.native_id,)
+        elif self.type=='tigr':
+            return "http://www.jcvi.org/cgi-bin/tigrfams/HmmReportPage.cgi?acc=%s" % (self.native_id,)
+        elif self.type=='kegg':
+            m = re.match(r'path:(\d+)', self.native_id)
+            if m:
+                pathway = m.group(1)
+            if organism:
+                return "http://www.genome.jp/kegg-bin/show_pathway?org_name=%s&mapno=%s&show_description=show" % (organism, pathway)
+            else:
+                return "http://www.genome.jp/kegg-bin/show_pathway?map%s" % (pathway,)
+        else:
+            link_to_term_url = "http://www.google.com/search?q=%s" % (self.native_id,)
 
     class Meta:
         ordering = ['native_id']

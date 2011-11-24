@@ -1,0 +1,9 @@
+{% extends "base2.html" %}
+{% block content %}
+<div id="main">
+<p>The Network Portal application has {{gene_count}} genes from <a href="/species/">{{species_count}} organisms</a>.</p>
+<p>To find specific genes, browse genes by <a href="/species/">species</a> or <a href="/search/">search</a> for
+  specific genes. URLs for specific genes follow this pattern:  http://{{request.get_host}}/gene/[gene name], for example,
+  <a href="/gene/DVU0001">http://{{request.get_host}}/gene/DVU0001</a>.</p>
+</div><!-- End #main -->
+{% endblock %}
