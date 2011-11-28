@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
+from web_app.networks.functions import functional_systems
 import networkx as nx
 import re
 import sys, traceback
@@ -20,7 +21,8 @@ import sys, traceback
 class Object(object):
     pass
 
-def gene(request):
+# I renamed this to make a gene page
+def analysis_gene(request):
     #return render_to_response('analysis/gene.html')
     return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
 
@@ -134,6 +136,10 @@ def genes(request, species=None, species_id=None):
         elif request.GET.has_key('id'):
                 species_id = request.GET['id']
                 species = Species.objects.get(id=species_id)
+        else:
+            gene_count = Gene.objects.count()
+            species_count = Species.objects.count()
+            return render_to_response('genes_empty.html', locals())
         
         # handle filters or just get all genes for the species
         if request.GET.has_key('filter'):
@@ -153,6 +159,32 @@ def genes(request, species=None, species_id=None):
         else:
             raise Http404("No species specified.")
 
+def gene(request, gene=None):
+    if gene:
+        try:
+            gene_id = int(gene)
+            gene = Gene.objects.get(id=gene_id)
+        except ValueError:
+            gene = Gene.objects.get(name=gene)
+    elif request.GET.has_key('id'):
+        gene_id = request.GET['id']
+        gene = Gene.objects.get(id=gene_id)
+    else:
+        gene_count = Gene.objects.count()
+        species_count = Species.objects.count()
+        return render_to_response('genes_empty.html', locals())
+    
+    # compile functions into groups by functional system
+    systems = []
+    for key, functions in gene.functions_by_type().items():
+        system = {}
+        system['name'] = functional_systems[key].display_name
+        system['functions'] = [ "(<a href=\"%s\">%s</a>) %s" % (function.link_to_term(), function.native_id, function.name,) \
+                                for function in functions ]
+        systems.append(system)  
+        
+    return render_to_response('gene.html', locals())
+
 def bicluster(request, bicluster_id=None):
     bicluster = Bicluster.objects.get(id=bicluster_id)
     genes = bicluster.genes.all()
@@ -169,30 +201,9 @@ def regulated_by(request, regulator=None):
     return render_to_response('biclusters.html', locals())
 
 def functions(request, type):
-    
-    # info for a function system:
-    # name, top_level_categories, link to home, link to term, citation, version?,
-    
-    if type==None or type=="":
-        pass
-    elif type=='go':
-        # top level GO terms
-        # GO:0003674 | molecular_function
-        # GO:0005575 | cellular_component
-        # GO:0008150 | biological_process
-        system = "GO Gene Ontology"
-        functions = Function.objects.filter(native_id__in=['GO:0003674', 'GO:0005575', 'GO:0008150'])
-    elif type=='kegg':
-        system = "KEGG Pathways"
-        functions = Function.objects.filter(type='kegg',namespace='kegg category')
-    elif type=='cog':
-        system = "COG Clusters of Orthologous Genes/Groups"
-        functions = Function.objects.filter(type='cog',namespace='cog category')
-    elif type=='tigr':
-        system = "TIGRFam"
-        functions = Function.objects.filter(type='tigr',namespace='tigr mainrole')
-    else:
-        raise Exception("Unknown type of function: " + type)
+    system = None
+    if type in functional_systems:
+        system = functional_systems[type]
     return render_to_response('functions.html', locals())
 
 def function(request, name):

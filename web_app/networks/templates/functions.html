@@ -1,18 +1,29 @@
 {% extends "base2.html" %}
 {% block content %}
 
-{% if functions %}
-<h2>{{ system }}</h2>
+{% if system %}
+<h2>{{ system.display_name }}</h2>
+<p>{{ system.linked_description|safe }}</p>
 
 <ul>
-  {% for function in functions %}
-  <li><a href="/function/{{ function.display_id }}/">{% if function.native_id %}{{ function.native_id }}, {% endif %}{{ function.name }}</a></li>
+  {% for function in system.top_level %}
+  <li><a href="/function/{{ function.display_id }}/">{% if function.native_id %}{{ function.native_id }}, {% endif %}{{ function.name }}</a>
+    {% if system.show_subcategories %}<ul>
+      {% for child_function in function.child_functions %}
+        <li><a href="/function/{{ child_function.display_id }}/">{% if child_function.native_id %}{{ child_function.native_id }}, {% endif %}
+          {{ child_function.name }}</a></li>
+      {% endfor %}
+    </ul>{% endif %}
+  </li>
   {% endfor %}
 </ul>
+
+<p><a href="/functions/">All functional systems</a></p>
+
 {% else %}
 <h2>Functions</h2>
 
-<p>The Network Portal contains functional annotations for 4 systems:</p>
+<p>The Network Portal contains annotations from 4 systems of functional classification:</p>
 
 <ul>
   <li><a href="/functions/go/">GO Gene Ontology</a></li>
