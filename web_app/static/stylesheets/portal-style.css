@@ -673,7 +673,7 @@ ol.commentlist {
     padding-top: 0.5em; 
 }
 
-/* NOTE: I commented out a line for .ui-tabs-hide in the main jquery css file 
+/* NOTE: I commented out a line for .ui-tabs-hide in the main jquery-ui css file 
 to make the following work how we'd like */
 .ui-tabs-hide {
     position: absolute;

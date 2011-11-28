@@ -44,7 +44,7 @@ var Manager;
     Manager.store.addByValue('q', '*:*');
     var params = {
       facet: true,
-      'facet.field': [ 'species_name', 'bi_species_name', 'bi_species_short_name', 'species_short_name', 'condition_name', 'species_network_name', 'network_name', 'influence_name', 'influence_type', 'gene_common_name', 'gene_name' ], //[ 'name', 'gene_common_name', 'gene_name' ],
+      'facet.field': [ 'species_name', 'species_short_name'], //[ 'name', 'gene_common_name', 'gene_name' ],
       'facet.limit': 20,
       'facet.mincount': 1,
       'f.topics.facet.limit': 50,

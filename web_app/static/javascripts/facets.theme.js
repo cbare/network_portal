@@ -4,16 +4,22 @@
 
 var count = 0;
 var total_output = '';
+var total_output_fun = '';
 var total_output_sp = '';
+var total_output_net = '';
 var tab_output = '';
 // end kmf 
 
 AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
   var output_header = '<table><tr><th>Gene Name</th><th>Common Name</th><th>Function</th><th>Type</th></tr>';
+  var output_header_fun = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
   var output_header_sp = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
+  var output_header_net = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
+
+  //console.debug("doc: " + doc.toSource());
 
   if (doc.doc_type == "GENE") {
-     total_output += '<tr><td>' + doc.gene_name + '</td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
+     total_output += '<tr><td><a href="/search/?q=' + doc.gene_name + '">' + doc.gene_name + '</a></td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
 
 /*
     var gene_name = doc.gene_name;
@@ -26,9 +32,18 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
 */
   }
 
+  //if (doc.doc_type == "FUNCTION") {
+    total_output_fun += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+  //}
+
   if (doc.doc_type == "SPECIES") {
-    total_output_sp += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+    total_output_sp += '<tr><td><a href="/species/' + doc.species_name + '">' + doc.species_name + '</a></td><td>' + doc.species_short_name + '</td></tr>';
   }
+
+  //if (doc.doc_type == "NETWORK") {
+    total_output_net += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+  //}
+
 
   count++;
 
@@ -43,20 +58,33 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
     }
 
     total_output += '</table>';
+    total_output_fun += '</table>';
     total_output_sp += '</table>';
+    total_output_net += '</table>';
+
     var new_total_output = total_output;
+    var new_total_output_fun = total_output_fun;
     var new_total_output_sp = total_output_sp;
+    var new_total_output_net = total_output_net;
 
     total_output = '';
+    total_output_fun = '';
     total_output_sp = '';
+    total_output_net = '';
 
     if (count == l) {
       count = 0;
     }
 
-    tab_output = '<script>$(function() {$("#results-tab").tabs();});</script><div id="results-tab"><ul><li><a href="#tabs-genes">Genes</a></li><li><a href="#tabs-species">Species</a></li></ul>'
-                 + '<div id="tabs-genes"><div id="navigation"><ul id="pager"></ul><div id="pager-header"></div></div>' + output_header 
-		 + new_total_output + '</div><div id="tabs-species">' + output_header_sp + new_total_output_sp + '</div></div>';
+    tab_output = '<script>$(function() {$("#results-tab").tabs();});</script>'
+                 + '<div id="results-tab"><ul><li><a href="#tabs-genes">Genes</a></li><li><a href="#tabs-functions">Functions</a></li>'
+                 + '<li><a href="#tabs-species">Species</a></li><li><a href="#tabs-networks">Networks</a></li></ul>'
+                 + '<div id="tabs-genes"><div id="navigation"><ul id="pager"></ul><div id="pager-header"></div></div>' 
+		 + output_header + new_total_output + '</div>'
+		 + '<div id="tabs-functions">' + output_header_fun + new_total_output_fun + '</div>'
+		 + '<div id="tabs-species">' + output_header_sp + new_total_output_sp + '</div>'
+		 + '<div id="tabs-networks">' + output_header_net + new_total_output_net + '</div>'
+		 + '</div>';
 
     return tab_output;
 
