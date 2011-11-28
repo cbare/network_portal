@@ -204,4 +204,3 @@ def function(request, name):
     if function is None:
         function = Function.objects.get(name=name)
     return render_to_response('function.html', locals())
-    
