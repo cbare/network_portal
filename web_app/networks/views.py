@@ -26,12 +26,6 @@ def analysis_gene(request):
     #return render_to_response('analysis/gene.html')
     return render_to_response('analysis/gene.html', {}, context_instance=RequestContext(request))
 
-def motif(request):
-    return HttpResponse("testing motif")
-
-def function(request):
-    return HttpResponse("testing function")
-
 
 def networks(request):
     networks = Network.objects.all()
@@ -60,28 +54,38 @@ def network_as_graphml(request):
         bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
     biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
 
+    graph = nx.Graph()
+
     # compile set of genes in all requested biclusters
     genes = set()
     influences = set()
     for b in biclusters:
         genes.update(b.genes.all())
-        influences.update(b.influences.all())
+        for influence in b.influences.all():
+            influences.add(influence)
+            if influence.is_combiner():
+                parts = influence.get_parts()
+                influences.update(parts)
+                for part in parts:
+                    graph.add_edge("inf:%d" % (part.id,), "inf:%d" % (influence.id,))
         print "influences = %d" % (len(influences),)
         print influences
 
     # build networkx graph
-    graph = nx.Graph()
     for gene in genes:
-        graph.add_node(gene, {'type':'gene', 'name':str(gene)})
+        graph.add_node(gene, {'type':'gene', 'name':gene.display_name()})
     for inf in influences:
-        graph.add_node("inf:%d" % (inf.id), {'type':'regulator', 'name':inf.name})
+        graph.add_node("inf:%d" % (inf.id,), {'type':'regulator', 'name':inf.name})
     for bicluster in biclusters:
-        graph.add_node(bicluster, {'type':'bicluster', 'name':str(bicluster)})
+        graph.add_node("bicluster:%d" %(bicluster.id,), {'type':'bicluster', 'name':str(bicluster)})
         for gene in bicluster.genes.all():
-            graph.add_edge(bicluster, gene)
+            graph.add_edge("bicluster:%d" %(bicluster.id,), gene)
         for inf in bicluster.influences.all():
-            graph.add_edge(bicluster, "inf:%d" % (inf.id))
+            graph.add_edge("bicluster:%d" %(bicluster.id,), "inf:%d" % (inf.id,))
             print ">>> " + str(inf)
+        for motif in bicluster.motif_set.all():
+            graph.add_node("motif:%d" % (motif.id,), {'type':'motif', 'consensus':motif.consensus(), 'e_value':motif.e_value, 'name':"motif:%d" % (motif.id,)})
+            graph.add_edge("bicluster:%d" %(bicluster.id,), "motif:%d" % (motif.id,))
 
     # write graphml to response
     writer = nx.readwrite.graphml.GraphMLWriter(encoding='utf-8',prettyprint=True)
@@ -182,7 +186,15 @@ def gene(request, gene=None):
         system['functions'] = [ "(<a href=\"%s\">%s</a>) %s" % (function.link_to_term(), function.native_id, function.name,) \
                                 for function in functions ]
         systems.append(system)  
-        
+    
+    # if the gene is a transcription factor, how many biclusters does it regulate?
+    count_regulated_biclusters = gene.count_regulated_biclusters(1)
+    
+    if request.GET.has_key('format'):
+        format = request.GET['format']
+        if format == 'html':
+            return render_to_response('gene_snippet.html', locals())
+    
     return render_to_response('gene.html', locals())
 
 def bicluster(request, bicluster_id=None):
@@ -191,6 +203,12 @@ def bicluster(request, bicluster_id=None):
     gene_count = len(genes)
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
+    
+    if request.GET.has_key('format'):
+        format = request.GET['format']
+        if format == 'html':
+            return render_to_response('bicluster_snippet.html', locals())
+
     return render_to_response('bicluster.html', locals())
 
 def regulated_by(request, regulator=None):
@@ -199,6 +217,11 @@ def regulated_by(request, regulator=None):
     biclusters = gene.regulated_biclusters(network)
     bicluster_ids = [bicluster.id for bicluster in biclusters]
     return render_to_response('biclusters.html', locals())
+
+def regulator(request, regulator=None):
+    influence = Influence.objects.get(name=regulator)
+    parts = influence.parts.all()
+    return render_to_response('influence_snippet.html', locals())
 
 def functions(request, type):
     system = None
@@ -215,4 +238,8 @@ def function(request, name):
     if function is None:
         function = Function.objects.get(name=name)
     return render_to_response('function.html', locals())
-    
+
+def motif(request, motif_id=None):
+    motif = Motif.objects.get(id=motif_id)
+    return render_to_response('motif_snippet.html', locals())
+

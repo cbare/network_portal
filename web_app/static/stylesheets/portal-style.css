@@ -823,6 +823,15 @@ a.tagcloud_size_10 {
     padding-left: 10px;
 }
 
+#search_box {
+  width: 60em;
+  height: 12ex;
+  background-color:#ffffff;
+  background-image: url("/static/images/search.gif");
+  background-repeat:no-repeat;
+  background-position: right top;
+}
+
 #facet-display {
     float: left;
     width: 500px;

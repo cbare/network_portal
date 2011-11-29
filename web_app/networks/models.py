@@ -71,6 +71,9 @@ class Gene(models.Model):
     transcription_factor = models.BooleanField(default=False)
     functions = models.ManyToManyField('Function', through='Gene_Function')
     
+    def display_name(self):
+        return self.name if self.common_name is None or self.common_name=='' else self.name + " " + self.common_name
+
     def functions_by_type(self):
         """
         Returns a dictionary with function types as keys and 
@@ -85,13 +88,17 @@ class Gene(models.Model):
     
     def regulated_biclusters(self, network):
         """
-        Return biclusters regulated by this gene.
+        Return biclusters regulated by this gene, either directly or through and-gates.
         """
         if not self.transcription_factor:
             return []
         else:
+            if type(network)==int:
+                network_id = network
+            else:
+                network_id = network.id
             return Bicluster.objects.raw("""
-            select nb.*
+            select distinct(nb.*)
             from networks_bicluster nb
                  join networks_bicluster_influences bi on nb.id=bi.bicluster_id
                  join networks_influence ni on bi.influence_id=ni.id
@@ -101,7 +108,32 @@ class Gene(models.Model):
               select from_influence_id
               from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
               where ni.gene_id=%s)));
-            """, (network.id, self.id, self.id,))
+            """, (network_id, self.id, self.id,))
+
+    def count_regulated_biclusters(self, network):
+        if not self.transcription_factor:
+            return 0
+        if type(network)==int:
+            network_id = network
+        else:
+            network_id = network.id
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                select count(distinct(nb.id))
+                from networks_bicluster nb
+                     join networks_bicluster_influences bi on nb.id=bi.bicluster_id
+                     join networks_influence ni on bi.influence_id=ni.id
+                where nb.network_id=%s
+                and ((ni.type='tf' and ni.gene_id=%s)
+                or (ni.type='combiner' and ni.id in (
+                  select from_influence_id
+                  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+                  where ni.gene_id=%s)));
+            """, (network_id, self.id, self.id,))
+            return cursor.fetchone()[0]
+        finally:
+            cursor.close()
     
     def __unicode__(self):
         return self.name
@@ -123,6 +155,20 @@ class Influence(models.Model):
     type = models.CharField(max_length=32, blank=True, null=True)
     parts = models.ManyToManyField('self')
     
+    def is_combiner(self):
+        return self.type=='combiner'
+    
+    # these two methods are redundant with parts
+    def get_part_names(self):
+        # return ~~ delimited parts, removing the last bit which is the combining operation ('min')
+        return self.name.split('~~')[:-1]
+
+    def get_parts(self):
+        parts = []
+        for part in self.get_part_names():
+            parts.append(Influence.objects.get(name=part))
+        return parts
+    
     def __unicode__(self):
         return self.name
 
@@ -140,7 +186,8 @@ class Bicluster(models.Model):
 class PSSM():
     """
     Position specific scoring matrix. Not a Django model 'cause one PSSM is
-    not a single in the DB but several (one row persition).
+    not a single row in the DB but several (one row per position).
+    At each position, 
     """
     def __init__(self):
         self.positions=[]
@@ -151,7 +198,16 @@ class PSSM():
     def get_position(self, p):
         return self.positions[p]
     
-    def to_one_letter_string(self):
+    def __iter__(self):
+        i = 0
+        while i < len(self.positions):
+            yield self.positions[i]
+            i += 1
+    
+    def __len__(self):
+        return len(self.positions)
+    
+    def consensus(self):
         letters = []
         for p in self.positions:
             max_letter = 'a'
@@ -160,7 +216,7 @@ class PSSM():
                     max_letter = letter
             if p[max_letter] > 0.8:
                 letters.append(max_letter.upper())
-            elif p[max_letter] > 0.5:
+            elif p[max_letter] > 0.4:
                 letters.append(max_letter)
             else:
                 letters.append('.')
@@ -174,6 +230,9 @@ class Motif(models.Model):
     position = models.IntegerField(blank=True, null=True)
     sites = models.IntegerField(blank=True, null=True)
     e_value = models.FloatField(blank=True, null=True)
+
+    def consensus(self):
+        return self.pssm().consensus()
     
     def pssm(self):
         try:
@@ -187,6 +246,7 @@ class Motif(models.Model):
             for row in rows:
                 pssm.add_position({'a':row[1], 'c':row[2], 'g':row[3], 't':row[4]})
 
+            self._pssm = pssm
             return pssm
         finally:
             cursor.close()

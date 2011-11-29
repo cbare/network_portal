@@ -2,22 +2,6 @@
 {% load humanize %}
 {% block content %}
 <div id="main">
-  <h1>{{ gene.name }}{% if gene.common_name %}{{ gene.common_name }}{% endif %}</h1>
-  <p>{{ gene.description }}</p>
-
-  <p>species: <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
-     coordinates: {{ gene.chromosome.name }}{{ gene.strand }}:{{ gene.start|intcomma }}-{{ gene.end|intcomma }} (<a href="http://microbes.ucsc.edu/cgi-bin/hgTracks?db={{ gene.species.ucsc_id }}&position={{gene.chromosome.ucsc_id}}:{{gene.start}}-{{gene.end}}">UCSC GB</a>)<br>
-     Gene ID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a>
-  </p>
-  
-  <h2>Functions</h2>
-  {% for system in systems %}
-  <p><b>{{ system.name }}</b>: {{system.functions|safeseq|join:", "}}</p>
-  {% endfor %}
-  
-  {% if gene.transcription_factor %}
-  <p><b>Regulates: </b> n genes in m biclusters.</p>
-  {% endif %}
-
+  {% include 'gene_snippet.html' %}
 </div><!-- End #main -->
 {% endblock %}

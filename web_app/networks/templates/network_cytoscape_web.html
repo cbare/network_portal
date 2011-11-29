@@ -4,12 +4,15 @@
 <html>
 <head>
   <title>{{ network.name }}</title>
+  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
   <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/main.css">  
+  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
 
-  <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
-  <script type="text/javascript" src="/static/javascripts/main.js"></script>
   <script type="text/javascript" src="/static/javascripts/jquery-1.5.1.min.js"></script>
   <script type="text/javascript" src="/static/javascripts/jquery-ui-1.8.14.custom.min.js"></script>
+  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+  <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
+  <script type="text/javascript" src="/static/javascripts/main.js"></script>
   
   <!-- JSON support for IE (needed to use JS API) -->
   <script type="text/javascript" src="/static/cytoscapeweb/js/json2.min.js"></script>
@@ -56,6 +59,18 @@
                          </div>");
           $(options.target).append(msg);
       }
+          
+      function pop_up(url) {
+          $.ajax({
+              url: url,
+              success: function(data){
+                  $("#pop_up").html(data);
+              },
+              error: function(){
+                  $("#pop_up").html("<p>Error!!</p>");
+              }
+          });
+      }
 
 
       $(document).ready(function() {
@@ -95,6 +110,42 @@
           //       }
           //     }
           // });
+          
+          node_click_listener = vis.addListener("click", "nodes", function(event) {
+              var data = event.target.data;
+              var url;
+              if (data.type=='gene') {
+                url = "/gene/" + data.id + "?format=html";
+              }
+              else if (data.type=='regulator') {
+                if (data.name.indexOf("~~") < 0) {
+                  url = "/gene/" + data.name + "?format=html"
+                }
+                else {
+                  url = "/regulator/" + data.name + "?format=html"
+                }
+              }
+              else if (data.type=='bicluster') {
+                pattern = /bicluster:(\d+)/;
+                id = pattern.exec(data.id)[1];
+                url = "/bicluster/" + id + "?format=html";
+              }
+              else if (data.type=='motif') {
+                pattern = /motif:(\d+)/;
+                id = pattern.exec(data.id)[1];
+                url = "/motif/" + id + "?format=html";
+              }
+              else {
+                return;
+              }
+
+              $("#pop_up").wijdialog({
+                  autoOpen: true,
+                  title: event.target.data.name,
+                  width: 600,
+                  open: pop_up(url)
+              });
+          });
 
           var shapeMapper = {
               attrName: 'type',
@@ -166,6 +217,9 @@
   </div>
   <div id="menu">
     <a href="/">home</a> | <a href="/search">search</a> | [controls to be added here or in sidebar]
+  </div>
+  <div id="pop_up">
+    
   </div>
 </body>
 </html>

@@ -1,0 +1,27 @@
+<h1>Motif: {{motif.id}}</h1>
+
+<p><b>e-value:</b> {{motif.e_value}}</p>
+<p><b>Consensus:</b> {{motif.consensus}}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>A</th>
+      <th>C</th>
+      <th>G</th>
+      <th>T  </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for position in motif.pssm %}
+    <tr>
+      <td>{{position.a|stringformat:".2f"}}</td>
+      <td>{{position.c|stringformat:".2f"}}</td>
+      <td>{{position.g|stringformat:".2f"}}</td>
+      <td>{{position.t|stringformat:".2f"}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p>Add motif logo here</p>

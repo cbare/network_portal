@@ -119,3 +119,53 @@ from networks_function f
 where f.type='go'
 and f.id in (select function_id from networks_function_relationships where type='is_a' and target_id=?)
 order by native_id;
+
+
+select split_part(name, '~~', 1) as regulator_1,
+       split_part(name, '~~', 2) as regulator_2,
+       split_part(name, '~~', 3) as op
+from networks_influence
+where position('~~' in name) > 0;
+
+
+select distinct(u.regulator) from (
+  select split_part(name, '~~', 1) as regulator
+  from networks_influence
+  where type='combiner'
+
+  union
+
+  select split_part(name, '~~', 2) as regulator
+  from networks_influence
+  where type='combiner'
+) as u;
+
+
+
+# count biclusters regulated by a transcription factor
+select count(distinct(nb.id))
+from networks_bicluster nb
+     join networks_bicluster_influences bi on nb.id=bi.bicluster_id
+     join networks_influence ni on bi.influence_id=ni.id
+where nb.network_id=1
+and ((ni.type='tf' and ni.gene_id=2074)
+or (ni.type='combiner' and ni.id in (
+  select from_influence_id
+  from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
+  where ni.gene_id=2074)));
+
+# count genes regulated by a transcription factor
+select count(distinct(g.id))
+from networks_gene g
+join networks_bicluster_genes bg on g.id = bg.gene_id
+join networks_bicluster b on b.id = bg.bicluster_id
+join networks_bicluster_influences bi on b.id=bi.bicluster_id
+join networks_influence i on bi.influence_id=i.id
+where b.network_id=1
+and ((i.type='tf' and i.gene_id=2074)
+or (i.type='combiner' and i.id in (
+  select from_influence_id
+  from networks_influence_parts ip join networks_influence i on ip.to_influence_id=i.id
+  where i.gene_id=2074)));
+
+

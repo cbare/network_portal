@@ -25,11 +25,16 @@ urlpatterns = patterns('',
 
     url(r'^species/(?P<species>[^/]*)/?$', 'web_app.networks.views.species', name='species'),
     url(r'^species/$', 'web_app.networks.views.species', name='species'),
+    
     url(r'^genes/(?P<species>.*)$', 'web_app.networks.views.genes', name='genes'),
     url(r'^gene/(?P<gene>.*)$', 'web_app.networks.views.gene', name='gene'),
+    
+    url(r'^motif/(?P<motif_id>\d+)$', 'web_app.networks.views.motif', name='motif'),
+    
     url(r'^bicluster/(?P<bicluster_id>\d+)$', 'web_app.networks.views.bicluster', name='biclusters'),
 
     url(r'^regulated_by/(?P<regulator>.*)$', 'web_app.networks.views.regulated_by', name='regulated by'),
+    url(r'^regulator/(?P<regulator>.*)$', 'web_app.networks.views.regulator', name='regulator'),
     
     url(r'^functions/(?P<type>[^/]*)/?$', 'web_app.networks.views.functions', name='functions'),
     url(r'^function/(?P<name>[^/]*)/?$', 'web_app.networks.views.function', name='function'),

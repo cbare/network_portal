@@ -1,0 +1,22 @@
+{% load humanize %}
+<h1>{{ gene.name }}{% if gene.common_name %}&nbsp;{{ gene.common_name }}{% endif %}</h1>
+<p>{{ gene.description }}</p>
+
+<p>species: <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
+   coordinates: {{ gene.chromosome.name }}{{ gene.strand }}:{{ gene.start|intcomma }}-{{ gene.end|intcomma }} (<a href="http://microbes.ucsc.edu/cgi-bin/hgTracks?db={{ gene.species.ucsc_id }}&position={{gene.chromosome.ucsc_id}}:{{gene.start}}-{{gene.end}}">UCSC GB</a>)<br>
+   Gene ID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a>
+</p>
+
+<h2>Functions</h2>
+{% if systems %}
+{% for system in systems %}
+<p><b>{{ system.name }}</b>: {{system.functions|safeseq|join:", "}}</p>
+{% endfor %}
+{% else %}
+<p>Unknown function</p>
+{% endif %}
+
+{% if gene.transcription_factor %}
+<h2>Regulation</h2>
+<p>Regulates <b>{{count_regulated_biclusters|intcomma}}</b> biclusters.</p>
+{% endif %}

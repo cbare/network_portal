@@ -1,7 +1,13 @@
 from django.db import connection
 
+# maybe this should be a static method of synomym?
+
 def synonym(obj=None, synonym_type=None):
-    print '+' * 100
+    """
+    Return a single synonym for an object of the specified type. The object may be any
+    other entity, for example gene, species or chromosome.
+    Returns a string or None if no such synonym exists.
+    """
     if object:
         target_id = obj.id
         target_type = type(obj).__name__.lower()
