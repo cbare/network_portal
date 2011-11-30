@@ -61,13 +61,14 @@ def network_as_graphml(request):
     influences = set()
     for b in biclusters:
         genes.update(b.genes.all())
-        for influence in b.influences.all():
-            influences.add(influence)
-            if influence.is_combiner():
-                parts = influence.get_parts()
-                influences.update(parts)
-                for part in parts:
-                    graph.add_edge("inf:%d" % (part.id,), "inf:%d" % (influence.id,))
+        influences.update(b.influences.all())
+        # for influence in b.influences.all():
+        #     influences.add(influence)
+        #     if influence.is_combiner():
+        #         parts = influence.get_parts()
+        #         influences.update(parts)
+        #         for part in parts:
+        #             graph.add_edge("inf:%d" % (part.id,), "inf:%d" % (influence.id,))
         print "influences = %d" % (len(influences),)
         print influences
 
@@ -221,6 +222,7 @@ def regulated_by(request, regulator=None):
 def regulator(request, regulator=None):
     influence = Influence.objects.get(name=regulator)
     parts = influence.parts.all()
+    biclusters = influence.bicluster_set.all()
     return render_to_response('influence_snippet.html', locals())
 
 def functions(request, type):
@@ -242,4 +244,3 @@ def function(request, name):
 def motif(request, motif_id=None):
     motif = Motif.objects.get(id=motif_id)
     return render_to_response('motif_snippet.html', locals())
-

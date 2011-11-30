@@ -2,7 +2,8 @@
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
-
+<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
+<script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-ui-1.8.14.custom.min.js"></script>
 <script type="text/javascript">
 $(function() {
     function log(message) {
@@ -12,12 +13,14 @@ $(function() {
 
     $("#search_box").autocomplete({
         source: function( request, response ) {
+                                 console.debug("term: " + request.term);
                 $.ajax({
                         url:      "http://" + window.location.hostname + ":8983/solr/suggest/?wt=json&json.wrf=?",
                         dataType: "jsonp",
                         data: { q: request.term
                         },
                         success: function( data ) {
+                                 //console.debug("data: " + data.toSource());
                                  response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
                                               //console.debug("key 1: " + key);
                                               //console.debug("val 1: " + value);

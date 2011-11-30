@@ -1,64 +1,54 @@
 (function ($) {
 
 // kmf has added functionality to get unique items within an array
-var bicl = new Array();
-var species = new Array();
-var network = new Array();
-
-Array.prototype.getUnique = function() {
-  var o = new Object();
-  var i, e;
-
-  for (i = 0; e = this[i]; i++) {
-    o[e] = 1
-  };
-  
-  var a = new Array();
-  for (e in o) {
-    a.push(e)
-  };
-
-  return a;
-};
-
 
 var count = 0;
+var total_output = '';
+var total_output_fun = '';
+var total_output_sp = '';
+var total_output_net = '';
+var tab_output = '';
 // end kmf 
 
 AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
+  var output_header = '<table><tr><th>Gene Name</th><th>Common Name</th><th>Function</th><th>Type</th></tr>';
+  var output_header_fun = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
+  var output_header_sp = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
+  var output_header_net = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
+
+  //console.debug("doc: " + doc.toSource());
+
+  if (doc.doc_type == "GENE") {
+     total_output += '<tr><td><a href="/search/?q=' + doc.gene_name + '">' + doc.gene_name + '</a></td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
 
 /*
-  var output = '<div><h2>Bicluster ID ' + doc.bicluster_id + '</h2>';
-  output += '<p id="links_' + doc.bicluster_id + '" class="links"></p>';
-  output += snippet + '</div>';
+    var gene_name = doc.gene_name;
+    var name = String(doc.gene_function_name).split(",");
+    var type = String(doc.gene_function_type).split(",");
+    var space = String(doc.gene_function_namespace).split(",");
+    for (var x in name) {
+    	total_output += '<tr><td>' + doc.gene_name + '</td><td>' + name[x] + '</td><td>' + type[x] + '</td><td>' +  space[x] + '</td></tr>';
+    }
 */
+  }
 
-  bicl.push(doc.bicluster_id);
-  species.push(doc.species_name);
-  network.push(doc.network_name);
+  //if (doc.doc_type == "FUNCTION") {
+    total_output_fun += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+  //}
+
+  if (doc.doc_type == "SPECIES") {
+    total_output_sp += '<tr><td><a href="/species/' + doc.species_name + '">' + doc.species_name + '</a></td><td>' + doc.species_short_name + '</td></tr>';
+  }
+
+  //if (doc.doc_type == "NETWORK") {
+    total_output_net += '<tr><td>' + doc.species_name + '</td><td>' + doc.species_short_name + '</td></tr>';
+  //}
+
 
   count++;
 
-  specu = species.getUnique(); 
-  netwu = network.getUnique(); 
-    
-  var sp_length = specu.length;
-  var ne_length = netwu.length;
-  var bi_length = bicl.length;
-  max = Math.max(sp_length, ne_length, bi_length);
-
-  //console.debug("bicl array = " + bicl.toSource());
-  //console.debug("spec array = " + specu.toSource());
-  //console.debug("netw array = " + netwu.toSource());
-
   if (count%10 == 0 || count == l) {
-    specu = species.getUnique(); 
-    netwu = network.getUnique(); 
-    
-    var sp_length = specu.length;
-    var ne_length = netwu.length;
-    var bi_length = bicl.length;
-    max = Math.max(sp_length, ne_length, bi_length);
+
     var ncount = 0;
     if (count - 10 < 0) {
       ncount = 0;
@@ -66,28 +56,47 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
     else {
       ncount = count - 10;
     }
-    var total_output = '<table><tr><th>Bicluster ID</th><th>Species</th><th>Network</th></tr>';
-    for (i = 0; i < max; i++) {
-      // using species array instead of specu
-      total_output += '<tr><td><a href="/bicluster/' + bicl[i] + '">' + bicl[i] + '</a></td><td><a href="/species/' + species[i] + '">' + species[i] + '</a></td><td>' +  netwu[i] + '</td></tr>';
-    }
 
     total_output += '</table>';
-    bicl.length = 0;
-    species.length = 0;
-    network.length = 0;
+    total_output_fun += '</table>';
+    total_output_sp += '</table>';
+    total_output_net += '</table>';
+
+    var new_total_output = total_output;
+    var new_total_output_fun = total_output_fun;
+    var new_total_output_sp = total_output_sp;
+    var new_total_output_net = total_output_net;
+
+    total_output = '';
+    total_output_fun = '';
+    total_output_sp = '';
+    total_output_net = '';
 
     if (count == l) {
       count = 0;
     }
 
-    return total_output;
+    tab_output = '<script>$(function() {$("#results-tab").tabs();});</script>'
+                 + '<div id="results-tab"><ul><li><a href="#tabs-genes">Genes</a></li><li><a href="#tabs-functions">Functions</a></li>'
+                 + '<li><a href="#tabs-species">Species</a></li><li><a href="#tabs-networks">Networks</a></li></ul>'
+                 + '<div id="tabs-genes"><div id="navigation"><ul id="pager"></ul><div id="pager-header"></div></div>' 
+		 + output_header + new_total_output + '</div>'
+		 + '<div id="tabs-functions">' + output_header_fun + new_total_output_fun + '</div>'
+		 + '<div id="tabs-species">' + output_header_sp + new_total_output_sp + '</div>'
+		 + '<div id="tabs-networks">' + output_header_net + new_total_output_net + '</div>'
+		 + '</div>';
+
+    return tab_output;
+
+    //return output_header + new_total_output;
   }
 
 };
 
 
 AjaxSolr.theme.prototype.snippet = function (doc) {
+
+  //console.debug("doc array = " + doc.toSource());
 
   var output = '';
 
@@ -101,7 +110,7 @@ AjaxSolr.theme.prototype.snippet = function (doc) {
     influence_names += doc.influence_name[i] + ',\n';
   }
 
-  if (doc.condition_name.length > 300) {
+  //if (doc.condition_name.length > 300) {
     output += '<div id="key">Network Name: </div><div id="result-value"><div id="value1">' + doc.network_name + '</div> - ' + doc.network_desc + '</div><br />';
     output += '<div id="key">Species Name (short name): </div><div id="result-value">' + doc.species_name + ' (' + doc.species_short_name + ')' + '</div><br />';
     output += '<span  style="display:none;"><div id="key">Condition Names: </div><div id="result-value">' + condition_names + '</div><br />';
@@ -109,20 +118,40 @@ AjaxSolr.theme.prototype.snippet = function (doc) {
     output += '</span> <a href="#" class="more">more</a>';
     //output += '<span style="display:none;">' + doc.text; //name_auto
     //output += '</span> <a href="#" class="more">more</a>';
-  }
-  else {
-    output += '<span id="key">Network Name: </span><span id="value1">' + doc.network_name + '</span> - ' + doc.network_desc + '><br />';
-    output += '<span id="key">Species Name (short name): </span>' + doc.species_name + ' (' + doc.species_short_name + ')' + '<br />';
-    output += '<span id="key">Condition Names: </span>' + '<div style="width:500px;">' + doc.condition_name.toString().split(",") + '</div><br />';
-    output += '<span id="key">Influence Names: </span>' + '<div style="width:500px;">' + doc.influence_name.toString().split(",") + '</div><br />';
+  //}
+  //else {
+  //  output += '<span id="key">Network Name: </span><span id="value1">' + doc.network_name + '</span> - ' + doc.network_desc + '><br />';
+  //  output += '<span id="key">Species Name (short name): </span>' + doc.species_name + ' (' + doc.species_short_name + ')' + '<br />';
+  //  output += '<span id="key">Condition Names: </span>' + '<div style="width:500px;">' + doc.condition_name.toString().split(",") + '</div><br />';
+  //  output += '<span id="key">Influence Names: </span>' + '<div style="width:500px;">' + doc.influence_name.toString().split(",") + '</div><br />';
 
     //output += doc.dateline + ' ' + doc.text;
-  }
+  //}
   return output;
 };
 
-AjaxSolr.theme.prototype.tag = function (value, weight, handler) {
-  return $('<a href="#" class="tagcloud_item"/>').text(value).addClass('tagcloud_size_' + weight).click(handler);
+AjaxSolr.theme.prototype.checkbox_l = function (text, handler, options) {
+  options = options || {}, options.attributes = options.attributes || {};
+  var attributes = '';
+  for (var i in options.attributes) {
+    attributes += ' '+ i +'="' + options.attributes[i] + '"';
+  }
+  return jQuery('<input type="checkbox" value="' + text + '"' + attributes + '/>').click(handler);
+};
+
+AjaxSolr.theme.prototype.select_link = function (facetText, handler) {
+  var options = {};
+  options.attributes = {};
+  //facetText = facetText.escapeOnce();
+  return jQuery('<label/>').append(AjaxSolr.theme('checkbox_l', facetText, handler, options)).append(facetText);
+};
+
+AjaxSolr.theme.prototype.unselect_link = function (facetText, handler) {
+  var options = {};
+  options.attributes = {};
+  options.attributes.checked = 'checked';
+  //facetText = facetText.escapeOnce();
+  return jQuery('<label/>').append(AjaxSolr.theme('checkbox_l', facetText, handler, options)).append(facetText);
 };
 
 AjaxSolr.theme.prototype.facet_link = function (value, handler) {
@@ -131,6 +160,6 @@ AjaxSolr.theme.prototype.facet_link = function (value, handler) {
 
 AjaxSolr.theme.prototype.no_items_found = function () {
   return 'no items found in current selection';
-};
+};  
 
 })(jQuery);

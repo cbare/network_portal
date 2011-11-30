@@ -526,6 +526,8 @@
 
    <!-- from kfoley -->
    <field name="name_auto" type="text_auto" indexed="true" stored="true" multiValued="true" />
+   <field name="doc_id" type="string" />
+   <field name="doc_type" type="string" />
 
    <!-- From cbare -->
     <field name="id" type="string" indexed="true" stored="true" required="true"/> 
@@ -533,16 +535,32 @@
     <field name="name" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- fields for species -->
+    <!--<field name="species_id" type="string" indexed="true" stored="true"/>-->
     <field name="ucsc_id" type="string" indexed="true" stored="true"/>
-    <field name="taxonomy_id" type="string" indexed="true" stored="true"/>
+    <field name="species_taxonomy_id" type="string" indexed="true" stored="true"/>
+    <field name="species_name" type="string" indexed="true" stored="true"/>
+    <field name="species_short_name" type="string" indexed="true" stored="true"/>
+    <field name="species_network_name" type="string" indexed="true" stored="true"/>
+    <field name="species_network_desc" type="string" indexed="true" stored="true"/>
+
+    <!-- fields for genes -->
+    <field name="gene_name" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_common_name" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_type" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_description" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_tf" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_function_name" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gene_function_namespace" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gene_function_type" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="gene_function_desc" type="string" indexed="true" stored="true" multiValued="true"/>
 
     <!-- fields for biclusters -->
     <field name="bicluster_id" type="string" indexed="true" stored="true"/>
-    <field name="gene_name" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="gene_common_name" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="gene_descr" type="string" indexed="true" stored="true" multiValued="true" />
-    <field name="species_name" type="string" indexed="true" stored="true" multiValued="false" />
-    <field name="species_short_name" type="string" indexed="true" stored="true" multiValued="false" />
+    <field name="bi_gene_name" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="bi_gene_common_name" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="bi_gene_descr" type="string" indexed="true" stored="true" multiValued="true" />
+    <field name="bi_species_name" type="string" indexed="true" stored="true" multiValued="false" />
+    <field name="bi_species_short_name" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="species_ncbi_tax_id" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="condition_name" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="network_name" type="string" indexed="true" stored="true" multiValued="false" />
@@ -637,7 +655,8 @@
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
- <uniqueKey>id</uniqueKey>
+<!-- <uniqueKey>id</uniqueKey>-->
+ <uniqueKey>doc_id</uniqueKey>
 
  <!-- field for the QueryParser to use when an explicit fieldname is absent -->
  <defaultSearchField>text</defaultSearchField>
@@ -661,19 +680,33 @@
    <copyField source="gene_name" dest="name_auto" />
    <copyField source="gene_common_name" dest="name_auto"/>
 
-   <!-- from cbare -->
+   <!-- from cbare/kfoley -->
    <copyField source="name" dest="text"/>
-   <copyField source="gene_name" dest="text"/>
-   <copyField source="gene_common_name" dest="text"/>
-   <copyField source="gene_descr" dest="text"/>
+   <copyField source="bi_gene_name" dest="text"/>
+   <copyField source="bi_gene_common_name" dest="text"/>
+   <copyField source="bi_gene_descr" dest="text"/>
    <copyField source="species_name" dest="text"/>
    <copyField source="species_short_name" dest="text"/>
+   <copyField source="species_taxonomy_id" dest="text"/>
+   <copyField source="bi_species_name" dest="text"/>
+   <copyField source="bi_species_short_name" dest="text"/>
    <copyField source="species_ncbi_tax_id" dest="text"/>
    <copyField source="condition_name" dest="text"/>
    <copyField source="network_name" dest="text"/>
    <copyField source="network_desc" dest="text"/>
+   <copyField source="species_network_name" dest="text"/>
+   <copyField source="species_network_desc" dest="text"/>
    <copyField source="influence_name" dest="text"/>
    <copyField source="influence_type" dest="text"/>
+   <copyField source="gene_name" dest="text" />
+   <copyField source="gene_common_name" dest="text" />
+   <copyField source="gene_type" dest="text" />
+   <copyField source="gene_description" dest="text" />
+   <copyField source="gene_tf" dest="text" />
+   <copyField source="gene_function_name" dest="text" />
+   <copyField source="gene_function_namespace" dest="text" />
+   <copyField source="gene_function_type" dest="text" />
+   <copyField source="gene_function_desc" dest="text" />
 
    <!-- end cbare -->
 

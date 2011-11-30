@@ -19,6 +19,7 @@ class Species(models.Model):
     
     class Meta:
         ordering = ['name']
+        verbose_name_plural = "Species"
 
 class Chromosome(models.Model):
     species = models.ForeignKey(Species)
