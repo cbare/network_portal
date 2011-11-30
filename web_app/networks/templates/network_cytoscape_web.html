@@ -6,11 +6,11 @@
   <title>{{ network.name }}</title>
   <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/main.css">  
 
-  <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
-  <script type="text/javascript" src="/static/javascripts/main.js"></script>
+  <!--<script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
+  <script type="text/javascript" src="/static/javascripts/main.js"></script> -->
   <script type="text/javascript" src="/static/javascripts/jquery-1.5.1.min.js"></script>
   <script type="text/javascript" src="/static/javascripts/jquery-ui-1.8.14.custom.min.js"></script>
-  
+
   <!-- JSON support for IE (needed to use JS API) -->
   <script type="text/javascript" src="/static/cytoscapeweb/js/json2.min.js"></script>
 
@@ -66,9 +66,9 @@
           // initialization options
           var options = {
               // where you have the Cytoscape Web SWF
-              swfPath: "/static/cytoscapeweb/swf/CytoscapeWeb",
+              swfPath: "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
               // where you have the Flash installer SWF
-              flashInstallerPath: "/static/cytoscapeweb/swf/playerProductInstall",
+              flashInstallerPath: "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
               flashAlternateContent: "Cytoscape Web network viewer requires Flash."
           };
 
