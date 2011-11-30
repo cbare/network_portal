@@ -188,9 +188,17 @@ def gene(request, gene=None):
 def bicluster(request, bicluster_id=None):
     bicluster = Bicluster.objects.get(id=bicluster_id)
     genes = bicluster.genes.all()
+    motifs = bicluster.motif_set.all()
     gene_count = len(genes)
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
+    if (len(str(bicluster.id)) <= 1):
+        cluster_id = "cluster000" + str(bicluster.id) 
+    elif (len(str(bicluster.id)) <= 2): 
+        cluster_id = "cluster00" + str(bicluster.id) 
+    else:
+        cluster_id = "cluster0" + str(bicluster.id) 
+    img_url = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"+cluster_id+".svgz"
     return render_to_response('bicluster.html', locals())
 
 def regulated_by(request, regulator=None):

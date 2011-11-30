@@ -5,9 +5,9 @@
   <div class="post-top">
     <div id="top-tabs">
       <ul>
-	<li><a class="name" href="#tab-main">Bicluster 0034</a>|</li>
+	<li><a class="name" href="#tab-main">Regulon {{ bicluster.id }}</a>|</li>
 	<li><a class="network" href="#tab-network">Network</a>|</li>
-	<li><a class="bicluster" href="#tab-bicluster">Biclusters</a>|</li>
+	<li><a class="bicluster" href="#tab-bicluster">Regulons</a>|</li>
 	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
 	<li><a class="function" href="#tab-function">Functions</a>|</li>
 	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
@@ -17,7 +17,7 @@
 
       <div id="tab-main">
 	<div id="main">
-	  <img src="{{ STATIC_PREFIX }}images/cluster0034.png">
+	  <object data="{{ img_url }}" type="image/svg+xml"></object>
 	</div>
 	<div id="sidebar">
 	  <h4>Summary</h4>
@@ -26,7 +26,7 @@
 	      <th class="help">Organism</th>
 	    </tr>
 	    <tr>
-	      <td><a href="/species/dvu">Desulfovibrio vulgaris</a></td>
+	      <td><a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species }}</a></td>
 	    </tr>
 	  </table>
 	  <table>
@@ -36,9 +36,9 @@
 	      <th>Conditions</th>
 	    </tr>
 	    <tr>
-	      <td><a href="bicluster_residual">0.44</a></td>
-	      <td><a href="bicluster_genes">21</a></td>
-	      <td><a href="bicluster_conditions">374</a></td>
+	      <td><a href="bicluster_residual">{{ bicluster.residual }}</a></td>
+	      <td><a href="bicluster_genes">{{ gene_count }}</a></td>
+	      <td><a href="bicluster_conditions">{{ conditions.count }}</a></td>
 	    </tr>
 	  </table>
 	  <table>
@@ -47,8 +47,13 @@
 	      <th>Motif 2 Evalue</th>
 	    </tr>
 	    <tr>
-	      <td><a href="pssm_1">1.4e-14</a></td>
-	      <td><a href="pssm_2">0.15</td></a>
+	      {% if motifs  %}
+	      <td><a href="pssm_1">{{motifs.0.e_value}}</a></td>
+	      <td><a href="pssm_2">{{motifs.1.e_value}}</td></a>
+	      {% else %}
+	      <td><a href="pssm_1">NA</a></td>
+	      <td><a href="pssm_2">NA</td></a>
+	      {% endif %}
 	    </tr>
 	  </table>
 	  <table>
