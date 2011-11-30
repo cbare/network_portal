@@ -2,54 +2,8 @@
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
-<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">
-<script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery-ui-1.8.14.custom.min.js"></script>
-<script type="text/javascript">
-$(function() {
-    function log(message) {
-             $("<div />").text(message).prependTo("#log");
-             $("#log").scrollTop(0);
-    }
-
-    $("#search_box").autocomplete({
-        source: function( request, response ) {
-                                 console.debug("term: " + request.term);
-                $.ajax({
-                        url:      "http://" + window.location.hostname + ":8983/solr/suggest/?wt=json&json.wrf=?",
-                        dataType: "jsonp",
-                        data: { q: request.term
-                        },
-                        success: function( data ) {
-                                 //console.debug("data: " + data.toSource());
-                                 response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
-                                              //console.debug("key 1: " + key);
-                                              //console.debug("val 1: " + value);
-				}));
-                        }
-                });         
-
-        },
-        minLength: 1,
-        select: function (event, ui) {
-		console.debug("log event, ui: " + ui.item.label);
-                $("#search_box").val(ui.item.label);
-		log (ui.item.label ?
-                       "Selected: " + ui.item.label :
-                       "Nothing selected, input was " + this.value);
-        }
-    });
-
-    $(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#search_box").val($("#example1").text());
-      });
-    });
-});
-</script>
 
 <div id="main" class="sub-page">
-  <!--<div class="demo">-->
-
   <div class="ui-widget">
     <h1>Search</h1>
     <form action="/search/" method="get">
@@ -57,18 +11,7 @@ $(function() {
       <input type="submit" value="Search">
     </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
-    <!--	<label for="artist">Search: </label>
-		<input id="artist" />
-		-->
   </div>
-  
-  <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">
-	    Result:
-	    <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
-  </div>
-  -->
-
-  <!--      <div class="ui-widget" style="margin-top:2em; font-family:Arial">-->
   <div id="search-results">
 
     {% if q %}
@@ -77,7 +20,6 @@ $(function() {
     <p>[Search results will be tabbed. For now, results are in terms of biclusters.]</p>
 
     {% if results %}
-    <!--<div class="ui-widget-content">-->
     <p>Found {{ results|length }} results for "{{ q }}".</p>
     <ul>
       {% for result in results %}
