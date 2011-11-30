@@ -23,7 +23,16 @@ def search(request):
     if request.GET.has_key('q'):
         q = request.GET['q']
         results = s.search(q)
-        bicluster_ids = [result['bicluster_id'] for result in results if 'bicluster_id' in result]
+        bicluster_ids = []
+        biclusters = []
+        genes = []
+        for result in results:
+            if result['doc_type']=='BICLUSTER':
+                biclusters.append(result)
+                if 'bicluster_id' in result and result['bicluster_id'] not in bicluster_ids:
+                    bicluster_ids.append(result['bicluster_id'])
+            elif result['doc_type']=='GENE':
+                genes.append(result)
     return render_to_response('search.html', locals())
 
 def logout_page(request):
