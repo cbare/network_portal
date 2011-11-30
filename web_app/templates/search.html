@@ -74,17 +74,25 @@ $(function() {
     {% if q %}
     <h3>Search Results</h3>
     <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>
-    <p>[Search results will be tabbed. For now, results are in terms of biclusters.]</p>
 
     {% if results %}
     <!--<div class="ui-widget-content">-->
     <p>Found {{ results|length }} results for "{{ q }}".</p>
+    <p><b>Genes</b></p>
     <ul>
-      {% for result in results %}
+      {% for result in genes %}
+      <li><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></li>
+      {% endfor %}
+    </ul>
+    {% if biclusters %}
+    <p><b>Biclusters</b></p>
+    <ul>
+      {% for result in biclusters %}
       <li><a href="/bicluster/{{ result.bicluster_id }}">bicluster {{ result.bicluster_id }}</a></li>
       {% endfor %}
     </ul>
     <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
+    {% endif %}
     {% else %}
     <p>No results for query &ldquo;{{ q }}&rdquo;</p>
     {% endif %}

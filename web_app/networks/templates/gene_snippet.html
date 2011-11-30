@@ -18,5 +18,5 @@
 
 {% if gene.transcription_factor %}
 <h2>Regulation</h2>
-<p>Regulates <b>{{count_regulated_biclusters|intcomma}}</b> biclusters.</p>
+<p>Regulates <b><a href="/regulated_by/{{gene.name}}">{{count_regulated_biclusters|intcomma}}</a></b> biclusters.</p>
 {% endif %}

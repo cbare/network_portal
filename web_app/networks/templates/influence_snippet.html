@@ -10,6 +10,15 @@
 </ul>
 {% endif %}
 
+{% if biclusters %}
+<h2>Regulates</h2>
+<ul>
+  {% for bicluster in biclusters %}
+  <li><a href="/bicluster/{{bicluster.id}}">bicluster {{bicluster.k}}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <script type="text/javascript">
 $(".influence_part").click(function(event) {
   regulator = event.target.text;
