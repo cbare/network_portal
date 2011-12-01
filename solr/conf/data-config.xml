@@ -28,7 +28,13 @@
       <field column="type" name="gene_type" />
       <field column="description" name="gene_description" />
       <field column="transcription_factor" name="gene_tf" />
-<!--
+      <entity name="gene_species"
+	      query="SELECT networks_species.name
+		     FROM networks_species, networks_gene
+		     WHERE networks_gene.species_id=networks_species.id
+		     AND networks_gene.id='${gene.id}'">
+	<field column="name" name="species_name" />
+      </entity>
       <entity name="gene_function"
 	      query="SELECT networks_function.name, networks_function.namespace, networks_function.type, networks_function.description
 		     FROM networks_function, networks_gene, networks_gene_function
@@ -40,8 +46,31 @@
 	<field column="type" name="gene_function_type" />
 	<field column="description" name="gene_function_desc" />
       </entity>
--->
     </entity>
+<!--
+    <entity name="function"
+	    transformer="TemplateTransformer"
+	    query="select * from networks_function">
+      <field column="doc_id" template="FUNCTION_${function.id}" />
+      <field column="doc_type" template="FUNCTION" />
+      <field column="name" name="function_name" />
+      <field column="namespace" name="function_namespace" />
+      <field column="type" name="function_type" />
+      <field column="description" name="function_desc" />
+      <entity name="function_gene"
+	      query="SELECT networks_gene.name, networks_function.name, networks_gene_function.source, networks_function.type
+		     FROM networks_gene, networks_function, networks_gene_function
+		     WHERE networks_gene.id=networks_gene_function.gene_id
+		     AND networks_gene_function.function_id=networks_function.id
+		     AND networks_function.id=${function.id}">
+	<field column="" name="" />
+      </entity>
+      <entity name="function_target_gene"
+	      query="">
+	<field column="" name="" />
+      </entity>
+    </entity>
+-->
     <entity name="bicluster"
 	    transformer="TemplateTransformer"
 	    query="select * from networks_bicluster;">
