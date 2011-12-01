@@ -26,6 +26,26 @@
       <li><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></li>
       {% endfor %}
     </ul>
+    <p><b>Functions (for Genes)</b></p>
+<!-- The following displays a unique list of functions found among
+     the queried set of Genes
+-->
+    <ul>
+      {% for term in unique %}
+      <li id="gene-function">{{ term }} </li>
+      {% endfor %}
+    </ul>
+<!--    Uncomment if user wants to see Gene: Functions
+    <ul>
+      {% for gname, func in ret %}
+        <li><a href="/gene/{{ gname }}">{{ gname }}</a>
+	  {% for type, name in func %}
+	    <li id="gene-function"> {{ type }}: {{ name  }} </li>
+	  {% endfor %}
+        </li>
+      {% endfor %}
+    </ul>
+-->
     {% if biclusters %}
     <p><b>Biclusters</b></p>
     <ul>
@@ -41,6 +61,5 @@
     {% endif %}
     <!--</div>-->
   </div>
-  <!-- </div><!-- End demo -->
 </div><!-- End #main -->
 {% endblock %}
