@@ -11,8 +11,8 @@
       <field column="ncbi_taxonomy_id" name="species_taxonomy_id" />
       <entity name="species_network"
 	      query="select networks_network.name, networks_network.description
-		     from networks_network, networks_species
-		     where networks_network.species_id=networks_species.id
+		     FROM networks_network, networks_species
+		     WHERE networks_network.species_id=networks_species.id
 		     AND networks_species.id='${species.id}'">
 	<field column="name" name="species_network_name" />
 	<field column="description" name="species_network_desc" />	      
@@ -79,7 +79,9 @@
       <entity name="bicluster_gene"
 	      query="select gene_id from networks_bicluster_genes where bicluster_id='${bicluster.id}'">
 	<entity name="gene"
-		query="select species_id, id, name, COALESCE(common_name,'_NULL_') as n_common_name, description from networks_gene where id='${bicluster_gene.gene_id}'">
+		query="SELECT species_id, id, name, COALESCE(common_name,'_NULL_') as n_common_name, description 
+		       FROM networks_gene 
+		       WHERE id='${bicluster_gene.gene_id}'">
 	  <field name="species_id" column="species_id" />		    		  
 	  <field name="gene_id" column="id" />		    
 	  <field name="bi_gene_name" column="name" />
@@ -87,34 +89,34 @@
 	  <field name="bi_gene_descr" column="description" />
 	</entity>
 	<entity name="bicluster_species"
-		query="select networks_species.name, networks_species.short_name, networks_species.ncbi_taxonomy_id 
-		       from networks_species, networks_gene
-		       where networks_species.id=networks_gene.species_id
-		       and networks_gene.id='${bicluster_gene.gene_id}'">
+		query="SELECT networks_species.name, networks_species.short_name, networks_species.ncbi_taxonomy_id 
+		       FROM networks_species, networks_gene
+		       WHERE networks_species.id=networks_gene.species_id
+		       AND networks_gene.id='${bicluster_gene.gene_id}'">
 	  <field name="bi_species_name" column="name" />
 	  <field name="bi_species_short_name" column="short_name" />
 	  <field name="species_ncbi_tax_id" column="ncbi_taxonomy_id" />
 	</entity>
       </entity>
       <entity name="bicluster_condition"
-	      query="select * 
-		     from networks_condition, networks_bicluster_conditions
-		     where networks_condition.id=networks_bicluster_conditions.condition_id 
+	      query="SELECT * 
+		     FROM networks_condition, networks_bicluster_conditions
+		     WHERE networks_condition.id=networks_bicluster_conditions.condition_id 
 		     AND networks_bicluster_conditions.bicluster_id='${bicluster.id}'">
 	<field name="condition_name" column="name" />
       </entity>
       <entity name="bicluster_network"
-	      query="select networks_network.name, networks_network.description
-		     from networks_network, networks_bicluster
-		     where networks_network.id=networks_bicluster.network_id
+	      query="SELECT networks_network.name, networks_network.description
+		     FROM networks_network, networks_bicluster
+		     WHERE networks_network.id=networks_bicluster.network_id
 		     AND networks_bicluster.id='${bicluster.id}'">
 	<field column="name" name="network_name" />
 	<field column="description" name="network_desc" />
       </entity>
       <entity name="bicluster_influence"
-	      query="select networks_influence.name, networks_influence.type
-		     from networks_influence, networks_bicluster_influences
-		     where networks_influence.id=networks_bicluster_influences.influence_id
+	      query="SELECT networks_influence.name, networks_influence.type
+		     FROM networks_influence, networks_bicluster_influences
+		     WHERE networks_influence.id=networks_bicluster_influences.influence_id
 		     AND networks_bicluster_influences.bicluster_id='${bicluster.id}'">
 	<field column="name" name="influence_name" />
 	<field column="type" name="influence_type" />
