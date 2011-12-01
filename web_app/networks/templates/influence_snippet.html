@@ -1,0 +1,34 @@
+<h1>{{influence.name}}</h1>
+
+<p><b>Name:</b> {{influence.name}}</p>
+{% if influence.is_combiner %}
+<p><b>Operation: </b> {{influence.operation}}</p>
+<ul>
+{% for part in parts %}
+<li><a class="influence_part" href="#" >{{part.name}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if biclusters %}
+<h2>Regulates</h2>
+<ul>
+  {% for bicluster in biclusters %}
+  <li><a href="/bicluster/{{bicluster.id}}">bicluster {{bicluster.k}}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<script type="text/javascript">
+$(".influence_part").click(function(event) {
+  regulator = event.target.text;
+  url = "/gene/" + regulator + "?format=html"
+  $("#pop_up").wijdialog({
+      autoOpen: true,
+      title: regulator,
+      width: 600,
+      open: pop_up(url)
+  });
+  return false;
+});
+</script>

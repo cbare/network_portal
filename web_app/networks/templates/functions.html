@@ -1,8 +1,9 @@
 {% extends "base2.html" %}
 {% block content %}
+<div id="main">
 
 {% if system %}
-<h2>{{ system.display_name }}</h2>
+<h1>{{ system.display_name }}</h1>
 <p>{{ system.linked_description|safe }}</p>
 
 <ul>
@@ -21,7 +22,7 @@
 <p><a href="/functions/">All functional systems</a></p>
 
 {% else %}
-<h2>Functions</h2>
+<h1>Functions</h1>
 
 <p>The Network Portal contains annotations from 4 systems of functional classification:</p>
 
@@ -33,5 +34,5 @@
 </ul>
 
 {% endif %}
-
+</div>
 {% endblock %}
