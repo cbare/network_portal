@@ -31,14 +31,25 @@
 ## == create and initialize database ==
 ## see db/README
 ##
-## == import biclusters ==
+## == load data ==
 ## in R: load('data/dvu/cm_session.RData')
 ## load('data/dvu/zzz_dvu_nwInf_coeffs.RData')
+##
+## == source this script ==
 ## source('network_portal/r-scripts/extract-biclusters.R')
+##
+## == check that genes exist ==
+## check.genes(con=NULL, e, species.id=3)
+## if this reports missing genes, try adding them:
+## chromosome.id.map <- c(6)
+## names(chromosome.id.map) <- c('NC_005791.1')
+## extract.genes(e, species.id=3, chromosome.id.map)
+## 
+## == import biclusters ==
 ## extract.network(env, network.name="Desulfovibrio network", data.source="MO & cMonkey 4.8.2", description="testing...")
 ##
 ## == import expression data ==
-## extract.ratios(e=env, network.id=1, species.id=1)
+## >>>>>already done in extract.network<<<<< extract.ratios(con=NULL, e=env, network.id=1, species.id=1)
 ##
 ## == import inferelator output ==
 ## extract.influences(con=NULL, e.coeffs, network.id, species.id)
@@ -142,7 +153,7 @@ extract.bicluster <- function(con, e, k, network.id, species.id) {
   for (gene in genes) {
     gene.id <- gene.ids[gene]
     if (is.na(gene.id)) {
-      warning(sprintf("Unknown gene \"%s\".", gene))
+      stop(sprintf("Unknown gene \"%s\".", gene))
     }
     sql <- sprintf("insert into networks_bicluster_genes (bicluster_id, gene_id) values (%d, %d);", bicluster.id, gene.id)
     dbSendQuery(con, sql)
@@ -154,7 +165,7 @@ extract.bicluster <- function(con, e, k, network.id, species.id) {
   for (condition in conditions) {
     condition.id <- condition.ids[condition]
     if (is.na(condition.id) || (is.null(condition.id))) {
-      warning(sprintf("Unknown condition \"%s\".", condition))
+      stop(sprintf("Unknown condition \"%s\".", condition))
     }
     sql <- sprintf("insert into networks_bicluster_conditions (bicluster_id, condition_id) values(%d, %d);", bicluster.id, condition.id)
     dbSendQuery(con, sql)
@@ -218,7 +229,7 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
     })
   }
 
-  ratios <- env$ratios[[1]]
+  ratios <- e$ratios[[1]]
   gene.ids <- get.gene.ids(con, species.id)
   condition.ids <- get.condition.ids(con, network.id)
 
@@ -452,33 +463,137 @@ mark.tfs <- function(con=NULL, tfs, species.id) {
 
 
 
-# get species_id for e$organism
-get.species.id <- function(con, species=NULL, env=NULL) {
-  if (is.null(species) && !is.null(env)) {
-    species <- env$organism
-  }
-  sql <- sprintf("select id from networks_species where name = '%s' or short_name = '%s';", species, species)
-  # cat(sql, "\n")
-  return( dbGetQuery(con, sql)[1,1] )
+
+# is the given gene identifier in the feature table?
+is.feature.id <- function(gene) {
+  gene %in% e$genome.info$feature.tab$id
 }
 
-extract.genes <- function(e) {
-  # I started to write this then abandoned it, because I realized all the genes in the
-  # ratios matrix aren't represented in the feature names table:
+# map the given gene name to it's identifier in the feature table
+# or to "???" if no such identifier can be found in the synonyms list.
+# example: feature.ids <- sapply( rownames(e$row.membership), get.feature.id )
+get.feature.id <- function(gene) {
+    if (is.feature.id(gene)) {
+       return(gene)
+    }
+    else {
+        result <- Filter( is.feature.id, e$genome.info$synonyms[[gene]] )
+        if (length(result)==0) { return(gene) }
+        return(result)
+    }
+}
+
+to.strand <- function(string) {
+  string <- tolower(string)
+  if (string %in% c('+', 'd', 'forward', 'plus', 'for', 'f')) {
+    return('+')
+  }
+  else if (string %in% c('-', 'r', 'reverse', 'minus', 'rev')) {
+    return('-')
+  }
+  else {
+    return('.')
+  }
+}
+
+to.db <- function(a) {
+  if (is.null(a) || is.na(a)) {
+    return('null')
+  }
+  if (typeof(a)=='character') {
+    return(paste("'", a, "'", sep=""))
+  }
+  return(a)
+}
+
+check.genes <- function(con=NULL, e, species.id) {
+  if (is.null(con)) {
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    on.exit(function() {
+      dbDisconnect(con)
+      dbUnloadDriver(postgreSQL.driver)
+    })
+  }
+  
+  # might this ever be necessary??
+  # genes <- union(rownames(e$row.membership), rownames(e$ratios[[1]]))
+  genes <- rownames(e$row.membership)
+  
+  cat("checking whether genes in network are in the DB...\n")
+  gene.ids <- get.gene.ids(con, species.id)
+  genes.not.found <- Filter( function(g) {!(g %in% names(gene.ids))}, genes )
+  if (length(genes.not.found) == 0) {
+    cat("all genes are in the DB!\n")
+  }
+  else {
+    cat(sprintf("%d genes are missing from the DB!!\n", length(genes.not.found)))
+    print(genes.not.found)
+  }
+  return(genes.not.found)
+}
+
+extract.genes <- function(e, species.id, chromosome.id.map) {
+  # For dvu, all the genes in the ratios matrix aren't represented in the feature
+  # names table:
 
   # > setdiff(rownames(env$ratios[[1]]), as.character(env$genome.info$feature.names$name))
   #  [1] "DVU0699"      "DVU1831"      "DVU2001"      "DVU2049"      "DVU2950"     
   #  [6] "DVU3126"      "DVU3280"      "DVU3304"      "VIMSS_208926" "DVU0490"     
   # [11] "DVU0557"
+  
+  # For mmp, there is one gene missing from the features table: "Mma-sR04"
 
-  # I eventually got the genes from
+  # I eventually got dvu genes from
   # NCBI, including an extra step to get discontinued and pseudo genes. See:
   # script/genes_from_ncbi.rb
   # script/dvu_discontinued_genes.rb
   
   # note that genes table must contain an entry for each row in e$ratios
-  # it would be a good idea to implement this to insert the union of all
-  # gene in either the features table or the ratios table.
+
+  postgreSQL.driver <- dbDriver("PostgreSQL")
+  con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+  on.exit(function() {
+    dbDisconnect(con)
+    dbUnloadDriver(postgreSQL.driver)
+  })
+
+  genes.not.found <- check.genes(con=NULL, e, species.id)
+  if (length(genes.not.found) > 0) {
+    for (gene in genes.not.found) {
+      feature.id <- get.feature.id( gene )
+      i = e$genome.info$feature.tab$id==feature.id
+      if (any(i)) {
+        if (sum(i) > 1) {
+          warning(sprintf("ambiguous gene name \"%s\".", feature.id))
+          i = which(i)[1]
+        }
+        chromosome.id <- chromosome.id.map[e$genome.info$feature.tab$contig[i]]
+        common_name <- e$genome.info$feature.tab$name[i]
+        if (common_name==gene) common_name<-NULL
+        sql <- sprintf("insert into networks_gene 
+                        (species_id, chromosome_id, name, common_name, geneid, type, start, \"end\", strand, description)
+                        values (%d, %d, %s, %s, %s, %s, %d, %d, %s, %s);",
+                        species.id, chromosome.id, to.db(gene), to.db(common_name),
+                        to.db(e$genome.info$feature.tab$GeneID[i]),
+                        to.db(tolower(e$genome.info$feature.tab$type[i])),
+                        e$genome.info$feature.tab$start[i],
+                        e$genome.info$feature.tab$end[i],
+                        to.db(to.strand(e$genome.info$feature.tab$strand[i])),
+                        to.db(e$genome.info$feature.tab$description[i]))
+        cat(sql,"\n")
+        dbGetQuery(con, sql)
+      }
+      else {
+        warning(sprintf("unidentifiable gene name \"%s\".", gene))
+        sql <- sprintf("insert into networks_gene 
+                        (species_id, name, type)
+                        values (%d, %s, %s);",species.id, to.db(gene), to.db('unknown'))
+        cat(sql,"\n")
+        dbGetQuery(con, sql)
+      }
+    }
+  }
 }
 
 
@@ -497,6 +612,15 @@ reset.sequence <- function(con=NULL, sequence) {
   dbGetQuery(con, sql)
 }
 
+# get species_id for e$organism
+get.species.id <- function(con, species=NULL, env=NULL) {
+  if (is.null(species) && !is.null(env)) {
+    species <- env$organism
+  }
+  sql <- sprintf("select id from networks_species where name = '%s' or short_name = '%s';", species, species)
+  # cat(sql, "\n")
+  return( dbGetQuery(con, sql)[1,1] )
+}
 
 # create a translation table between gene name and id for the given species
 get.gene.ids <- function(con, species.id) {
@@ -523,6 +647,13 @@ get.bicluster.ids <- function(con, network.id) {
   return(bicluster.ids)
 }
 
+get.chromosome.ids <- function(con, species.id) {
+  sql <- sprintf("select id, name, refseq from networks_chromosome where species_id=%d;", species.id)
+  chromosome.ids <- dbGetQuery(con, sql)
+  result <- rbind( chromosome.ids$id, chromosome.ids$id )
+  names(result) <- rbind( chromosome.ids$name, chromosome.ids$refseq )
+  return(result)
+}
 
 assert.equals <- function(func_name, value, expected) {
   if (value == expected) { cat(func_name, "ok\n") }
