@@ -47,6 +47,8 @@ def network_cytoscape_web(request):
     network.name = "Test Network"
     if request.GET.has_key('biclusters'):
         network.bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
+        _network = Bicluster.objects.get(id=network.bicluster_ids[0]).network
+        network.id = _network.id
     return render_to_response('network_cytoscape_web.html', locals())
 
 def network_as_graphml(request):
@@ -164,7 +166,7 @@ def genes(request, species=None, species_id=None):
         else:
             raise Http404("No species specified.")
 
-def gene(request, gene=None):
+def gene(request, gene=None, network_id=None):
     if gene:
         try:
             gene_id = int(gene)
@@ -189,7 +191,9 @@ def gene(request, gene=None):
         systems.append(system)  
     
     # if the gene is a transcription factor, how many biclusters does it regulate?
-    count_regulated_biclusters = gene.count_regulated_biclusters(1)
+    if network_id:
+        network_id = int(network_id)
+        count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
     
     if request.GET.has_key('format'):
         format = request.GET['format']
@@ -212,9 +216,9 @@ def bicluster(request, bicluster_id=None):
 
     return render_to_response('bicluster.html', locals())
 
-def regulated_by(request, regulator=None):
+def regulated_by(request, network_id, regulator):
     gene = Gene.objects.get(name=regulator)
-    network = Network.objects.get(id=1)
+    network = Network.objects.get(id=network_id)
     biclusters = gene.regulated_biclusters(network)
     bicluster_ids = [bicluster.id for bicluster in biclusters]
     return render_to_response('biclusters.html', locals())

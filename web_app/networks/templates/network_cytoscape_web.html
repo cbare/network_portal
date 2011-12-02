@@ -119,10 +119,10 @@
               }
               else if (data.type=='regulator') {
                 if (data.name.indexOf("~~") < 0) {
-                  url = "/gene/" + data.name + "?format=html"
+                  url = "/network/" + {{network.id}} + "/gene/" + data.name + "?format=html";
                 }
                 else {
-                  url = "/regulator/" + data.name + "?format=html"
+                  url = "/regulator/" + data.name + "?format=html";
                 }
               }
               else if (data.type=='bicluster') {
