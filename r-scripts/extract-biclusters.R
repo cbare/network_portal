@@ -40,10 +40,22 @@
 ##
 ## == check that genes exist ==
 ## check.genes(con=NULL, e, species.id=3)
-## if this reports missing genes, try adding them:
+##
+## if this reports missing genes, check for them in cMonkey's feature table and the synonyms table:
+## genes.still.not.found <- check.genes(con=NULL, e, 2)
+## sapply(genes.still.not.found, is.feature.id)
+## sapply(genes.still.not.found, get.feature.id)
+##
+## If the genes can be mapped to the feature table, try adding them to the DB
 ## chromosome.id.map <- c(6)
 ## names(chromosome.id.map) <- c('NC_005791.1')
-## extract.genes(e, species.id=3, chromosome.id.map)
+## extract.genes(e, species.id=3, chromosome.id.map=chromosome.id.map)
+## 
+## You might see a message that some genes can't be mapped to the feature table. For most organisms
+## there are a handful of special cases - genes considered obsolete by Entrez gene, for one reason,
+## that require intervention by hand.
+##
+## Once check.genes reports all genes are found in the genes synonyms tables, you can proceed.
 ## 
 ## == import biclusters ==
 ## extract.network(env, network.name="Desulfovibrio network", data.source="MO & cMonkey 4.8.2", description="testing...")
@@ -54,6 +66,9 @@
 ## == import inferelator output ==
 ## extract.influences(con=NULL, e.coeffs, network.id, species.id)
 ##
+## BUG: This script seems to leak database connections. Does on.exit get called in
+##      case of exceptions, like a finally clause? Do I need to release result sets
+##      as well as connections?
 ##
 ## Christopher Bare
 
@@ -146,12 +161,21 @@ extract.bicluster <- function(con, e, k, network.id, species.id) {
   # get the ID of the newly inserted bicluster
   bicluster.id <- dbGetQuery(con, "select lastval();")[1,1]
   gene.ids <- get.gene.ids(con, species.id)
+  gene.synonyms <- get.gene.synonyms(con, species.id)
   condition.ids <- get.condition.ids(con, network.id)
 
   # add genes to bicluster
   genes <- b$rows
   for (gene in genes) {
-    gene.id <- gene.ids[gene]
+    if (gene %in% names(gene.ids)) {
+      gene.id <- gene.ids[gene]
+    }
+    else if (gene %in% names(gene.synonyms)) {
+      gene.id <- gene.synonyms[gene]
+    }
+    else {
+      stop(sprintf("Unknown gene \"%s\".", gene))
+    }
     if (is.na(gene.id)) {
       stop(sprintf("Unknown gene \"%s\".", gene))
     }
@@ -231,6 +255,7 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
 
   ratios <- e$ratios[[1]]
   gene.ids <- get.gene.ids(con, species.id)
+  gene.synonyms <- get.gene.synonyms(con, species.id)
   condition.ids <- get.condition.ids(con, network.id)
 
   cat("Begin import of", nrow(ratios), "by", ncol(ratios), "matrix.\n")
@@ -258,7 +283,21 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
     {
 
       for (r in order.by.rowname) {
-        gene.id <- gene.ids[rownames(ratios)[r]]
+        gene <- rownames(ratios)[r]
+
+        if (gene %in% names(gene.ids)) {
+          gene.id <- gene.ids[gene]
+        }
+        else if (gene %in% names(gene.synonyms)) {
+          gene.id <- gene.synonyms[gene]
+        }
+        else {
+          stop(sprintf("Unknown gene \"%s\".", gene))
+        }
+        if (is.na(gene.id)) {
+          stop(sprintf("Unknown gene \"%s\".", gene))
+        }
+        
         cat(rownames(ratios)[r], "\n")
         dbBeginTransaction(con)
         for (c in 1:ncol(ratios)) {
@@ -443,7 +482,7 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
 
 # known transcription factors are in predictor.mats#genetic.names
 # tfs <- mark.tfs(con, tfs=predictor.mats$genetic.names, species.id=1)
-mark.tfs <- function(con=NULL, tfs, species.id) {
+mark.tfs.old <- function(con=NULL, tfs, species.id) {
   # connect to db, if needed
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
@@ -462,6 +501,43 @@ mark.tfs <- function(con=NULL, tfs, species.id) {
 }
 
 
+mark.tfs <- function(con=NULL, tfs, species.id) {
+  # connect to db, if needed
+  if (is.null(con)) {
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    on.exit(function() {
+      dbDisconnect(con)
+      dbUnloadDriver(postgreSQL.driver)
+    })
+  }
+
+  gene.ids <- get.gene.ids(con, species.id)
+  gene.synonyms <- get.gene.synonyms(con, species.id)
+  
+  for (gene in tfs) {
+    if (gene %in% names(gene.ids)) {
+      gene.id <- gene.ids[gene]
+    }
+    else if (gene %in% names(gene.synonyms)) {
+      gene.id <- gene.synonyms[gene]
+    }
+    else {
+      stop(sprintf("Unknown gene \"%s\".", gene))
+    }
+    if (is.na(gene.id)) {
+      stop(sprintf("Unknown gene \"%s\".", gene))
+    }
+    
+    sql <- sprintf("update networks_gene set transcription_factor=true where id=%d;", gene.id);
+    cat(gene, "\n")
+    dbGetQuery(con, sql)
+    
+  }
+  return(dbGetQuery(con, sprintf("select name from networks_gene where transcription_factor=true and species_id=%d", species.id))$name)
+}
+
+
 
 
 # is the given gene identifier in the feature table?
@@ -470,7 +546,7 @@ is.feature.id <- function(gene) {
 }
 
 # map the given gene name to it's identifier in the feature table
-# or to "???" if no such identifier can be found in the synonyms list.
+# or to '???' if no such identifier can be found in the synonyms list.
 # example: feature.ids <- sapply( rownames(e$row.membership), get.feature.id )
 get.feature.id <- function(gene) {
     if (is.feature.id(gene)) {
@@ -478,7 +554,7 @@ get.feature.id <- function(gene) {
     }
     else {
         result <- Filter( is.feature.id, e$genome.info$synonyms[[gene]] )
-        if (length(result)==0) { return(gene) }
+        if (length(result)==0) { return('???') }
         return(result)
     }
 }
@@ -524,16 +600,25 @@ check.genes <- function(con=NULL, e, species.id) {
   gene.ids <- get.gene.ids(con, species.id)
   genes.not.found <- Filter( function(g) {!(g %in% names(gene.ids))}, genes )
   if (length(genes.not.found) == 0) {
-    cat("all genes are in the DB!\n")
+    cat("all genes are in the networks_gene table!\n")
   }
   else {
-    cat(sprintf("%d genes are missing from the DB!!\n", length(genes.not.found)))
-    print(genes.not.found)
+    cat(sprintf("%d genes are missing from the networks_gene table!!\n", length(genes.not.found)))
   }
-  return(genes.not.found)
+  
+  synonyms <- get.gene.synonyms(con, species.id)
+  genes.still.not.found <- Filter( function(g) {!(g %in% names(synonyms))}, genes.not.found )
+  if (length(genes.still.not.found) == 0) {
+    cat("Of those, all match gene synonyms!\n")
+  }
+  else {
+    cat(sprintf("Of those, %d genes also match no synonyms!!\n", length(genes.still.not.found)))
+  }
+  
+  return(genes.still.not.found)
 }
 
-extract.genes <- function(e, species.id, chromosome.id.map) {
+extract.genes <- function(e, species.id, chromosome.id.map, genes=NULL) {
   # For dvu, all the genes in the ratios matrix aren't represented in the feature
   # names table:
 
@@ -558,10 +643,15 @@ extract.genes <- function(e, species.id, chromosome.id.map) {
     dbUnloadDriver(postgreSQL.driver)
   })
 
-  genes.not.found <- check.genes(con=NULL, e, species.id)
-  if (length(genes.not.found) > 0) {
-    for (gene in genes.not.found) {
+  if (is.null(genes))
+    genes <- check.genes(con=NULL, e, species.id)
+  if (length(genes) > 0) {
+    for (gene in genes) {
       feature.id <- get.feature.id( gene )
+      if (feature.id=='???') {
+        cat('Gene:', gene, 'can\'t be mapped to the feature table!\n')
+        next
+      }
       i = e$genome.info$feature.tab$id==feature.id
       if (any(i)) {
         if (sum(i) > 1) {
@@ -582,7 +672,7 @@ extract.genes <- function(e, species.id, chromosome.id.map) {
                         to.db(to.strand(e$genome.info$feature.tab$strand[i])),
                         to.db(e$genome.info$feature.tab$description[i]))
         cat(sql,"\n")
-        dbGetQuery(con, sql)
+#        dbGetQuery(con, sql)
       }
       else {
         warning(sprintf("unidentifiable gene name \"%s\".", gene))
@@ -590,7 +680,7 @@ extract.genes <- function(e, species.id, chromosome.id.map) {
                         (species_id, name, type)
                         values (%d, %s, %s);",species.id, to.db(gene), to.db('unknown'))
         cat(sql,"\n")
-        dbGetQuery(con, sql)
+#        dbGetQuery(con, sql)
       }
     }
   }
@@ -630,6 +720,18 @@ get.gene.ids <- function(con, species.id) {
   names(name.id.map) <- df$name
   return(name.id.map)
 }
+
+get.gene.synonyms <- function(con, species.id) {
+  sql <- sprintf("select s.target_id as id, s.name from networks_synonym s 
+                  join networks_gene g on g.id=s.target_id
+                  where s.target_type='gene'
+                  and g.species_id=%d;", species.id)
+  df <- dbGetQuery(con, sql)
+  synonym.id.map <- df$id
+  names(synonym.id.map) <- df$name
+  return(synonym.id.map)
+}
+
 
 # create a translation table between condition name and id for the given network
 get.condition.ids <- function(con, network.id) {

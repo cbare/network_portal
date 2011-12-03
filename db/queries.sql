@@ -168,4 +168,20 @@ or (i.type='combiner' and i.id in (
   from networks_influence_parts ip join networks_influence i on ip.to_influence_id=i.id
   where i.gene_id=2074)));
 
+# add synonyms for halo genes
+insert into networks_synonym (target_id, target_type, name, type)
+  select id as target_id, 
+          'gene' as target_type,
+          trim(trailing 'm' from name) as name,
+          'vng:m' as type
+    from networks_gene
+    where species_id=2
+    and name like '%m';
 
+insert into networks_synonym (target_id, target_type, name, type) select id as target_id, 'gene' as target_type, 'xxxx' as name, 'vng:7/5' as type from networks_gene where species_id=2 and name = 'yyyy';
+
+# get synonyms for genes in a species
+select s.* from networks_synonym s 
+join networks_gene g on g.id=s.target_id
+where s.target_type='gene'
+and g.species_id=2;
