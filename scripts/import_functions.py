@@ -119,59 +119,6 @@ def read_kegg_pathways(filename):
     
     return pathways
 
-
-def read_gene_kegg_pathways_old(filename):
-    """
-    Returns a map from gene name to a list of pathway names.
-    Input file = dvu_gene_kegg_pathway2_attributes.csv
-    """
-    
-    genes = {}
-    with open(filename, 'r') as f:
-
-        #skip header
-        line = f.next()
-
-        # read gene -> pathway mappings
-        for line in f:
-            line = line.rstrip('\n')
-            fields = line.split(',')
-            functions = [ field for field in fields[1:] if field != 'NA' ]
-            if len(functions) > 0:
-                genes[fields[0]] = functions
-
-    return genes
-
-
-def read_kegg_pathway_ids_old(filename):
-    """
-    Read kegg_pathway_ids.csv, which holds pathways for a particular organism.
-    Return map from pathway name to pathway object
-    """
-
-    pathways = {}
-    with open(filename, 'r') as f:
-
-        #skip header
-        line = f.next()
-
-        # read gene -> pathway mappings
-        for line in f:
-            line = line.rstrip('\n')
-            fields = line.split(',')
-            m = re.match(r'path:(dvu\d+)', fields[0])
-            if m:
-                pathway = OpenStruct()
-                pathway.native_id = m.group(1)
-                pathway.name = fields[1]
-                pathway.subcategory = fields[2]
-                pathway.category = fields[3]
-                pathways[pathway.name] = pathway
-            else:
-                raise Exception("Can't parse line: %s" % (line,))
-
-    return pathways
-
 def read_gene_kegg_pathways(filename):
     """
     Reads the two column kegg pathway.list file and returns a dictionary
