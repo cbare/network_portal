@@ -1,6 +1,36 @@
 {% extends "base2.html" %}
 {% block content %}
+<script src="../static/javascripts/wwu_logo/isblogo.js"></script>
+<!--<script type="application/x-javascript">-->
+<script type="text/javascript">
+  function initCanvas() {
+    var django_pssm = {{ pssm_logo_dict }};
+    for (var motif_id in django_pssm)  {
+      var pssm = {alphabet: ['A', 'C', 'T', 'G'],
+                  values: django_pssm[motif_id]
+      };
+      canvas_id = 'canvas_' + motif_id;
+      var canvasOptions = {
+        width: 300, //400,
+        height: 150, //300,
+        glyphStyle: '20pt Helvetica'
+      };
+      isblogo.makeLogo(canvas_id, pssm, canvasOptions);  
+    }
+/*
+    var pssm = {alphabet: ['A', 'C', 'T', 'G'],
+                values: {{ pssm_list }}
+    };
 
+    var canvasOptions = {
+      width: 200, //400,
+      height: 150, //300,
+      glyphStyle: '20pt Helvetica'
+    };
+    isblogo.makeLogo('canvas', pssm, canvasOptions);
+*/
+  }
+</script>
 <div id="bicluster-top">
   <div class="post-top">
     <div id="top-tabs">
@@ -73,22 +103,23 @@
 	</div><!-- #sidebar -->
       </div>
       <div id="tab-network">
-	testing network tab
+	{% include 'bicl_network_snippet.html' %}
       </div>
       <div id="tab-bicluster">
 	testing bicluster tab
       </div>
       <div id="tab-motif">
-	MOTIF tab
+	{% include 'bicl_motif_snippet.html' %}
       </div>
       <div id="tab-function">
 	FUNCTION tab
       </div>
       <div id="tab-gene">
-	GENE tab
+	{% include 'bicl_gene_snippet.html' %}
       </div>
       <div id="tab-add-cart">
-	add cart tab
+	add cart tab <br />
+	...TO BE DONE...
       </div>
       <div id="tab-help">
 	HELP tab
