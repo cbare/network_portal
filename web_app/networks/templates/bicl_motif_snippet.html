@@ -1,0 +1,32 @@
+<table id="motif">
+  <thead>
+    <tr>
+      <th>Motif Id</th>
+      <th>e-value</th>
+      <th>Consensus</th>
+      <th>Alignment</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if motifs %}
+    {% for m in motifs %}
+  <tr>
+    <td>{{m.id}}</td>
+    <td>{{m.e_value}}</td>
+    <td>{{m.consensus}}</td>
+    <td>
+      <div id="canvas_{{m.id}}">
+      </div>
+    </td>
+  </tr>
+    {% endfor %}
+  {% else %}
+  <tr>
+    <td>No motifs found.</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  {% endif %}
+  </tbody>
+</table>
