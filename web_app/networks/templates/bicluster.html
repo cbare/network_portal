@@ -1,13 +1,43 @@
 {% extends "base2.html" %}
 {% block content %}
+<script src="../static/javascripts/wwu_logo/isblogo.js"></script>
+<!--<script type="application/x-javascript">-->
+<script type="text/javascript">
+  function initCanvas() {
+    var django_pssm = {{ pssm_logo_dict }};
+    for (var motif_id in django_pssm)  {
+      var pssm = {alphabet: ['A', 'C', 'T', 'G'],
+                  values: django_pssm[motif_id]
+      };
+      canvas_id = 'canvas_' + motif_id;
+      var canvasOptions = {
+        width: 300, //400,
+        height: 150, //300,
+        glyphStyle: '20pt Helvetica'
+      };
+      isblogo.makeLogo(canvas_id, pssm, canvasOptions);  
+    }
+/*
+    var pssm = {alphabet: ['A', 'C', 'T', 'G'],
+                values: {{ pssm_list }}
+    };
 
+    var canvasOptions = {
+      width: 200, //400,
+      height: 150, //300,
+      glyphStyle: '20pt Helvetica'
+    };
+    isblogo.makeLogo('canvas', pssm, canvasOptions);
+*/
+  }
+</script>
 <div id="bicluster-top">
   <div class="post-top">
     <div id="top-tabs">
       <ul>
-	<li><a class="name" href="#tab-main">Bicluster 0034</a>|</li>
+	<li><a class="name" href="#tab-main">Regulon {{ bicluster.id }}</a>|</li>
 	<li><a class="network" href="#tab-network">Network</a>|</li>
-	<li><a class="bicluster" href="#tab-bicluster">Biclusters</a>|</li>
+	<li><a class="bicluster" href="#tab-bicluster">Regulons</a>|</li>
 	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
 	<li><a class="function" href="#tab-function">Functions</a>|</li>
 	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
@@ -17,7 +47,7 @@
 
       <div id="tab-main">
 	<div id="main">
-	  <img src="{{ STATIC_PREFIX }}images/cluster0034.png">
+	  <object data="{{ img_url }}" type="image/svg+xml"></object>
 	</div>
 	<div id="sidebar">
 	  <h4>Summary</h4>
@@ -26,7 +56,7 @@
 	      <th class="help">Organism</th>
 	    </tr>
 	    <tr>
-	      <td><a href="/species/dvu">Desulfovibrio vulgaris</a></td>
+	      <td><a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species }}</a></td>
 	    </tr>
 	  </table>
 	  <table>
@@ -36,9 +66,9 @@
 	      <th>Conditions</th>
 	    </tr>
 	    <tr>
-	      <td><a href="bicluster_residual">0.44</a></td>
-	      <td><a href="bicluster_genes">21</a></td>
-	      <td><a href="bicluster_conditions">374</a></td>
+	      <td><a href="bicluster_residual">{{ bicluster.residual }}</a></td>
+	      <td><a href="bicluster_genes">{{ gene_count }}</a></td>
+	      <td><a href="bicluster_conditions">{{ conditions.count }}</a></td>
 	    </tr>
 	  </table>
 	  <table>
@@ -47,8 +77,13 @@
 	      <th>Motif 2 Evalue</th>
 	    </tr>
 	    <tr>
-	      <td><a href="pssm_1">1.4e-14</a></td>
-	      <td><a href="pssm_2">0.15</td></a>
+	      {% if motifs  %}
+	      <td><a href="pssm_1">{{motifs.0.e_value}}</a></td>
+	      <td><a href="pssm_2">{{motifs.1.e_value}}</td></a>
+	      {% else %}
+	      <td><a href="pssm_1">NA</a></td>
+	      <td><a href="pssm_2">NA</td></a>
+	      {% endif %}
 	    </tr>
 	  </table>
 	  <table>
@@ -68,22 +103,23 @@
 	</div><!-- #sidebar -->
       </div>
       <div id="tab-network">
-	testing network tab
+	{% include 'bicl_network_snippet.html' %}
       </div>
       <div id="tab-bicluster">
 	testing bicluster tab
       </div>
       <div id="tab-motif">
-	MOTIF tab
+	{% include 'bicl_motif_snippet.html' %}
       </div>
       <div id="tab-function">
 	FUNCTION tab
       </div>
       <div id="tab-gene">
-	GENE tab
+	{% include 'bicl_gene_snippet.html' %}
       </div>
       <div id="tab-add-cart">
-	add cart tab
+	add cart tab <br />
+	...TO BE DONE...
       </div>
       <div id="tab-help">
 	HELP tab

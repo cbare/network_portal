@@ -11,7 +11,7 @@ var tab_output = '';
 // end kmf 
 
 AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
-  var output_header = '<table><tr><th>Gene Name</th><th>Common Name</th><th>Function</th><th>Type</th></tr>';
+  var output_header = '<table><tr><th>Gene Name</th><th>Organism</th><th>Function</th><th>Type</th></tr>';
   var output_header_fun = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
   var output_header_sp = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
   var output_header_net = '<table><tr><th>Species Name</th><th>Short Name</th></tr>';
@@ -19,7 +19,7 @@ AjaxSolr.theme.prototype.result = function (doc, l, snippet) {
   //console.debug("doc: " + doc.toSource());
 
   if (doc.doc_type == "GENE") {
-     total_output += '<tr><td><a href="/search/?q=' + doc.gene_name + '">' + doc.gene_name + '</a></td><td>' + doc.gene_common_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
+     total_output += '<tr><td><a href="/search/?q=' + doc.gene_name + '">' + doc.gene_name + '</a></td><td>' + doc.species_name + '</td><td>' + doc.gene_description + '</td><td>' +  doc.gene_type + '</td></tr>';
 
 /*
     var gene_name = doc.gene_name;

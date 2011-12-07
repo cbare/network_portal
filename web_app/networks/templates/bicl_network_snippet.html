@@ -1,34 +1,3 @@
-{% load static %}
-{% get_static_prefix as STATIC_PREFIX %}
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{ network.name }}</title>
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/portal-style.css">  
-  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
-
-  <script type="text/javascript" src="/static/javascripts/jquery-1.5.1.min.js"></script>
-  <script type="text/javascript" src="/static/javascripts/jquery-ui-1.8.16.custom.min.js"></script>
-  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
-  <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
-  <script type="text/javascript" src="/static/javascripts/main.js"></script>
-  
-  <!-- JSON support for IE (needed to use JS API) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/json2.min.js"></script>
-
-  <!-- Flash embedding utility (needed to embed Cytoscape Web) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/AC_OETags.min.js"></script>
-
-  <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/cytoscapeweb.min.js"></script>
-
-  <style type="text/css">
-      /* The Cytoscape Web container must have its dimensions set. */
-      html, body { height: 100%; width: 100%; padding: 0; margin: 0; }
-      #cytoscapeweb { width: 100%; height: 90%; }
-  </style>
-
   <script type="text/javascript">
   
       var vis;
@@ -119,10 +88,10 @@
               }
               else if (data.type=='regulator') {
                 if (data.name.indexOf("~~") < 0) {
-                  url = "/network/" + {{network.id}} + "/gene/" + data.name + "?format=html";
+                  url = "/gene/" + data.name + "?format=html"
                 }
                 else {
-                  url = "/regulator/" + data.name + "?format=html";
+                  url = "/regulator/" + data.name + "?format=html"
                 }
               }
               else if (data.type=='bicluster') {
@@ -186,7 +155,7 @@
           };
 
           $.ajax({
-              url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}",
+              url: "/network/graphml?biclusters={{ bicluster.id }}",
               success: function(data){
                   if (typeof data !== "string") { 
                       if (window.ActiveXObject) { // IE 
@@ -215,11 +184,7 @@
   <div id="cytoscapeweb">
     Cytoscape Web
   </div>
-  <div id="menu">
-    <a href="/">home</a> | <a href="/search">search</a> | [controls to be added here or in sidebar]
-  </div>
   <div id="pop_up">
     
   </div>
 </body>
-</html>

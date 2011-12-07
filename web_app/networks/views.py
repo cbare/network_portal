@@ -13,6 +13,8 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
+from pprint import pprint
+import json
 import networkx as nx
 import re
 import sys, traceback
@@ -205,10 +207,47 @@ def gene(request, gene=None, network_id=None):
 def bicluster(request, bicluster_id=None):
     bicluster = Bicluster.objects.get(id=bicluster_id)
     genes = bicluster.genes.all()
+    motifs = bicluster.motif_set.all()
     gene_count = len(genes)
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
-    
+
+    species_sh_name =  bicluster.network.species.short_name
+    if (species_sh_name == "dvu"):
+        img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"
+    elif (species_sh_name == "mmp"):
+        img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/mmp/cmonkey_4.8.8_mmp_1661x58_11_Oct_11_16:14:07/svgs/"
+    else:
+        "No prefix available"
+
+    if (len(str(bicluster.k)) <= 1):
+        cluster_id = "cluster000" + str(bicluster.k) 
+    elif (len(str(bicluster.k)) <= 2): 
+        cluster_id = "cluster00" + str(bicluster.k) 
+    else:
+        cluster_id = "cluster0" + str(bicluster.k) 
+    #img_url = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"+cluster_id+".svgz"
+    img_url = img_url_prefix + cluster_id + ".svgz"
+
+    # create motif object to hand to wei-ju's logo viewer
+    alphabet = ['A','C','T','G']
+    pssm_logo_dict = {}
+    for m in motifs:
+        motif = Motif.objects.get(id=m.id)
+        pssm_list = []
+        for positions in motif.pssm():
+            position_list = []
+            for pos, val in positions.items():
+                position_list.append(val)
+            pssm_list.append(position_list)
+        #print pssm_list
+        #motifs['pssm'] = pssm_list
+        pssm_logo = {'alphabet':alphabet, 'values':pssm_list }
+        pssm_logo_dict[m.id] = pssm_list
+        #print pssm_logo_test
+        ret_pssm = json.JSONEncoder().encode(pssm_logo)
+    #print pssm_logo_dict
+
     if request.GET.has_key('format'):
         format = request.GET['format']
         if format == 'html':
