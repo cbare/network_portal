@@ -214,7 +214,7 @@ def bicluster(request, bicluster_id=None):
     elif (species_sh_name == "mmp"):
         img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/mmp/cmonkey_4.8.8_mmp_1661x58_11_Oct_11_16:14:07/svgs/"
     else:
-        "No prefix available"
+        img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/output/cmonkey_4.1.5_hal_2072x268_09_Oct_07_11:51:17/svgs/"
 
     if (len(str(bicluster.k)) <= 1):
         cluster_id = "cluster000" + str(bicluster.k) 
@@ -222,8 +222,9 @@ def bicluster(request, bicluster_id=None):
         cluster_id = "cluster00" + str(bicluster.k) 
     else:
         cluster_id = "cluster0" + str(bicluster.k) 
-    #img_url = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"+cluster_id+".svgz"
+
     img_url = img_url_prefix + cluster_id + ".svgz"
+    print img_url
 
     # create motif object to hand to wei-ju's logo viewer
     alphabet = ['A','C','T','G']
@@ -236,13 +237,10 @@ def bicluster(request, bicluster_id=None):
             for pos, val in positions.items():
                 position_list.append(val)
             pssm_list.append(position_list)
-        #print pssm_list
-        #motifs['pssm'] = pssm_list
+
         pssm_logo = {'alphabet':alphabet, 'values':pssm_list }
         pssm_logo_dict[m.id] = pssm_list
-        #print pssm_logo_test
         ret_pssm = json.JSONEncoder().encode(pssm_logo)
-    #print pssm_logo_dict
 
     if request.GET.has_key('format'):
         format = request.GET['format']
