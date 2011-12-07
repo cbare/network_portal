@@ -8,6 +8,10 @@ that read particular file formats and return lists or hierarchies of
 objects. Then, there are a corresponding bunch of methods that take the
 objects produced by the readers and insert them into the database.
 
+Data sources:
+KEGG mirror at http://www.biowebdb.org/pub/kegg/
+MicrobesOnline - genomeInfo files contain GO, COG and TIGR mappings for genes
+
 To totally rebuild all functional data in the DB, first drop the existing
 tables. WARNING: don't drop synonyms if there is other data in there.
 drop table networks_function_relationships CASCADE;
@@ -27,7 +31,9 @@ and link dvu (dvu=DvH), mmp and halo genes to functions.
 > python import_functions.py --cog-categories ../../data/cog_categories.txt --cogs ../../data/COG_whog
 > python import_functions.py --tigrfams ../../data/tigrfam_table.txt
 > python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
-> python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
+> python import_functions.py --species mmp --kegg-gene-pathways ../../data/mmp/kegg/mmp_pathway.list
+> python import_functions.py --species hal --kegg-gene-pathways ../../data/hal/kegg/hal_pathway.list
+> does this work for dvu? python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/kegg/dvu_pathway.list
 > python import_functions.py --species dvu --genome-info ../../data/dvu/genomeInfo.microbesonline.txt
 > python import_functions.py --species mmp --genome-info ../../data/mmp/genomeInfo.microbesonline.txt
 > python import_functions.py --species hal --genome-info ../../data/hal/genomeInfo.microbesonline.txt
