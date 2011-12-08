@@ -25,7 +25,6 @@ $(document).ready(function() {
 	    cache: true
 	});
 	
-	initCanvas();
 
 /*
 	    $("#network-tabs").tabs({

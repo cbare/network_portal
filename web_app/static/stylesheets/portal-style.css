@@ -1085,7 +1085,7 @@ input[type="checkbox"] {
     padding: 7px 5px 7px 30px;
 }
 
-.post-top a.bicluster {
+.post-top a.regulator {
     background: url("../images/bicluster.gif") no-repeat scroll 0 2px #FAF7F5;
     color: #977C57;
     margin: 0 10px 0 5px;
@@ -1155,7 +1155,7 @@ table#motif {
 	padding: 0px;
     }
 
-    #tab-bicluster {
+    #tab-regulator {
 	position: absolute;
 	top: 40px; 
     }
@@ -1196,7 +1196,7 @@ table#motif {
     }
 
     #cytoscapeweb {
-	width: 775px; /*755px;*/
+	width: 900px; /*755px;*/
 	height: 550px;
     }
 }
@@ -1222,4 +1222,12 @@ table#motif {
 
 #tab-network {
     padding: 0px;
+}
+
+#canvas {
+    margin-left: 10px;
+}
+
+#network-tabs #cytoscapeweb {
+    width: 775px;
 }
