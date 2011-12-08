@@ -2,11 +2,19 @@
 
 {% block content %}
 
+<script type="text/javascript">
+$(document).ready(function() {
+      $("#example1").click(function(event) {
+        $("#search_box_home").val($("#example1").text());
+      });
+    });  
+</script>
+
 <div id="main">
 
   <h2>Search</h2>
   <form action="/search/" method="get">
-    <input type="text" name="q">
+    <input type="text" id="search_box_home" name="q">
     <input type="submit" value="Search">
   </form>
 

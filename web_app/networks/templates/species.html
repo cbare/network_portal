@@ -6,8 +6,6 @@
 <div id="main" class="sub-page">
   <h1>{{ species.name }}</h1>
 
-  <p>taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
-  
   <h2>Genome:</h2>
   <table>
     <thead>
@@ -38,11 +36,7 @@
     {% endfor %}
   </ul> -->
   
-  {% if species.ucsc_id %}
-  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser">View {{ species.name }} in UCSC Genome Browser</a>.</p>
-  {% endif %}
-  
-  <h3>Networks</h3>
+  <h2>Networks</h2>
   {% if species.network_set.count > 0 %}
   <ul>
     {% for network in species.network_set.all %}
@@ -51,5 +45,18 @@
   {% else %}
   <p>No networks for this species, yet.</p>
   {% endif %}
+  
+  <h2>Functions</h2>
+  <p>Explore gene functional annotation from any of these systems: <a href="">KEGG pathways</a>, <a href="">GO Gene Ontology</a>, <a href="">TIGRFams</a> or <a href="">COGs</a>.</p>
+
+  <h2>Links</h2>
+  <p>NCBI taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
+  
+  <p><a href="http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId={{ species.ncbi_taxonomy_id }}"><img src="/static/images/microbesOnline150.gif"><br>genome</a></p>
+  
+  {% if species.ucsc_id %}
+  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser"><br>View {{ species.name }} in UCSC Genome Browser</a>.</p>
+  {% endif %}
+
 </div><!-- End #main -->
 {% endblock %}
