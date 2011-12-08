@@ -1,3 +1,7 @@
+Start w/ alestic Ubuntu 11.04 or latest 64 bit.
+instance type: m1 large, 7.5GB
+Firewall: SSH, HTTP
+
 sudo apt-get -y update
 sudo apt-get -y install emacs
 sudo apt-get -y install git
@@ -9,20 +13,25 @@ sudo apt-get -y install libapache2-mod-wsgi
 sudo pip install --upgrade pip
 sudo pip install django
 
-NetworkX
---------
-sudo pip install networkx
-
-PostgreSQL 9.0
---------------
+PostgreSQL 9.0 on Ubuntu 11.04
+------------------------------
 sudo add-apt-repository ppa:pitti/postgresql
 sudo apt-get update
 sudo apt-get -y install postgresql-9.0 postgresql-client-9.0
 sudo apt-get -y install libpq-dev
 
+PostgreSQL 9.x on Ubuntu 11.10+
+-------------------------------
+sudo apt-get -y install postgresql-9.1 postgresql-client-9.1
+sudo apt-get -y install libpq-dev
+
 Python postgres client
 ----------------------
 sudo pip install psycopg2
+
+NetworkX
+--------
+sudo pip install networkx
 
 Java
 ----
@@ -52,22 +61,30 @@ sudo pip install lxml
 Setup postgres & populate DB
 ----------------------------
 scp -i ~/ec2/cbare-work-2.pem network_portal.dump.2011.10.24.gz ubuntu@ec2-50-17-132-19.compute-1.amazonaws.com:/home/ubuntu/network_portal
-sudo emacs /etc/postgresql/9.0/main/pg_hba.conf # change ident to trust
+sudo emacs /etc/postgresql/9.1/main/pg_hba.conf
+ # change ident or peer to trust for postgres
+ # change peer to md5 for local connections
 sudo /etc/init.d/postgresql restart
 psql -U postgres
 create database network_portal
 create user, grant privileges
+create user joe_mamma with password 'password';
 gunzip < network_portal.dump.2011.10.24.gz | psql -U postgres --dbname network_portal
 
 
 Solr
 ----
 // sudo apt-get -y install solr-jetty (old version 1.4.1)
-curl -O http://mirror.metrocast.net/apache/lucene/solr/3.4.0/apache-solr-3.4.0.tgz
-extract into /home/ubuntu/network_portal/apache-solr-3.4.0/
-java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.4.0/" -jar start.jar
+curl -O http://mirror.metrocast.net/apache/lucene/solr/3.5.0/apache-solr-3.5.0.tgz
 
-start Solr server (how best to do this in production??)
+// extract into /home/ubuntu/network_portal/apache-solr-3.5.0/
+tar -xzvf apache-solr-3.5.0.tgz
+
+// start Solr server (how best to do this in production??)
+java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.5.0/" -jar start.jar
+
+// tell Solr to re-index
+curl http://localhost:8983/solr/dataimport?command=full-import
 
 
 Set up Apache WSGI
@@ -125,6 +142,22 @@ Order deny,allow
 Allow from all
 </Directory>
 
+<IfModule mod_proxy.c>
+  ProxyRequests Off
+
+  <Proxy *>
+  Order deny,allow
+  Allow from all
+  </Proxy>
+
+  ProxyPass /solr/select http://localhost:8983/solr/select
+  ProxyPassReverse /solr/select http://localhost:8983/solr/select
+
+  ProxyPass /solr/suggest http://localhost:8983/solr/suggest
+  ProxyPassReverse /solr/suggest http://localhost:8983/solr/suggest
+</IfModule>
+
+
 sudo /etc/init.d/apache2 restart
 
 Solr-Jetty config
@@ -150,21 +183,7 @@ cd /etc/apache2/mods-enabled/
 sudo ln -s ../mods-available/proxy_http.load .
 sudo ln -s ../mods-available/proxy.load .
 
-In /etc/apache2/httpd.conf
-<IfModule mod_proxy.c>
-  ProxyRequests Off
-
-  <Proxy *>
-  Order deny,allow
-  Allow from all
-  </Proxy>
-
-  ProxyPass /solr/select http://localhost:8983/solr/select
-  ProxyPassReverse /solr/select http://localhost:8983/solr/select
-
-  ProxyPass /solr/suggest http://localhost:8983/solr/suggest
-  ProxyPassReverse /solr/suggest http://localhost:8983/solr/suggest
-</IfModule>
+Make sure proxy stuff is in /etc/apache2/httpd.conf
 
 
 
