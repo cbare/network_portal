@@ -14,11 +14,8 @@
 /* Top Elements */
 * { margin: 0; padding: 0; outline: 0 }
 
-html, body {
-    height: 100%;
-}
-
 body {
+/*	background: #CCC url("../images/sapphire_background.jpg") repeat-x;*/
 	background: #CCC url("../images/bg.gif") repeat-x;
 	font: 12px/170% 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	color: #6B6B6B;
@@ -208,25 +205,22 @@ input.button {
 	width: 952px;
 	background: #FFF url("../images/wrap-noline.gif") repeat-y center top;
 	margin: 40px auto 30px auto;
-	text-align: left;
-	/*height: 100%;*/
+	text-align: left;	
 }
 
 #content {
 	clear: both;	
 	float: left;	
 	width: 952px;						
-	padding: 25px 0 60px 0; 
-	/*height: 100%;
-	background: #FFF url("../images/wrap-noline.gif") repeat-y center top;*/
+	padding: 25px 0 60px 0; 	
 }
-
 #header {
 	position: relative;
 	width: 952px;
 	height: 99px; /*138px;*/
-	background:url('../images/portal-logo_01.jpg') no-repeat;	
-	color: #ffff;	
+/*	background:url('../images/portal-logo_01.jpg') no-repeat;	*/	
+	background: #65A400 url("../images/sapphire-background-header.jpg") no-repeat;
+	color: #ffffff;	
 	padding: 0;	
 	margin: 0;	
 }
@@ -308,7 +302,7 @@ input.button {
 	padding: 0;	margin: 0;
 	width: 952px;
 	height: 50px;
-	background: #988060 url("../images/nav.gif") no-repeat;
+	background: #A1C458; /* url("../images/nav.gif") no-repeat;*/
 }
 #nav ul {
 	float: left;	
@@ -807,13 +801,6 @@ to make the following work how we'd like */
     /*z-index: 1;*/
 }
 
-.ui-tabs .ui-tabs-panel {
-    background: none repeat scroll 0 0 transparent;
-    border-width: 0;
-    display: block;
-    padding: 0em 1em 1em 1em;
-}
-
 /* for FF issue */
 @-moz-document url-prefix() {
     .ui-tabs-hide {
@@ -1085,7 +1072,7 @@ input[type="checkbox"] {
     padding: 7px 5px 7px 30px;
 }
 
-.post-top a.regulator {
+.post-top a.bicluster {
     background: url("../images/bicluster.gif") no-repeat scroll 0 2px #FAF7F5;
     color: #977C57;
     margin: 0 10px 0 5px;
@@ -1149,55 +1136,8 @@ table#motif {
 }
 
 @-moz-document url-prefix() {
-    #tab-network {
-	position: absolute;
-	top: 50px;
-	padding: 0px;
-    }
-
-    #tab-regulator {
-	position: absolute;
-	top: 40px; 
-    }
-    
-    #tab-motif {
-	position: absolute;
-	top: 40px;
-    }
-
-    #tab-function {
-	position: absolute;
-	top: 40px; 
-    }
-
-    #tab-gene {
-	position: absolute;
-	top: 40px;
-    }
-
-    #tab-add-cart {
-	position: absolute;
-	top: 40px; 
-    }
-    
-    #tab-help {
-	position: absolute;	
-	top: 40px; 
-    }
-
-    #genes-table {
-	margin-left: -10px;
-	margin-top: 0px;
-    }
-
-    #genes-table td {
-	padding-left: 2px;
-	padding-right: 3px;
-    }
-
-    #cytoscapeweb {
-	width: 900px; /*755px;*/
-	height: 550px;
+    table#motif {
+	margin-top: 75px;
     }
 }
 
@@ -1206,28 +1146,7 @@ table#motif {
     margin-top: 0px;
 }
 
-#tab-gene #genes-table {
-    margin-left: 0px;
-    margin-top: 0px;
-}
-
 #genes-table td {
     padding-left: 5px;
     padding-right: 5px;
-}
-
-#tab-gene {
-    clear: both;
-}
-
-#tab-network {
-    padding: 0px;
-}
-
-#canvas {
-    margin-left: 10px;
-}
-
-#network-tabs #cytoscapeweb {
-    width: 775px;
 }

@@ -1,4 +1,4 @@
-  <script type="text/javascript">
+<script type="text/javascript">
   
       var vis;
       
@@ -29,18 +29,55 @@
           $(options.target).append(msg);
       }
           
-      function pop_up(url) {
+      function initCanvas() {
+          var django_pssm = {{ pssm_logo_dict }};
+          for (var motif_id in django_pssm)  {
+                  var pssm = { alphabet: ['A', 'C', 'T', 'G'],
+                               values: django_pssm[motif_id]
+                  };
+                  canvas_id = 'canvas_' + motif_id;
+                  var canvasOptions = {
+                                        width: 300, //400,
+                                        height: 150, //300,
+                                        glyphStyle: '20pt Helvetica'
+                  };
+                  isblogo.makeLogo(canvas_id, pssm, canvasOptions);
+          }
+      }
+
+      function uiDialogPopUpReady(id) {
+          var django_pssm = {{ pssm_logo_dict }};      
+          var pssm;
+          for (var motif_id in django_pssm)  {
+              if (motif_id == id) {
+                  pssm = { alphabet: ['A', 'C', 'T', 'G'],
+                           values: django_pssm[motif_id]
+                  };
+              }
+          }
+
+          var options = {
+                    width: 300,
+                    height: 150,
+                    glyphStyle: '20pt Helvetica'
+
+          };
+          isblogo.makeLogo("canvas", pssm, options);
+      }
+
+      function pop_up(url, id) {
+
           $.ajax({
               url: url,
-              success: function(data){
-                  $("#pop_up").html(data);
+              success: function(html){
+                  $("#pop_up").html(html);
+                  uiDialogPopUpReady(id);
               },
               error: function(){
                   $("#pop_up").html("<p>Error!!</p>");
               }
           });
       }
-
 
       $(document).ready(function() {
 
@@ -112,7 +149,7 @@
                   autoOpen: true,
                   title: event.target.data.name,
                   width: 600,
-                  open: pop_up(url)
+                  open: pop_up(url, id)
               });
           });
 
@@ -176,7 +213,7 @@
                   });
               }
           });
-          
+	  initCanvas();
       });
   </script>
 </head>
