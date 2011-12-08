@@ -14,6 +14,10 @@
 /* Top Elements */
 * { margin: 0; padding: 0; outline: 0 }
 
+html, body {
+    height: 100%;
+}
+
 body {
 	background: #CCC url("../images/bg.gif") repeat-x;
 	font: 12px/170% 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -204,15 +208,19 @@ input.button {
 	width: 952px;
 	background: #FFF url("../images/wrap-noline.gif") repeat-y center top;
 	margin: 40px auto 30px auto;
-	text-align: left;	
+	text-align: left;
+	/*height: 100%;*/
 }
 
 #content {
 	clear: both;	
 	float: left;	
 	width: 952px;						
-	padding: 25px 0 60px 0; 	
+	padding: 25px 0 60px 0; 
+	/*height: 100%;
+	background: #FFF url("../images/wrap-noline.gif") repeat-y center top;*/
 }
+
 #header {
 	position: relative;
 	width: 952px;
@@ -799,6 +807,13 @@ to make the following work how we'd like */
     /*z-index: 1;*/
 }
 
+.ui-tabs .ui-tabs-panel {
+    background: none repeat scroll 0 0 transparent;
+    border-width: 0;
+    display: block;
+    padding: 0em 1em 1em 1em;
+}
+
 /* for FF issue */
 @-moz-document url-prefix() {
     .ui-tabs-hide {
@@ -1134,8 +1149,55 @@ table#motif {
 }
 
 @-moz-document url-prefix() {
-    table#motif {
-	margin-top: 75px;
+    #tab-network {
+	position: absolute;
+	top: 50px;
+	padding: 0px;
+    }
+
+    #tab-bicluster {
+	position: absolute;
+	top: 40px; 
+    }
+    
+    #tab-motif {
+	position: absolute;
+	top: 40px;
+    }
+
+    #tab-function {
+	position: absolute;
+	top: 40px; 
+    }
+
+    #tab-gene {
+	position: absolute;
+	top: 40px;
+    }
+
+    #tab-add-cart {
+	position: absolute;
+	top: 40px; 
+    }
+    
+    #tab-help {
+	position: absolute;	
+	top: 40px; 
+    }
+
+    #genes-table {
+	margin-left: -10px;
+	margin-top: 0px;
+    }
+
+    #genes-table td {
+	padding-left: 2px;
+	padding-right: 3px;
+    }
+
+    #cytoscapeweb {
+	width: 775px; /*755px;*/
+	height: 550px;
     }
 }
 
@@ -1144,7 +1206,20 @@ table#motif {
     margin-top: 0px;
 }
 
+#tab-gene #genes-table {
+    margin-left: 0px;
+    margin-top: 0px;
+}
+
 #genes-table td {
     padding-left: 5px;
     padding-right: 5px;
+}
+
+#tab-gene {
+    clear: both;
+}
+
+#tab-network {
+    padding: 0px;
 }
