@@ -1,25 +1,64 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<div id="main">
+<script type="text/javascript">
+$(function() {
+    function log(message) {
+             $("<div />").text(message).prependTo("#log");
+             $("#log").scrollTop(0);
+    }
 
+    $("#query").autocomplete({
+        source: function( request, response ) {
+                                 console.debug("term: " + request.term);
+                $.ajax({
+                        url:      "http://localhost:8983/solr/suggest/?wt=json&json.wrf=?",
+                        dataType: "jsonp",
+                        data: { q: request.term
+                        },
+                        success: function( data ) {
+                                 //console.debug("data: " + data.toSource());
+                                 response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
+                                              //console.debug("key 1: " + key);
+                                              //console.debug("val 1: " + value);
+				}));
+                        }
+                });         
+
+        },
+        minLength: 1,
+        select: function (event, ui) {
+		console.debug("log event, ui: " + ui.item.label);
+                $("#query").val(ui.item.label);
+		log (ui.item.label ?
+                       "Selected: " + ui.item.label :
+                       "Nothing selected, input was " + this.value);
+        }
+    });
+
+    $(document).ready(function() {
+      $("#example1").click(function(event) {
+        $("#query").val($("#example1").text());
+      });
+    });
+});
+</script>
+
+
+<div id="main">
+  <div id="facet-display">
   <h2>Search</h2>
+  <span id="search_help">(press ESC to close suggestions)</span>
   <form action="/search/" method="get">
-    <input type="text" name="q">
-    <input type="submit" value="Search">
+    <ul id="search">
+      <input type="text" id="query" name="q">
+      <input type="submit" value="Search">
+    </ul>
+
   </form>
 
   <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>    
-<!--
-  <h2>Browse</h2>
-  <ul>
-    <li><a href="/networks/">Networks</a></li>
-    <li><a href="/species/">Species</a></li>
-    <li>Functions?</li>
-  </ul>
--->
-
+  </div>
 </div><!-- End #main -->
 <div id="sidebar">
   <h3>About</h3>
