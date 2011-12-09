@@ -972,12 +972,25 @@ input[type="checkbox"] {
 #search {
     margin: 0;
     padding-left: 10px;
+    display: inline;
 }
 
+/*
 #search input {
     width: 350px;
     background: url("../images/search.gif") no-repeat scroll 0 2px;
     background-position: right;
+}
+*/
+
+#query {
+    width: 350px;
+    background: white url("../images/search.gif") no-repeat scroll 0 2px;
+    background-position: right;
+}
+
+textarea#query {
+    width: 600px;
 }
 
 #search_help {
