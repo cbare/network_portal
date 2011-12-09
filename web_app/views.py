@@ -43,12 +43,13 @@ def search(request):
 
         for result in results:
             print result.keys()
+            print result.values()
             print result['doc_type']
             if result['doc_type']=='BICLUSTER':
                 biclusters.append(result)
                 if 'bicluster_id' in result and result['bicluster_id'] not in bicluster_ids:
                     bicluster_ids.append(result['bicluster_id'])
-            #elif result['doc_type']=='GENE':
+
             if result['doc_type']=='GENE':
                 if ('gene_function_type' in result):
                     # create sorted list of functions per gene; 
