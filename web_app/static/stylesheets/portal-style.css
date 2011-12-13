@@ -1157,6 +1157,26 @@ textarea#query {
     padding-left: 10px;
 }
 
+td #gene-function {
+    width: 125px;
+}
+
+li#gene-function {
+    display: inline-block;
+}
+
+#gene-regulon {
+    padding-left: 10px;
+}
+
+td #gene-regulon {
+    width: 90px;
+}
+
+li#gene-regulon {
+    display: inline-block;
+}
+
 table#motif {
     margin-top: 40px;
 }

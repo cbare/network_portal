@@ -8,6 +8,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import logout
 from web_app.networks.models import *
+from web_app.networks.functions import functional_systems
 
 import search as s
 import itertools
@@ -40,21 +41,31 @@ def search(request):
         genes = []
         gene_functions = {}
         terms = []
+        count = 0
+        kegg_id = ''
 
         for result in results:
-            print result.keys()
-            print result.values()
-            print result['doc_type']
+            #print result.keys()
+            #print result.values()
+            #print result['doc_type']
             if result['doc_type']=='BICLUSTER':
                 biclusters.append(result)
                 if 'bicluster_id' in result and result['bicluster_id'] not in bicluster_ids:
                     bicluster_ids.append(result['bicluster_id'])
 
             if result['doc_type']=='GENE':
+                count+=1
                 if ('gene_function_type' in result):
                     # create sorted list of functions per gene; 
                     # use if user wants to display Gene: Functions
-                    functions = zip(result['gene_function_type'], result['gene_function_name'])
+                    result['gene_function_native_id'] = list(result['gene_function_native_id'])
+                    for index, k in enumerate(result['gene_function_native_id']):
+                        if 'path' in k:
+                            kegg_id = re.match(r'path:(\d+)', k)
+                            result['gene_function_native_id'][index] = kegg_id.group(1)
+                    tuple(result['gene_function_native_id'])
+                    functions = zip(result['gene_function_type'], result['gene_function_name'], result['gene_function_native_id'])
+                            
                     gene_functions[result['gene_name']] = functions
                     ret = sorted(gene_functions.items())
                     # create a list of unique functions found among the collection
@@ -69,7 +80,7 @@ def search(request):
                     genes.append(result)
                 else:
                     genes.append(result)
-                        
+
     return render_to_response('search.html', locals())
 
 def logout_page(request):
