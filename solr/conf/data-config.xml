@@ -3,7 +3,7 @@
   <document>
     <entity name="species"
 	    transformer="TemplateTransformer"
-	    query="select * from networks_species;">
+	    query="select * from networks_species">
       <field column="doc_id" template="SPECIES_${species.id}" />
       <field column="doc_type" template="SPECIES" />      
       <field column="name" name="species_name" />
@@ -20,7 +20,7 @@
     </entity>
     <entity name="gene"
 	    transformer="TemplateTransformer"
-	    query="select * from networks_gene;">
+	    query="select id, name, common_name, type, description, transcription_factor from networks_gene">
       <field column="doc_id" template="GENE_${gene.id}" />
       <field column="doc_type" template="GENE" /> 
       <field column="name" name="gene_name" />
@@ -36,11 +36,12 @@
 	<field column="name" name="species_name" />
       </entity>
       <entity name="gene_function"
-	      query="SELECT networks_function.name, networks_function.namespace, networks_function.type, networks_function.description
+	      query="SELECT networks_function.native_id, networks_function.name, networks_function.namespace, networks_function.type, networks_function.description
 		     FROM networks_function, networks_gene, networks_gene_function
 		     WHERE networks_function.id=networks_gene_function.function_id
 		     AND networks_gene_function.gene_id=networks_gene.id
 		     AND networks_gene.id='${gene.id}'">
+	<field column="native_id" name="gene_function_native_id" />
 	<field column="name" name="gene_function_name" />
 	<field column="namespace" name="gene_function_namespace" />
 	<field column="type" name="gene_function_type" />
@@ -73,7 +74,7 @@
 -->
     <entity name="bicluster"
 	    transformer="TemplateTransformer"
-	    query="select * from networks_bicluster;">
+	    query="select * from networks_bicluster">
       <field column="doc_id" template="BICLUSTER_${bicluster.id}" />
       <field column="doc_type" template="BICLUSTER" />      
       <entity name="bicluster_gene"
