@@ -72,14 +72,9 @@
        files in that directory which completely match the regex
        (anchored on both ends) will be included.
     -->
-  <!-- invoke java -Dsolr.install.dir=[my_path]/apache-solr-3.4.0 start.jar
-       so that we can find these jars. - cbare -->
-  <lib dir="${solr.install.dir}/contrib/extraction/lib" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-cell-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-clustering-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/dist/" regex="apache-solr-dataimporthandler-extras-\d.*\.jar" />
-  <lib dir="${solr.install.dir}/contrib/clustering/lib/" />
+  <lib dir="../../dist/" regex="apache-solr-cell-\d.*\.jar" />
+  <lib dir="../../dist/" regex="apache-solr-clustering-\d.*\.jar" />
+  <lib dir="../../dist/" regex="apache-solr-dataimporthandler-\d.*\.jar" />
 
   <!-- If a dir option (with or without a regex) is used and nothing
        is found that matches, it will be ignored
@@ -1398,7 +1393,7 @@
     <lst name="defaults">
       <str name="spellcheck">true</str>
       <str name="spellcheck.dictionary">suggest</str>
-      <str name="spellcheck.onlyMorePopular">true</str>
+      <str name="spellcheck.onlyMorePopular">false</str>
       <str name="spellcheck.count">10</str>
       <str name="spellcheck.collate">true</str>
     </lst>

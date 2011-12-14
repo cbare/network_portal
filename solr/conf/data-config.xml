@@ -20,7 +20,7 @@
     </entity>
     <entity name="gene"
 	    transformer="TemplateTransformer"
-	    query="select id, name, common_name, type, description, transcription_factor from networks_gene">
+	    query="select * from networks_gene">
       <field column="doc_id" template="GENE_${gene.id}" />
       <field column="doc_type" template="GENE" /> 
       <field column="name" name="gene_name" />
