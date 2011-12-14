@@ -93,6 +93,7 @@ $(function() {
       <tr>
         <td><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></td>
         <td>{{ result.gene_description }}</td>
+	{% if ret %}
 	{% for gname, func in ret %}
 	{% if gname == result.gene_name %}
 	<td>
@@ -118,6 +119,17 @@ $(function() {
 	</td>
 	{% endif %} <!--if gname -->
 	{% endfor %} <!-- for gname -->
+	{% else %}
+	<td>
+	  <li id="gene-function">Unknown</li>
+	</td>
+	<td>
+	  <li id="gene-function">Unknown</li>
+	</td>
+	<td>
+	  <li id="gene-function">Unknown</li>
+	</td>
+	{% endif %}
 	<td>
 	{% if biclusters %}
 	  {% for bi_result in biclusters %}
