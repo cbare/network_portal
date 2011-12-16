@@ -380,6 +380,15 @@ input.button {
 	color: #51432f;
 	text-decoration: none;		
 }
+
+#main h3 {
+    font: bold 1.7em 'Trebuchet MS', 'Helvetica Neue', 'Arial', 'Sans-serif';
+    color: #51432F;
+    margin-left: 5px;
+    letter-spacing: -2px;
+    border-bottom: 1px solid #E4F2C8;
+}
+
 #main ul li {
 	list-style-image: url("../images/bullet.gif");
 }
@@ -1145,8 +1154,8 @@ textarea#query {
 }
 
 #top-tabs {
-    position: absolute;
-    top: -3px;
+    position: relative; /*absolute;*/
+    top: -9px; /*-3px;*/
 }
 
 #top-tabs ul, ol {
@@ -1263,4 +1272,17 @@ table#motif {
 
 #network-tabs #cytoscapeweb {
     width: 775px;
+}
+
+#gene-regulation {
+    margin-left: 0px;
+}
+
+#regulators-table {
+    margin-left: 10px;
+}
+
+#gene-tab-links {
+    margin-left: 0;
+    margin-right: 0;
 }
