@@ -60,13 +60,13 @@ $(function() {
 
     {% if q %}
     <h3>Search Results</h3>
-    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>
+<!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
 
     {% if results %}
       {% if count == 1 %}
         <p> testing {{ results|length }}</p>
       {% else %}
-    <p>Found {{ results|length }} results for "{{ q }}".</p>
+    <!--<p>Found {{ gene_count }} gene results for "{{ q }}".</p> -->
       {% endif %}
 
 <!-- The following displays a unique list of functions found among
@@ -98,21 +98,21 @@ $(function() {
 	{% if gname == result.gene_name %}
 	<td>
 	  {% for type, name, term_id in func %}
-	  {% if type == 'go'%}
+	  {% if type == 'go' %}
 	  <li id="gene-function">{{ name }} <br />(<a href="http://amigo.geneontology.org/cgi-bin/amigo/term_details?term={{term_id}}">{{ term_id }}</a>),</li>
 	  {% endif %}
 	  {% endfor %}
 	</td>
 	<td>
 	  {% for type, name, term_id in func %}
-	  {% if type == 'kegg'%}
+	  {% if type == 'kegg' %}
 	  <li id="gene-function">{{ name }} <br />(<a href="http://www.genome.jp/kegg-bin/show_pathway?map{{ term_id }}">path:{{ term_id }}</a>),</li>
 	  {% endif %}
 	  {% endfor %}
 	</td>
 	<td>
 	  {% for type, name, term_id in func %}
-	  {% if type == 'cog'%}
+	  {% if type == 'cog' %}
 	  <li id="gene-function">{{ name }} <br />(<a href="http://www.ncbi.nlm.nih.gov/COG/grace/wiew.cgi?{{ term_id }}">{{ term_id }}</a>),</li>
 	  {% endif %}
 	  {% endfor %}
@@ -129,8 +129,9 @@ $(function() {
 	<td>
 	  <li id="gene-function">Unknown</li>
 	</td>
-	{% endif %}
+	{% endif %} <!-- if ret -->
 	<td>
+
 	{% if biclusters %}
 	  {% for bi_result in biclusters %}
 	    {% for k in bi_result.bi_gene_name %}
@@ -139,18 +140,28 @@ $(function() {
 	      {% endif %}
 	    {% endfor %}
 	  {% endfor %}
-	{% endif %}
+	{% endif %} <!-- if biclusters -->
 	</td>
       </tr>
-      {% endfor %} <!-- for result -->
+      {% endfor %} <!-- for result in genes -->
     </table>
-    {% endif %}<!-- if result -->
-    {% if biclusters %}
-    <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>
-    {% else %}
-    <p>No results for query &ldquo;{{ q }}&rdquo;</p>
-    {% endif %}
-    {% endif %}
+
+      {% if biclusters %}
+        {% for bi_result in biclusters %}
+          {% for gene in bi_result.bi_gene_name %}
+            {% if result.gene_name == gene %}
+            <!-- <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>-->
+            {% else %}
+            <!--<p>{{ q }} is not a member of a regulon </p>-->
+	    {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+      <p>No regulon results for query &ldquo;{{ q }}&rdquo;</p>
+      {% endif %} <!-- if biclusters -->
+
+      {% endif %} <!-- for results -->
+      {% endif %} <!-- if q -->
   </div>
 </div><!-- End #main -->
 {% endblock %}
