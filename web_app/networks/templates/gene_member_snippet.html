@@ -1,0 +1,31 @@
+<p>species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
+  genes: {{ total_member_genes }}
+</p>
+
+<table id="regulon-members-table">
+  <thead>
+    <tr>
+      <th>Regulon</th>
+      <th>Gene</th>
+      <th>Description</th>
+      <th>Regulon membership</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bicl, genes in other_member_regulons.items %}
+        {% for name, descr, bicls in genes %}
+    <tr>
+      <td>{{ bicl }}</td>
+      <td><a href="/gene/{{ name }}">{{ name }}</a></td>
+      <td>{{ descr }}</td>
+      <td>
+          {% for bicl in bicls %}
+	    <a href="/bicluster/{{ bicl.id }}">{{ bicl.id }}</a>,
+	  {% endfor %}
+      </td>
+    </tr>
+        {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+<br />

@@ -41,7 +41,8 @@ def search(request):
         genes = []
         gene_functions = {}
         terms = []
-        count = 0
+        gene_count = 0
+        bicl_count = 0
         kegg_id = ''
 
         for result in results:
@@ -49,12 +50,13 @@ def search(request):
             #print result.values()
             #print result['doc_type']
             if result['doc_type']=='BICLUSTER':
+                bicl_count+=1
                 biclusters.append(result)
                 if 'bicluster_id' in result and result['bicluster_id'] not in bicluster_ids:
                     bicluster_ids.append(result['bicluster_id'])
 
             if result['doc_type']=='GENE':
-                count+=1
+                gene_count+=1
                 if ('gene_function_type' in result):
                     # create sorted list of functions per gene; 
                     # use if user wants to display Gene: Functions
