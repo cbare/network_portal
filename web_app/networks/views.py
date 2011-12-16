@@ -171,6 +171,7 @@ def gene(request, gene=None):
         try:
             gene_id = int(gene)
             gene = Gene.objects.get(id=gene_id)
+
         except ValueError:
             gene = Gene.objects.get(name=gene)
     elif request.GET.has_key('id'):
@@ -180,7 +181,39 @@ def gene(request, gene=None):
         gene_count = Gene.objects.count()
         species_count = Species.objects.count()
         return render_to_response('genes_empty.html', locals())
-    
+
+    # get all biclusters that the gene is a member of
+    member_bicluster = gene.bicluster_set.all()
+
+    # get all the regulators of the above biclusters and their total # of conditions
+    regulators = {}
+    bicl_reg_list = {}
+    other_member_regulons = {}
+    total_member_genes = 0
+
+    for bicluster in member_bicluster:
+        if bicluster.id not in regulators:
+            regulators[bicluster.id] = {}
+            regulators[bicluster.id]['inf'] = bicluster.influences.count()
+            regulators[bicluster.id]['cond'] = bicluster.conditions.count()
+
+        inf_list = []
+        for item in bicluster.influences.all():
+            inf_list.append(item)
+        bicl_reg_list[bicluster.id] = inf_list
+
+        regulon_members = Bicluster.objects.get(id=bicluster.id)
+        member_genes = regulon_members.genes.all()
+        total_member_genes += member_genes.count()
+
+        gene_list = []
+        for gene in member_genes:
+            gene_info = ()
+            gene_info = (gene.name, gene.description, gene.bicluster_set.all())
+            gene_list.append(gene_info)
+        other_member_regulons[bicluster.id] = gene_list
+
+    print total_member_genes
     # compile functions into groups by functional system
     systems = []
     for key, functions in gene.functions_by_type().items():
@@ -207,6 +240,7 @@ def bicluster(request, bicluster_id=None):
     gene_count = len(genes)
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
+    inf_count = len(influences)
 
     species_sh_name =  bicluster.network.species.short_name
     if (species_sh_name == "dvu"):
@@ -214,7 +248,7 @@ def bicluster(request, bicluster_id=None):
     elif (species_sh_name == "mmp"):
         img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/mmp/cmonkey_4.8.8_mmp_1661x58_11_Oct_11_16:14:07/svgs/"
     else:
-        img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/output/cmonkey_4.1.5_hal_2072x268_09_Oct_07_11:51:17/svgs/"
+        img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/hal/cmonkey_4.5.4_hal_2072x268_10_Jul_13_11:04:39_EGRIN1_ORIGINAL_CLUSTERS/svgs/"
 
     if (len(str(bicluster.k)) <= 1):
         cluster_id = "cluster000" + str(bicluster.k) 
