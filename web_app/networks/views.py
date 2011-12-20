@@ -13,6 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
+from web_app.networks.helpers import nice_string
 from pprint import pprint
 import json
 import networkx as nx
@@ -166,15 +167,24 @@ def genes(request, species=None, species_id=None):
         else:
             genes = species.gene_set.all()
         
+        if request.GET.has_key('format'):
+            format = request.GET['format']
+            if format=='tsv':
+                response = HttpResponse(content_type='application/tsv')
+                for gene in genes:
+                    response.write("\t".join([nice_string(field) for field in (gene.name, gene.common_name, gene.geneid, gene.type, gene.description, gene.location(),)]) + "\n")
+                return response
+        
         gene_count = len(genes)
         return render_to_response('genes.html', locals())
     except (ObjectDoesNotExist, AttributeError):
-        if species:
-            raise Http404("Couldn't find genes for species: " + species)
-        elif species_id:
-            raise Http404("Couldn't find genes for species with id=" + species_id)
-        else:
-            raise Http404("No species specified.")
+        raise
+        # if species:
+        #     raise Http404("Couldn't find genes for species: " + str(species))
+        # elif species_id:
+        #     raise Http404("Couldn't find genes for species with id=" + species_id)
+        # else:
+        #     raise Http404("No species specified.")
 
 def gene(request, gene=None, network_id=None):
     if gene:

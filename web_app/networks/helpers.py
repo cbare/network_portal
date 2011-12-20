@@ -19,4 +19,8 @@ def synonym(obj=None, synonym_type=None):
         return row[0] if row else None
     finally:
         if cursor: cursor.close()
-    
+
+def nice_string(obj):
+    if obj is None:
+        return ""
+    return str(obj)

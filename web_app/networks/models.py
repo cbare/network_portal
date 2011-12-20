@@ -74,6 +74,12 @@ class Gene(models.Model):
     
     def display_name(self):
         return self.name if self.common_name is None or self.common_name=='' else self.name + " " + self.common_name
+    
+    def location(self):
+        if self.chromosome:
+            return "%s%s:%d-%d" % (self.chromosome.name, self.strand, self.start, self.end,)
+        else:
+            return None
 
     def functions_by_type(self):
         """

@@ -17,7 +17,11 @@
 <p>Unknown function</p>
 {% endif %}
 
-{% if network_id and gene.transcription_factor %}
+{% if gene.transcription_factor %}
 <h2>Regulation</h2>
+{% if network_id %}
 <p>Regulates <b><a href="/network/{{network_id}}/regulated_by/{{gene.name}}">{{count_regulated_biclusters|intcomma}}</a></b> biclusters.</p>
+{% else %}
+
+{% endif %}
 {% endif %}
