@@ -31,7 +31,8 @@
 
   <script type="text/javascript">
   
-      var vis;
+      var vis = null;
+      var expanded = false;
       
       function showObject(obj) {
         var a = []
@@ -71,9 +72,34 @@
               }
           });
       }
+      
+      function filter_on() {
+        if (vis) {
+          vis.filter(null, function(edge) {
+              return !edge.data.expanded;
+          }, true);
+        }
+      }
+      
+      function expand() {
+        if (vis) {
+          vis.removeFilter(null);
+        }
+      }
 
 
       $(document).ready(function() {
+        
+          $("#toggle_expand").click(function(event) {
+            if (expanded) {
+              filter_on();
+              expanded = false;
+            }
+            else {
+              expand();
+              expanded = true;
+            }
+          });
 
           // id of Cytoscape Web container div
           var div_id = "cytoscapeweb";
@@ -89,7 +115,11 @@
 
           // init and draw
           vis = new org.cytoscapeweb.Visualization(div_id, options);
-
+          
+          vis.ready(function() {
+            filter_on();
+          });
+          
           // update gaggle data on selection events for the purpose of
           // broadcasting out lists of selected genes
           vis.addListener("select", "nodes", function(evt) {
@@ -119,10 +149,10 @@
               }
               else if (data.type=='regulator') {
                 if (data.name.indexOf("~~") < 0) {
-                  url = "/gene/" + data.name + "?format=html"
+                  url = "/network/" + {{network.id}} + "/gene/" + data.name + "?format=html";
                 }
                 else {
-                  url = "/regulator/" + data.name + "?format=html"
+                  url = "/regulator/" + data.name + "?format=html";
                 }
               }
               else if (data.type=='bicluster') {
@@ -186,7 +216,7 @@
           };
 
           $.ajax({
-              url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}",
+              url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}{{expand}}",
               success: function(data){
                   if (typeof data !== "string") { 
                       if (window.ActiveXObject) { // IE 
@@ -216,7 +246,9 @@
     Cytoscape Web
   </div>
   <div id="menu">
-    <a href="/">home</a> | <a href="/search">search</a> | [controls to be added here or in sidebar]
+    <a href="/">home</a> | <a href="/search">search</a> | 
+    {% if expand %}<a id="toggle_expand">expand</a> |{% endif %}
+    [controls to be added here or in sidebar]
   </div>
   <div id="pop_up">
     

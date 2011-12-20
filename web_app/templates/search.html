@@ -46,12 +46,20 @@ $(function() {
 });
 </script>
 
+<script type="text/javascript">
+$(document).ready(function() {
+      $("#example1").click(function(event) {
+        $("#search_box").val($("#example1").text());
+      });
+    });  
+</script>
+
 <div id="main" class="sub-page">
   <div class="ui-widget">
     <h1>Search</h1>
     <form action="/search/" method="get">
       <textarea rows="4" cols="60" name="q" id="query"></textarea>
-<!--      <input type="text" id="query" name="q">-->
+<!--      <textarea rows="4" cols="60" name="q" id="search_box">{% if q %}{{ q }}{% endif %}</textarea>-->
       <input type="submit" value="Search">
     </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	

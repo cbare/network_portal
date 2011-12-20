@@ -13,6 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
+from web_app.networks.helpers import nice_string
 from pprint import pprint
 import json
 import networkx as nx
@@ -49,36 +50,46 @@ def network_cytoscape_web(request):
     network.name = "Test Network"
     if request.GET.has_key('biclusters'):
         network.bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
+        _network = Bicluster.objects.get(id=network.bicluster_ids[0]).network
+        network.id = _network.id
+    if request.GET.has_key('expand') and request.GET['expand']=='true':
+        expand = "&expand=true"
+    else:
+        expand = ""
     return render_to_response('network_cytoscape_web.html', locals())
 
 def network_as_graphml(request):
     if request.GET.has_key('biclusters'):
         bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
     biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
-
+    
+    expand = request.GET.has_key('expand') and request.GET['expand']=='true'
+    
     graph = nx.Graph()
 
-    # compile set of genes in all requested biclusters
+    # compile sets of genes and influences from all requested biclusters
     genes = set()
     influences = set()
     for b in biclusters:
         genes.update(b.genes.all())
         influences.update(b.influences.all())
-        # for influence in b.influences.all():
-        #     influences.add(influence)
-        #     if influence.is_combiner():
-        #         parts = influence.get_parts()
-        #         influences.update(parts)
-        #         for part in parts:
-        #             graph.add_edge("inf:%d" % (part.id,), "inf:%d" % (influence.id,))
-        print "influences = %d" % (len(influences),)
-        print influences
 
     # build networkx graph
     for gene in genes:
         graph.add_node(gene, {'type':'gene', 'name':gene.display_name()})
-    for inf in influences:
-        graph.add_node("inf:%d" % (inf.id,), {'type':'regulator', 'name':inf.name})
+    for influence in influences:
+        graph.add_node("inf:%d" % (influence.id,), {'type':'regulator', 'name':influence.name})
+        
+        # on request, we can add links for combiners (AND gates) to
+        # the influences they're combining. This makes a mess of larger
+        # networks, but works OK in very small networks (1-3 biclusters)
+        if expand and influence.is_combiner():
+            parts = influence.get_parts()
+            for part in parts:
+                if part not in influences:
+                    graph.add_node("inf:%d" % (part.id,), {'type':'regulator', 'name':part.name, 'expanded':True})
+                graph.add_edge("inf:%d" % (influence.id,), "inf:%d" % (part.id,), {'expanded':True})
+        
     for bicluster in biclusters:
         graph.add_node("bicluster:%d" %(bicluster.id,), {'type':'bicluster', 'name':str(bicluster)})
         for gene in bicluster.genes.all():
@@ -156,17 +167,26 @@ def genes(request, species=None, species_id=None):
         else:
             genes = species.gene_set.all()
         
+        if request.GET.has_key('format'):
+            format = request.GET['format']
+            if format=='tsv':
+                response = HttpResponse(content_type='application/tsv')
+                for gene in genes:
+                    response.write("\t".join([nice_string(field) for field in (gene.name, gene.common_name, gene.geneid, gene.type, gene.description, gene.location(),)]) + "\n")
+                return response
+        
         gene_count = len(genes)
         return render_to_response('genes.html', locals())
     except (ObjectDoesNotExist, AttributeError):
-        if species:
-            raise Http404("Couldn't find genes for species: " + species)
-        elif species_id:
-            raise Http404("Couldn't find genes for species with id=" + species_id)
-        else:
-            raise Http404("No species specified.")
+        raise
+        # if species:
+        #     raise Http404("Couldn't find genes for species: " + str(species))
+        # elif species_id:
+        #     raise Http404("Couldn't find genes for species with id=" + species_id)
+        # else:
+        #     raise Http404("No species specified.")
 
-def gene(request, gene=None):
+def gene(request, gene=None, network_id=None):
     if gene:
         try:
             gene_id = int(gene)
@@ -224,7 +244,9 @@ def gene(request, gene=None):
         systems.append(system)  
     
     # if the gene is a transcription factor, how many biclusters does it regulate?
-    count_regulated_biclusters = gene.count_regulated_biclusters(1)
+    if network_id:
+        network_id = int(network_id)
+        count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
     
     if request.GET.has_key('format'):
         format = request.GET['format']
@@ -283,9 +305,9 @@ def bicluster(request, bicluster_id=None):
 
     return render_to_response('bicluster.html', locals())
 
-def regulated_by(request, regulator=None):
+def regulated_by(request, network_id, regulator):
     gene = Gene.objects.get(name=regulator)
-    network = Network.objects.get(id=1)
+    network = Network.objects.get(id=network_id)
     biclusters = gene.regulated_biclusters(network)
     bicluster_ids = [bicluster.id for bicluster in biclusters]
     return render_to_response('biclusters.html', locals())

@@ -1,0 +1,32 @@
+insert into networks_synonym (target_id, target_type, name, type) select id as target_id, 'gene' as target_type, 'VNG0035C' as name, 'vng' as type from networks_gene where species_id=2 and name = 'VNG0035H';
+insert into networks_synonym (target_id, target_type, name, type) select id as target_id, 'gene' as target_type, 'VNG1526H' as name, 'vng' as type from networks_gene where species_id=2 and name = 'VNG1526G';
+insert into networks_synonym (target_id, target_type, name, type) select id as target_id, 'gene' as target_type, 'VNG1535G' as name, 'vng' as type from networks_gene where species_id=2 and name = 'VNG1534a';
+  
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG0287H', 3, '+', 230608, 230883, 'submitted to robetta: 3d-jury hit to a DNA binding protein PDB 1du6A/1ig6A, medium confidence.');
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG0772H', 3, '-', 582075, 582338, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG1598H', 3, '-', 1191884, 1192099, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG2466C', 3, '+', 1845475, 1846278, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5038H', 5, '+', 29637, 29789, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5047H', 5, '-', 38251, 38520, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5048H', 5, '-', 38679, 38837, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5049H', 5, '-', 39204, 39437, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5050H', 5, '+', 39504, 39785, 'predicted transcriptional regulator; PFAM03551:PadR/MarR family of transcriptional repressors; COG1695:predicted transcriptional regulators (PET=28)');
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5053H', 5, '-', 40577, 40747, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5073H', 5, '+', 52660, 52809, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5081H', 5, '+', 57972, 58352, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5083H', 5, '+', 59944, 60054, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5097H', 5, '+', 71971, 72222, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5112H', 5, '-', 81426, 81614, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5120H', 5, '-', 86487, 86612, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5123H', 5, '-', 89038, 89376, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5130H', 5, '+', 91734, 92042, 'putative transcriptional regulator PadR family; COG1695:predicted transcriptional regulator; PF03551:PadR/marR family of transcriptional repressors; Rosetta predicts B-globin fold');
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5137H', 5, '+', 103281, 103472, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5150H', 5, '-', 123955, 124233, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5157H', 5, '-', 127459, 127758, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5160H', 5, '-', 127755, 128252, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5167H', 5, '+', 130900, 131046, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5168H', 5, '-', 131122, 131643, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5173H', 5, '-', 133779, 133931, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5175H', 5, '-', 135596, 135712, null);
+insert into networks_gene (species_id, type, name, chromosome_id, strand, start, "end", description) values (2, 'cds', 'VNG5178H', 5, '-', 137425, 137592, null);
+

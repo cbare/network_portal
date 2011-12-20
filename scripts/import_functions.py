@@ -8,6 +8,10 @@ that read particular file formats and return lists or hierarchies of
 objects. Then, there are a corresponding bunch of methods that take the
 objects produced by the readers and insert them into the database.
 
+Data sources:
+KEGG mirror at http://www.biowebdb.org/pub/kegg/
+MicrobesOnline - genomeInfo files contain GO, COG and TIGR mappings for genes
+
 To totally rebuild all functional data in the DB, first drop the existing
 tables. WARNING: don't drop synonyms if there is other data in there.
 drop table networks_function_relationships CASCADE;
@@ -27,7 +31,9 @@ and link dvu (dvu=DvH), mmp and halo genes to functions.
 > python import_functions.py --cog-categories ../../data/cog_categories.txt --cogs ../../data/COG_whog
 > python import_functions.py --tigrfams ../../data/tigrfam_table.txt
 > python import_functions.py --tigrfam-role-links ../../data/TIGRFAMS_ROLE_LINK --tigr-roles ../../data/TIGR_ROLE_NAMES
-> python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/DvH_Annotations_kegg/dvu_gene_kegg_pathway2_attributes.csv
+> python import_functions.py --species mmp --kegg-gene-pathways ../../data/mmp/kegg/mmp_pathway.list
+> python import_functions.py --species hal --kegg-gene-pathways ../../data/hal/kegg/hal_pathway.list
+> does this work for dvu? python import_functions.py --species dvu --kegg-gene-pathways ../../data/dvu/kegg/dvu_pathway.list
 > python import_functions.py --species dvu --genome-info ../../data/dvu/genomeInfo.microbesonline.txt
 > python import_functions.py --species mmp --genome-info ../../data/mmp/genomeInfo.microbesonline.txt
 > python import_functions.py --species hal --genome-info ../../data/hal/genomeInfo.microbesonline.txt
@@ -119,58 +125,28 @@ def read_kegg_pathways(filename):
     
     return pathways
 
-
 def read_gene_kegg_pathways(filename):
     """
-    Returns a map from gene name to a list of pathway names.
+    Reads the two column kegg pathway.list file and returns a dictionary
+    from gene name to kegg pathway number.
     """
-    
-    genes = {}
+    genes_to_pathway = {}
     with open(filename, 'r') as f:
-
-        #skip header
-        line = f.next()
-
-        # read gene -> pathway mappings
         for line in f:
             line = line.rstrip('\n')
-            fields = line.split(',')
-            functions = [ field for field in fields[1:] if field != 'NA' ]
-            if len(functions) > 0:
-                genes[fields[0]] = functions
-
-    return genes
-
-
-def read_kegg_pathway_ids(filename):
-    """
-    Read kegg_pathway_ids.csv, which holds pathways for a particular organism.
-    Return map from pathway name to pathway object
-    """
-
-    pathways = {}
-    with open(filename, 'r') as f:
-
-        #skip header
-        line = f.next()
-
-        # read gene -> pathway mappings
-        for line in f:
-            line = line.rstrip('\n')
-            fields = line.split(',')
-            m = re.match(r'path:(dvu\d+)', fields[0])
-            if m:
-                pathway = OpenStruct()
-                pathway.native_id = m.group(1)
-                pathway.name = fields[1]
-                pathway.subcategory = fields[2]
-                pathway.category = fields[3]
-                pathways[pathway.name] = pathway
-            else:
-                raise Exception("Can't parse line: %s" % (line,))
-
-    return pathways
-
+            fields = line.split('\t')
+            
+            m = re.match(r'\w\w\w:(\w+)', fields[0])
+            gene = m.group(1)
+            m = re.match(r'path:\w\w\w(\d+)', fields[1])
+            pathway = "path:" + m.group(1)
+            
+            # genes may belong to more than one pathway
+            if not(gene in genes_to_pathway):
+                genes_to_pathway[gene] = []
+            genes_to_pathway[gene].append(pathway)
+            
+    return genes_to_pathway
 
 def read_microbes_online_genome_info(filename):
     """
@@ -555,6 +531,42 @@ def get_function_id_lookup_table(cur, type):
     return function_ids
 
 
+def get_kegg_pathways():
+    """
+    Get KEGG pathways from the database.
+    """
+    con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+    cur = None
+
+    try:
+        cur = con.cursor()
+
+        cur.execute("select * from networks_function where type='kegg' and namespace='kegg pathway';")
+
+        pathways = {}
+        for row in cur:
+            pathways[row[1]] = row
+
+        return pathways
+    finally:
+        if (cur): cur.close()
+        if (con): con.close()
+
+def get_gene_ids(species):
+    """
+    Get a list of genes for an organism for testing
+    """
+    con = psycopg2.connect("dbname=network_portal user=dj_ango password=django")
+    cur = None
+
+    try:
+        cur = con.cursor()
+        species_id = get_species_id(cur, species)
+        return get_gene_id_lookup_table(cur, species_id)
+    finally:
+        if (cur): cur.close()
+        if (con): con.close()
+
 def get_go_function_id_lookup_table(cur):
     """
     Create a dictionary for looking up GO function IDs by their native_id or alt_id
@@ -589,7 +601,6 @@ class Lookup:
     def __repr__(self):
         return __str__(self)
 
-
 def insert_gene_kegg_function_associations(gene_kegg_pathways, species, translate_genes=Lookup()):
     """
     Insert mappings from genes to KEGG pathways.
@@ -607,9 +618,9 @@ def insert_gene_kegg_function_associations(gene_kegg_pathways, species, translat
         
         species_id = get_species_id(cur, species)
         
-        # create functions id lookup table
+        # create functions id lookup table, keyed by native id
         cur.execute("""
-            select id, name from networks_function where type = 'kegg';
+            select id, native_id from networks_function where type = 'kegg' and namespace = 'kegg pathway';
             """)
         functions = {}
         for row in cur:
@@ -623,19 +634,22 @@ def insert_gene_kegg_function_associations(gene_kegg_pathways, species, translat
         for gene in gene_kegg_pathways:
             pathways = gene_kegg_pathways[gene]
             gene_count += 1
+            
             for pathway in pathways:
-
+                
+                # get function id
                 if pathway in functions:
                     function_id = functions[pathway]
                 else:
                     raise Exception("Unknown KEGG pathway: " + pathway)
 
+                # get gene id
                 gene = translate_genes(gene)
                 if gene in genes:
                     gene_id = genes[gene]
                 else:
                     raise Exception("Unknown gene: " + gene)
-                    
+
                 cur.execute("""
                     insert into networks_gene_function
                     (function_id, gene_id, source)
@@ -643,6 +657,7 @@ def insert_gene_kegg_function_associations(gene_kegg_pathways, species, translat
                     """,
                     (function_id, gene_id, 'kegg'))
                 pathway_count += 1
+                
         print "Added %d genes to %d pathways." % (gene_count, pathway_count,)
         
         con.commit()
@@ -1157,11 +1172,12 @@ def main():
     parser.add_argument('-s', '--species', help='for example, hal for halo')
     parser.add_argument('--test', action='store_true', help='Print list functions, rather than adding them to the db')
     parser.add_argument('--list-species', action='store_true', help='Print list of known species. You might have to add one.')
+    parser.add_argument('--list-kegg-pathways', action='store_true', help='Print list of KEGG pathways in the DB.')
     args = parser.parse_args()
     
     if not ( args.kegg_pathways or args.kegg_gene_pathways or args.go_terms or args.genome_info or
              args.tigrfams or args.tigr_roles or args.tigrfam_role_links or
-             args.cogs or args.cog_categories or args.list_species):
+             args.cogs or args.cog_categories or args.list_species or args.list_kegg_pathways):
         print parser.print_help()
         return
     
@@ -1190,6 +1206,12 @@ def main():
         for key in species_dict:
             print "%s => %s, %s" % (str(key), str(species_dict[key].name), str(species_dict[key].chromosome_map))
         return
+    
+    if args.list_kegg_pathways:
+        kegg_pathways = get_kegg_pathways()
+        print "KEGG pathways in the database:"
+        for key in sorted(kegg_pathways.keys()):
+            print "%s -> %s" % (key, str(kegg_pathways[key]))
     
     # read and insert the master list of all KEGG pathways plus the global pathways
     if args.kegg_pathways:
@@ -1261,10 +1283,29 @@ def main():
     if args.kegg_gene_pathways:
         gene_kegg_pathways = read_gene_kegg_pathways(args.kegg_gene_pathways)
         if args.test:
-            for gene in gene_kegg_pathways:
+            kegg_pathways = get_kegg_pathways()
+            pathways_in_db = []
+            for gene in sorted(gene_kegg_pathways.keys()):
                 pathways = gene_kegg_pathways[gene]
                 for p in pathways:
-                    print "%s : %s" % (gene, str(p))
+                    in_db = str( p in kegg_pathways )
+                    pathways_in_db.append(in_db)
+                    print "%s : %s, %s" % (gene, p, in_db)
+            # check if KEGG pathways can be found in the DB
+            if all( pathways_in_db ):
+                print "KEGG pathways OK"
+            else:
+                print "pathways missing: %d out of %d." % (len(pathways_in_db) - sum(pathways_in_db),len(gene_kegg_pathways),)
+            # check if genes can be found in the DB
+            gene_ids = get_gene_ids(species)
+            genes_in_db = [ g in gene_ids.keys() for g in gene_kegg_pathways.keys() ]
+            if all( genes_in_db ):
+                print "Genes OK"
+            else:
+                print "pathway genes are: " + str(gene_kegg_pathways.keys())
+                print "gene names in DB are: " + str(gene_ids.keys())
+                print "Some genes not in DB, missing: %d out of %d." % (len(genes_in_db) - sum(genes_in_db),len(gene_kegg_pathways.keys()),)
+                        
         else:
             if species=='Desulfovibrio vulgaris Hildenborough':
                 translate_genes = Lookup({'DVU_tRNA-SeC_p_-1':'DVU_tRNA-SeC(p)-1'})

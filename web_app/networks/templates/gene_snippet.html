@@ -4,7 +4,8 @@
 
 <p>species: <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
    coordinates: {{ gene.chromosome.name }}{{ gene.strand }}:{{ gene.start|intcomma }}-{{ gene.end|intcomma }} (<a href="http://microbes.ucsc.edu/cgi-bin/hgTracks?db={{ gene.species.ucsc_id }}&position={{gene.chromosome.ucsc_id}}:{{gene.start}}-{{gene.end}}">UCSC GB</a>)<br>
-   Gene ID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a>
+   Gene ID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a><br>
+   Transcription factor: {{gene.transcription_factor}}
 </p>
 
 <h2>Functions</h2>
@@ -18,5 +19,9 @@
 
 {% if gene.transcription_factor %}
 <h2>Regulation</h2>
-<p>Regulates <b><a href="/regulated_by/{{gene.name}}">{{count_regulated_biclusters|intcomma}}</a></b> biclusters.</p>
+{% if network_id %}
+<p>Regulates <b><a href="/network/{{network_id}}/regulated_by/{{gene.name}}">{{count_regulated_biclusters|intcomma}}</a></b> biclusters.</p>
+{% else %}
+
+{% endif %}
 {% endif %}

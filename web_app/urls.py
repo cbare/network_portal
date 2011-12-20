@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     url(r'^networks/$', 'web_app.networks.views.networks', name='networks'),
     url(r'^network/(?P<network_id>\d+)$', 'web_app.networks.views.network', name='network'),
     url(r'^network/graphml', 'web_app.networks.views.network_as_graphml', name='network'),
+    url(r'^network/(?P<network_id>\d+)/regulated_by/(?P<regulator>.*)$', 'web_app.networks.views.regulated_by', name='regulated by'),
+    url(r'^network/(?P<network_id>\d+)/gene/(?P<gene>.*)$', 'web_app.networks.views.gene', name='network_gene'),
     url(r'^network', 'web_app.networks.views.network_cytoscape_web', name='network'),
 
     url(r'^species/(?P<species>[^/]*)/?$', 'web_app.networks.views.species', name='species'),
@@ -33,7 +35,6 @@ urlpatterns = patterns('',
     
     url(r'^bicluster/(?P<bicluster_id>\d+)$', 'web_app.networks.views.bicluster', name='biclusters'),
 
-    url(r'^regulated_by/(?P<regulator>.*)$', 'web_app.networks.views.regulated_by', name='regulated by'),
     url(r'^regulator/(?P<regulator>.*)$', 'web_app.networks.views.regulator', name='regulator'),
     
     url(r'^functions/(?P<type>[^/]*)/?$', 'web_app.networks.views.functions', name='functions'),

@@ -29,7 +29,7 @@
     <tbody>
       {% for gene in genes %}
       <tr>
-        <td>{{ gene.name }}</td>
+        <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
         <td>{{ gene.common_name|default_if_none:"" }}</td>
         <td>{{ gene.type }}</td>
         <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>

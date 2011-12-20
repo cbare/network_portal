@@ -168,4 +168,62 @@ or (i.type='combiner' and i.id in (
   from networks_influence_parts ip join networks_influence i on ip.to_influence_id=i.id
   where i.gene_id=2074)));
 
+# add synonyms for halo genes
+insert into networks_synonym (target_id, target_type, name, type)
+  select id as target_id, 
+          'gene' as target_type,
+          trim(trailing 'm' from name) as name,
+          'vng:m' as type
+    from networks_gene
+    where species_id=2
+    and name like '%m';
 
+insert into networks_synonym (target_id, target_type, name, type) select id as target_id, 'gene' as target_type, 'xxxx' as name, 'vng:7/5' as type from networks_gene where species_id=2 and name = 'yyyy';
+
+# get synonyms for genes in a species
+select s.* from networks_synonym s 
+join networks_gene g on g.id=s.target_id
+where s.target_type='gene'
+and g.species_id=2;
+
+
+# for each bicluster, list genes and their functions
+select b.id as bicluster_id, bg.gene_id as gene_id, f.id as function_id
+from networks_bicluster b
+join networks_bicluster_genes bg on b.id=bg.bicluster_id
+join networks_gene_function gf on gf.gene_id=bg.gene_id
+join networks_function f on gf.function_id=f.id
+where f.type='kegg'
+order by bicluster_id, gene_id, function_id
+limit 50;
+
+# count genes in each bicluster
+select b.id as bicluster_id, count(bg.gene_id) as gene_count
+from networks_bicluster b
+join networks_bicluster_genes bg on b.id=bg.bicluster_id
+group by b.id
+order by b.id;
+
+select b.id as bicluster_id, f.id as function_id, count(bg.gene_id) as count
+from networks_bicluster b
+join networks_bicluster_genes bg on b.id=bg.bicluster_id
+join networks_gene_function gf on gf.gene_id=bg.gene_id
+join networks_function f on gf.function_id=f.id
+where f.type='kegg'
+group by b.id, f.id
+order by bicluster_id, function_id
+limit 50;
+
+# get a count of genes with each functional annotation in the organism
+select gf.function_id, count(gf.gene_id)
+from networks_gene_function gf
+join networks_gene g on g.id = gf.gene_id
+where g.species_id = 1 
+group by gf.function_id
+order by gf.function_id;
+
+select count(distinct(e.gene_id))
+from expression e
+join networks_bicluster_conditions bc on e.condition_id = bc.condition_id
+join networks_bicluster b on b.id = bc.bicluster_id
+where b.network_id = 1
