@@ -60,14 +60,12 @@
 	      <th>Regulators</th>
 	      <th>Process</th>
 	    </tr>
+	    {% for influence in influences %}
 	    <tr>
-	      <td><a href="pssm_1">Fur</a></td>
-	      <td><a href="pssm_2">Iron homeostasis</td></a>
+	      <td><a href="pssm_1">{{ influence.name }}</a></td>
+	      <td><a href="pssm_1">{{ influence.type }}</a></td>
 	    </tr>
-	    <tr>
-	      <td><a href="pssm_1">AraC</a></td>
-	      <td><a href="pssm_2">Arabinose metabolism</td></a>
-	    </tr>
+	    {% endfor %}
 	  </table>
 	</div><!-- #sidebar -->
       </div>
