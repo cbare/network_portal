@@ -227,13 +227,12 @@ def gene(request, gene=None, network_id=None):
         total_member_genes += member_genes.count()
 
         gene_list = []
-        for gene in member_genes:
+        for genex in member_genes:
             gene_info = ()
-            gene_info = (gene.name, gene.description, gene.bicluster_set.all())
+            gene_info = (genex.name, genex.description, genex.bicluster_set.all())
             gene_list.append(gene_info)
         other_member_regulons[bicluster.id] = gene_list
 
-    print total_member_genes
     # compile functions into groups by functional system
     systems = []
     for key, functions in gene.functions_by_type().items():
@@ -263,7 +262,7 @@ def bicluster(request, bicluster_id=None):
     influences = bicluster.influences.all()
     conditions = bicluster.conditions.all()
     inf_count = len(influences)
-
+    
     species_sh_name =  bicluster.network.species.short_name
     if (species_sh_name == "dvu"):
         img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"
