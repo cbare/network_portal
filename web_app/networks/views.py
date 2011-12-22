@@ -204,18 +204,21 @@ def gene(request, gene=None, network_id=None):
 
     # get all biclusters that the gene is a member of
     member_bicluster = gene.bicluster_set.all()
+    ret_mem_bicl = member_bicluster #json.JSONEncoder().encode(member_bicluster)
 
     # get all the regulators of the above biclusters and their total # of conditions
     regulators = {}
     bicl_reg_list = {}
     other_member_regulons = {}
     total_member_genes = 0
+    json_reg_list = []
 
     for bicluster in member_bicluster:
         if bicluster.id not in regulators:
             regulators[bicluster.id] = {}
             regulators[bicluster.id]['inf'] = bicluster.influences.count()
             regulators[bicluster.id]['cond'] = bicluster.conditions.count()
+        json_reg_list.append(bicluster.id)
 
         inf_list = []
         for item in bicluster.influences.all():
@@ -232,6 +235,7 @@ def gene(request, gene=None, network_id=None):
             gene_info = (genex.name, genex.description, genex.bicluster_set.all())
             gene_list.append(gene_info)
         other_member_regulons[bicluster.id] = gene_list
+    ret_mem_ids = json.JSONEncoder().encode(json_reg_list)
 
     # compile functions into groups by functional system
     systems = []
