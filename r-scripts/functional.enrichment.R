@@ -1,3 +1,8 @@
+## Compute functional enrichment for biclusters
+## 
+## Copyright (C) 2011 Institute for Systems Biology, Seattle, Washington, USA.
+## Christopher Bare
+
 library(RPostgreSQL)
 
 # database connect info
@@ -9,7 +14,15 @@ config$db.host = "localhost"
 
 
 
-# for each bicluster, need its member genes and their functional annotations
+# compute functional enrichment for all biclusters in the given network
+# with the given system and namespace. If gene.ids are not given, use the
+# set of genes that appear in at least one bicluster. This will likely not
+# include all genes in the organism. If genes were considered, but not
+# included in any bicluster, we should include those in the background.
+#
+# examples:
+# enrichment(network.id=1, type='kegg', namespace='kegg pathway')
+# enrichment(network.id=1, type='tigr', namespace='tigrfam')
 enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
   tryCatch(
   expr={
@@ -124,8 +137,61 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
     # add columns to data frame
     return(data.frame(bicluster.id=bicluster.function.counts$bicluster_id,
                       function.id=bicluster.function.counts$function_id,
-                      count=q,
+                      gene.count=q,
                       m,n,k,p,p.bh, p.b))
+  },
+  finally={
+    dbDisconnect(con)
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+  })
+}
+
+# put an enrichment data.frame into the DB
+insert.enrichment <- function(en) {
+  tryCatch(
+  expr={
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+
+    for (i in 1:nrow(en)) {
+      row <- en[i,]
+      sql <- sprintf(paste(
+        "insert into networks_bicluster_function",
+        "(bicluster_id, function_id, gene_count, m, n, k, p, p_bh, p_b)",
+        "values (%d, %d, %d, %d, %d, %d, %f, %f, %f);"),
+            row$bicluster.id, row$function.id, row$gene.count,
+            row$m, row$n, row$k,
+            row$p, row$p.bh, row$p.b)
+      dbGetQuery(con, sql)
+    }
+  },
+  finally={
+    dbDisconnect(con)
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+  })
+}
+
+get.gene2go <- function(species.id, namespace='biological_process') {
+  tryCatch(
+  expr={
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+
+    sql <- sprintf(paste(
+      "select g.id, g.name, f.native_id",
+      "from networks_function f",
+      "join networks_gene_function gf on gf.function_id=f.id",
+      "join networks_gene g on gf.gene_id=g.id",
+      "where g.species_id=%d",
+      "and f.type='go'",
+      "and f.namespace='%s'",
+      "order by gf.gene_id;"),
+      species.id, namespace)
+    go.annos <- dbGetQuery(con, sql)
+    genes <- unique(go.annos$name)
+    gene2go <- lapply(genes, function(g) { go.annos$native_id[ go.annos$name==g ] })
+    names(gene2go) <- genes
+    return(gene2go)
   },
   finally={
     dbDisconnect(con)
@@ -141,7 +207,6 @@ get.networks <- function() {
     
     sql <- "select * from networks_network;"
     return(dbGetQuery(con, sql))
-    
   },
   finally={
     dbDisconnect(con)
@@ -149,10 +214,11 @@ get.networks <- function() {
   })
 }
 
-let.it.rip <- function() {
+let.it.rip <- function(insert=F) {
   systems = list( c(type='kegg', namespace='kegg pathway'),
                   c(type='tigr', namespace='tigrfam'),
                   c(type='go',   namespace='biological_process'),
+                  c(type='go',   namespace='molecular_function'),
                   c(type='cog',  namespace='cog') )
   
   networks <- get.networks()
@@ -164,6 +230,28 @@ let.it.rip <- function() {
       cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
       cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
       print(head(en))
+      if (insert) {
+        insert.enrichment(en)
+      }
     }
   }
 }
+
+# geneList <- factor(as.integer(names(gene2go) %in% sig.genes))
+# names(geneList) <- names(gene2go)
+# 
+# GOdata <- new("topGOdata", ontology = "BP",
+#               allGenes = geneList,
+#               annot = annFUN.gene2GO,
+#               gene2GO = gene2go)
+# 
+# resultFis <- getSigGroups(GOdata, test.stat)
+# 
+# GenTable(resultFis)
+# # Error in function (classes, fdef, mtable)  : 
+# #   unable to find an inherited method for function "GenTable", for signature "topGOresult"
+# 
+# my.group <- new("classicCount", testStatistic = GOFisherTest, name = "fisher", 
+#                 allMembers = names(gene2go),
+#                 groupMembers = gene2go,
+#                 sigMembers = sig.genes)

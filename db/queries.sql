@@ -227,3 +227,15 @@ from expression e
 join networks_bicluster_conditions bc on e.condition_id = bc.condition_id
 join networks_bicluster b on b.id = bc.bicluster_id
 where b.network_id = 1
+
+# get GO mappings for all genes in an organism
+select gf.gene_id, f.native_id
+from networks_function f
+join networks_gene_function gf on gf.function_id=f.id
+join networks_gene g on gf.gene_id=g.id
+where g.species_id=1
+and f.type='go'
+and f.namespace='biological_process';
+
+
+

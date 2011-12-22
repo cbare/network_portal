@@ -70,6 +70,7 @@
 ##      case of exceptions, like a finally clause? Do I need to release result sets
 ##      as well as connections?
 ##
+## Copyright (C) 2011 Institute for Systems Biology, Seattle, Washington, USA.
 ## Christopher Bare
 
 library(RPostgreSQL)
