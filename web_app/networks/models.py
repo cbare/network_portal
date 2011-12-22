@@ -382,3 +382,15 @@ class Gene_Function(models.Model):
     gene = models.ForeignKey(Gene)
     source = models.CharField(max_length=255, blank=True, null=True)
 
+class Bicluster_Function(models.Model):
+    bicluster = models.ForeignKey(Bicluster)
+    function = models.ForeignKey(Function)
+    gene_count = models.IntegerField(blank=True, null=True)
+    m = models.IntegerField(blank=True, null=True)
+    n = models.IntegerField(blank=True, null=True)
+    k = models.IntegerField(blank=True, null=True)
+    p = models.FloatField(blank=True, null=True)
+    p_bh = models.FloatField(blank=True, null=True)
+    p_b = models.FloatField(blank=True, null=True)
+
+
