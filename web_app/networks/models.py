@@ -42,6 +42,7 @@ class Network(models.Model):
     name = models.CharField(max_length=255)
     data_source = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    version_id = models.CharField(max_length=255)
     created_at = models.DateTimeField()
     
     def get_biclusters_regulated_by(regulator):
