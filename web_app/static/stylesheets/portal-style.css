@@ -143,7 +143,13 @@ td {
 	padding-left: 11px;
 	padding-right: 11px;
 	border: 1px solid #DDD;	
-}	
+}
+caption { 
+        color: #51432F;
+	text-align:left;
+	font-size:1.2em;
+	font-weight: bold;
+}
 /* end - table */
 
 /* form elements */
@@ -369,12 +375,12 @@ input.button {
 }
 
 #main h2 {
-	font: bold 2.0em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
+	font: bold 2.0em 'Lucida Grande ', 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
 	color: #51432F; 
 	padding: 10px 0 5px 5px; 	
 	margin-left: 5px;		
 	letter-spacing: -2px;
-	border-bottom: 1px solid #E4F2C8; 	
+	border-bottom: 1px solid #E4F2C8;
 }
 #main h2 a {
 	color: #51432f;
@@ -415,7 +421,7 @@ input.button {
 
 #sidebar h3 {
 	color: #51432F; 
-	font: bold 1.9em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
+	font: bold 1.6em 'Lucida Grande', 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
 	text-transform: none;
 	letter-spacing: -0.5px;
 	padding: 5px 0 5px 7px; 
@@ -426,7 +432,7 @@ input.button {
 #sidebar h4 {
     border-bottom: 1px solid #E4F2C8;
     color: #51432F;
-    font: bold 1.6em 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
+    font: bold 1.4em 'Lucida Grande', 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
     letter-spacing: -0.5px;
     margin: 0 0 5px 10px;
     padding: 5px 0 5px 7px;

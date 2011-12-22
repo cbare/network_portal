@@ -125,10 +125,19 @@ def species(request, species=None, species_id=None):
             species = Species.objects.get(id=species_id)
         else:
             species = Species.objects.all()
+            if (species_id  == "1"):
+               version_id = "cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51"
+            elif (species_id == "2"):
+               version_id = "cmonkey_4.8.8_mmp_1661x58_11_Oct_11_16:14:07"
+            elif (species_id == "3"):
+               version_id = "cmonkey_4.5.4_hal_2072x268_10_Jul_13_11:04:39"
             return render_to_response('species_list.html', locals())
+
+        networks = Network.objects.all()
         gene_count = species.gene_set.count()
         transcription_factors = species.gene_set.filter(transcription_factor=True)
         chromosomes = species.chromosome_set.all()
+        organism_info = "organism_info/" + species.short_name + ".html"
         return render_to_response('species.html', locals())
     except (ObjectDoesNotExist, AttributeError):
         exc_type, exc_value, exc_traceback = sys.exc_info()

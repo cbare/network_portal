@@ -1,25 +1,31 @@
 {% extends "base2.html" %}
 {% block content %}
-
 <div id="main">
-  <h1>Species</h1>
-
+  <h2>Species</h2>
   <table>
-    <caption>a list of species in the Network Portal database</caption>
+    <caption>A list of species in the Network Portal database</caption>
     <thead>
       <tr>
+	<th>Org code</th>
         <th>Species</th>
         <th>Taxonomy id</th>
+	<th>Genes </th>
+	<th>Regulators </th>
+	<th>Created at</th>
       </tr>
     </thead>
     <tbody>
       {% for sp in species %}
       <tr>
+	<td><a href="/species/{{ sp.short_name }}">{{ sp.short_name }}</a></td>
         <td><i><a href="/species/{{ sp.name }}">{{ sp.name }}</a></i></td>
-        <td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ sp.ncbi_taxonomy_id }}">{{ sp.ncbi_taxonomy_id }}</a></td>
+        <td><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ sp.ncbi_taxonomy_id }}">{{ sp.ncbi_taxonomy_id }}</a>(NCBI)</td>
+	<td><a href="/genes/{{ sp.short_name }}">{{ sp.gene_set.count }}</a></td>
+	<td><a href="/genes/{{ sp.short_name }}?filter=tf">{{ sp.transcription_factors|length }}</a></td>
+	<td><a href="/species/{{ sp.short_name }}">{{ sp.created_at|date:"F j, Y" }}</a></td>
       </tr>
       {% endfor %}
-    </tbody>
+     </tbody>
   </table>
 </div><!-- End #main -->
 {% endblock %}
