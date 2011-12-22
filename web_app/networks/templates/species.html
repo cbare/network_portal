@@ -4,9 +4,13 @@
 {% get_static_prefix as STATIC_PREFIX %}
 
 <div id="main" class="sub-page">
-  <h1>{{ species.name }}</h1>
+  <h2>{{ species.name }}</h2>
 
-  <h2>Genome:</h2>
+<div id="organism_info">
+        {% include organism_info %}
+      </div>
+
+  <h3>Genome:</h3>
   <table>
     <thead>
       <tr>
@@ -36,7 +40,7 @@
     {% endfor %}
   </ul> -->
   
-  <h2>Networks</h2>
+  <h3>Networks</h3>
   {% if species.network_set.count > 0 %}
   <ul>
     {% for network in species.network_set.all %}
@@ -46,10 +50,10 @@
   <p>No networks for this species, yet.</p>
   {% endif %}
   
-  <h2>Functions</h2>
+  <h3>Functions</h3>
   <p>Explore gene functional annotation from any of these systems: <a href="">KEGG pathways</a>, <a href="">GO Gene Ontology</a>, <a href="">TIGRFams</a> or <a href="">COGs</a>.</p>
 
-  <h2>Links</h2>
+  <h3>Links</h3>
   <p>NCBI taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
   
   <p><a href="http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId={{ species.ncbi_taxonomy_id }}"><img src="/static/images/microbesOnline150.gif"><br>genome</a></p>
