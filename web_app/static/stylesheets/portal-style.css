@@ -143,7 +143,13 @@ td {
 	padding-left: 11px;
 	padding-right: 11px;
 	border: 1px solid #DDD;	
-}	
+}
+caption { 
+        color: #51432F;
+	text-align:left;
+	font-size:1.2em;
+	font-weight: bold;
+}
 /* end - table */
 
 /* form elements */
@@ -369,17 +375,26 @@ input.button {
 }
 
 #main h2 {
-	font: bold 2.0em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
+	font: bold 2.0em 'Lucida Grande ', 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
 	color: #51432F; 
 	padding: 10px 0 5px 5px; 	
 	margin-left: 5px;		
 	letter-spacing: -2px;
-	border-bottom: 1px solid #E4F2C8; 	
+	border-bottom: 1px solid #E4F2C8;
 }
 #main h2 a {
 	color: #51432f;
 	text-decoration: none;		
 }
+
+#main h3 {
+    font: bold 1.7em 'Trebuchet MS', 'Helvetica Neue', 'Arial', 'Sans-serif';
+    color: #51432F;
+    margin-left: 5px;
+    letter-spacing: -2px;
+    border-bottom: 1px solid #E4F2C8;
+}
+
 #main ul li {
 	list-style-image: url("../images/bullet.gif");
 }
@@ -406,7 +421,7 @@ input.button {
 
 #sidebar h3 {
 	color: #51432F; 
-	font: bold 1.9em 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
+	font: bold 1.6em 'Lucida Grande', 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
 	text-transform: none;
 	letter-spacing: -0.5px;
 	padding: 5px 0 5px 7px; 
@@ -417,7 +432,7 @@ input.button {
 #sidebar h4 {
     border-bottom: 1px solid #E4F2C8;
     color: #51432F;
-    font: bold 1.6em 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
+    font: bold 1.4em 'Lucida Grande', 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
     letter-spacing: -0.5px;
     margin: 0 0 5px 10px;
     padding: 5px 0 5px 7px;
@@ -972,12 +987,25 @@ input[type="checkbox"] {
 #search {
     margin: 0;
     padding-left: 10px;
+    display: inline;
 }
 
+/*
 #search input {
     width: 350px;
     background: url("../images/search.gif") no-repeat scroll 0 2px;
     background-position: right;
+}
+*/
+
+#query {
+    width: 350px;
+    background: white url("../images/search.gif") no-repeat scroll 0 2px;
+    background-position: right;
+}
+
+textarea#query {
+    width: 600px;
 }
 
 #search_help {
@@ -1132,8 +1160,8 @@ input[type="checkbox"] {
 }
 
 #top-tabs {
-    position: absolute;
-    top: -3px;
+    position: relative; /*absolute;*/
+    top: -9px; /*-3px;*/
 }
 
 #top-tabs ul, ol {
@@ -1142,6 +1170,26 @@ input[type="checkbox"] {
 
 #gene-function {
     padding-left: 10px;
+}
+
+td #gene-function {
+    width: 125px;
+}
+
+li#gene-function {
+    display: inline-block;
+}
+
+#gene-regulon {
+    padding-left: 10px;
+}
+
+td #gene-regulon {
+    width: 90px;
+}
+
+li#gene-regulon {
+    display: inline-block;
 }
 
 table#motif {
@@ -1230,4 +1278,17 @@ table#motif {
 
 #network-tabs #cytoscapeweb {
     width: 775px;
+}
+
+#gene-regulation {
+    margin-left: 0px;
+}
+
+#regulators-table {
+    margin-left: 10px;
+}
+
+#gene-tab-links {
+    margin-left: 0;
+    margin-right: 0;
 }

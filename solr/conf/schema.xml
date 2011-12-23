@@ -525,7 +525,8 @@
    <field name="store" type="location" indexed="true" stored="true"/>
 
    <!-- from kfoley -->
-   <field name="name_auto" type="text_auto" indexed="true" stored="true" multiValued="true" />
+   <!--<field name="name_auto" type="text_auto" indexed="true" stored="true" multiValued="true" />-->
+   <field name="name_auto" type="text_general" indexed="true" stored="true" multiValued="true" />
    <field name="doc_id" type="string" />
    <field name="doc_type" type="string" />
 
@@ -549,6 +550,7 @@
     <field name="gene_type" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="gene_description" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="gene_tf" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="gene_function_native_id" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gene_function_name" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gene_function_namespace" type="string" indexed="true" stored="true" multiValued="true"/>
     <field name="gene_function_type" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -676,9 +678,14 @@
    <copyField source="manu" dest="manu_exact"/>
 
    <!-- from kfoley -->
-   <copyField source="name" dest="name_auto" />
+   <!--<copyField source="name" dest="name_auto" />-->
    <copyField source="gene_name" dest="name_auto" />
    <copyField source="gene_common_name" dest="name_auto"/>
+   <copyField source="species_name" dest="name_auto" />
+   <copyField source="species_short_name" dest="name_auto" />
+   <copyField source="gene_function_name" dest="name_auto" />
+   <copyField source="bi_gene_name" dest="name_auto"/>
+   <copyField source="bi_gene_common_name" dest="name_auto"/>
 
    <!-- from cbare/kfoley -->
    <copyField source="name" dest="text"/>
@@ -691,7 +698,7 @@
    <copyField source="bi_species_name" dest="text"/>
    <copyField source="bi_species_short_name" dest="text"/>
    <copyField source="species_ncbi_tax_id" dest="text"/>
-   <copyField source="condition_name" dest="text"/>
+<!--   <copyField source="condition_name" dest="text"/>-->
    <copyField source="network_name" dest="text"/>
    <copyField source="network_desc" dest="text"/>
    <copyField source="species_network_name" dest="text"/>
@@ -707,8 +714,11 @@
    <copyField source="gene_function_namespace" dest="text" />
    <copyField source="gene_function_type" dest="text" />
    <copyField source="gene_function_desc" dest="text" />
-
    <!-- end cbare -->
+
+   <!-- kfoley test -->
+   <!--<copyField source="*" dest="name_auto" />-->
+   <!-- end kfoley test -->
 
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 

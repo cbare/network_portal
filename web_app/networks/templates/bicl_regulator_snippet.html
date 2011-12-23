@@ -1,0 +1,20 @@
+<p>species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
+  regulators: {{ inf_count }}
+</p>
+<table id="regulators-table">
+  <thead>
+    <tr>
+      <th>Regulator Name</th>
+      <th>Regulator Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for influence in influences %}
+    <tr>
+      <td>{{ influence.name }}</td>
+      <td>{{ influence.type }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br />
