@@ -42,6 +42,7 @@ class Network(models.Model):
     name = models.CharField(max_length=255)
     data_source = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    version_id = models.CharField(max_length=255)
     created_at = models.DateTimeField()
     
     def get_biclusters_regulated_by(regulator):
@@ -381,4 +382,16 @@ class Gene_Function(models.Model):
     function = models.ForeignKey(Function)
     gene = models.ForeignKey(Gene)
     source = models.CharField(max_length=255, blank=True, null=True)
+
+class Bicluster_Function(models.Model):
+    bicluster = models.ForeignKey(Bicluster)
+    function = models.ForeignKey(Function)
+    gene_count = models.IntegerField(blank=True, null=True)
+    m = models.IntegerField(blank=True, null=True)
+    n = models.IntegerField(blank=True, null=True)
+    k = models.IntegerField(blank=True, null=True)
+    p = models.FloatField(blank=True, null=True)
+    p_bh = models.FloatField(blank=True, null=True)
+    p_b = models.FloatField(blank=True, null=True)
+
 
