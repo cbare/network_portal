@@ -1,0 +1,21 @@
+<p>species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
+</p>
+<div id = "main">
+<table id="genes-table">
+  <thead>
+    <tr>
+      <th>Function Name</th>
+      <th># of Genes with function</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for func, count in ret_bicl_functions.items %}
+    <tr>
+      <td>{{ func }}</td>
+      <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br />
+</div>
