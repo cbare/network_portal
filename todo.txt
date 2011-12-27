@@ -1,0 +1,62 @@
+Network_portal TODO
+===================
+
+Home page
+---------
+  About in center, link to more detail on biological purpose
+  Clean up statistics box
+  Make news into RSS / Atom / or Twitter feed
+
+
+Search
+------
+  Return genes, functions, biclusters, species
+
+
+Gene tabs
+---------
+  gene tab, circle thing?
+   * either put stuff in tabs or all in one page, not both
+   * gene neighborhood graphic?
+  gene | regulators: implement
+  gene | motifs: implement
+  gene | functions: implement
+  gene | regulon neighbourhood: this should be a set of genes
+  links to regulators and conditions
+
+
+Bicluster tabs
+--------------
+  bicluster / regulon tab
+   * either put stuff in tabs or all in one page, not both
+  bicluster | conditions tab?
+  bicluster | functions
+   * show number of genes
+   * show type of function (KEGG/GO/etc.)
+   * let the user filter to a specific type of function
+  bicluster | genes: link to gene
+
+
+Cleanup
+-------
+  Remove Contact / Login until implemented
+
+
+Features to be added later
+--------------------------
+  Login through ISB gmail accts
+  links into microbes online
+  links into RegPrecise, RegPredict
+  cMonkey/inferelator stats for a given network
+  view network for a set of genes
+
+
+Use-cases (biological questions)
+--------------------------------
+  given a set of genes, what regulates them?
+  given a set of genes, what functions do they have?
+  given a regulator, what genes does it regulate?
+  given a regulator, what functions does it regulate?
+  find all possible motifs for a regulator?
+  promoter architectures?
+  given a KEGG pathway or function, find genes/biclusters
