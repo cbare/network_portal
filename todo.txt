@@ -30,7 +30,6 @@ Search
       flagellar cell motility
       Alanine aspartate and glutamate metabolism
   limit search to a specific organism or network
-  error message on search page if Solr isn't running
 
 
 Gene tabs
@@ -42,7 +41,6 @@ Gene tabs
   gene | regulators: implement
   gene | motifs: implement
   gene | functions: implement
-  gene | regulon neighbourhood: this should be a set of genes
   links to regulators and conditions
 
 

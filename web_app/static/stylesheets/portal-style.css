@@ -1292,3 +1292,8 @@ table#motif {
     margin-left: 0;
     margin-right: 0;
 }
+
+#error_message {
+    color: red;
+    font-weight: bold;
+}
