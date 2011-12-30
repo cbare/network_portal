@@ -4,6 +4,10 @@ Network_portal TODO
 Home page
 ---------
   About in center, link to more detail on biological purpose
+   * what are GRN's and what do we hope to learn from them?
+   * brief explanation of cMonkey and Inferelator and links
+   * links to papers: cMonkey, Inferelator, EGRIN, etc.
+   * links to data sources and partner sites: microbes online, RegPrecise/RegPredict, kegg, etc.
   Clean up statistics box
   Make news into RSS / Atom / or Twitter feed
 
@@ -11,13 +15,30 @@ Home page
 Search
 ------
   Return genes, functions, biclusters, species
+  Accepts as input: genes, functions, species, plus related terms from descriptions and synonyms
+   * examples:
+      VNG0536*
+      sirR (any capitalization)
+      1447364 (gene ID)
+      "transcription repressor"
+      hal
+      halo
+      halobacterium
+      dvu
+      dvh
+      GO:0060286
+      flagellar cell motility
+      Alanine aspartate and glutamate metabolism
+  limit search to a specific organism or network
+  error message on search page if Solr isn't running
 
 
 Gene tabs
 ---------
+  what does this do when there is more than one network for a species?
   gene tab, circle thing?
-   * either put stuff in tabs or all in one page, not both
-   * gene neighborhood graphic?
+  gene tab: either put stuff in tabs or all in one page, not both
+  gene tab: gene neighborhood graphic?
   gene | regulators: implement
   gene | motifs: implement
   gene | functions: implement
@@ -39,7 +60,11 @@ Bicluster tabs
 
 Cleanup
 -------
-  Remove Contact / Login until implemented
+  Remove Contact / Login until implemented?
+  duplicate IDs in HTML elements
+  ReSTful URLs
+  move bicluster-tabs page and gene-tabs page into separate apps?
+  identify biclusters by (network_id and k) or id consistently
 
 
 Features to be added later
@@ -49,6 +74,8 @@ Features to be added later
   links into RegPrecise, RegPredict
   cMonkey/inferelator stats for a given network
   view network for a set of genes
+  programmatic API
+  gaggle microformats
 
 
 Use-cases (biological questions)

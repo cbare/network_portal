@@ -12,9 +12,9 @@ $(function() {
 
     $("#query").autocomplete({
         source: function( request, response ) {
-                                 console.debug("term: " + request.term);
+                //console.debug("term: " + request.term);
                 $.ajax({
-                        url:      "http://ec2-50-17-134-33.compute-1.amazonaws.com:8983/solr/suggest/?wt=json&json.wrf=?",
+                        url:      "http://{{ request.META.SERVER_NAME }}:8983/solr/suggest/?wt=json&json.wrf=?",
                         dataType: "jsonp",
                         data: { q: request.term
                         },
@@ -39,24 +39,11 @@ $(function() {
     });
 
     $(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#query").val($("#example1").text());
-      });
-    });
-    $(document).ready(function() {
-      $("#example2").click(function(event) {
-        $("#query").val($("#example2").text());
+      $(".example-search").click(function(event) {
+        $("#query").val($(event.target).text());
       });
     });
 });
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#search_box").val($("#example1").text());
-      });
-    });  
 </script>
 
 <div id="main" class="sub-page">
@@ -77,14 +64,14 @@ $(document).ready(function() {
   <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
-      <input type="text" id="query" name="q">
+      <input type="text" id="query" name="q" value="{{ q }}">
       <input type="submit" value="Search">
     </ul>
   </form>
 
-  <p><b>Example 1: </b><span id="example1">DVU848 DVU0694 DVU0693 DVU0778 DVU0846</span>
+  <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
     <span id="search_help">(Click to add)</span></p>
-  <p><b>Example 2: </b><span id="example2">thioredoxin, oxidative</span>
+  <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
     <span id="search_help">(Click to add)</span></p>
   </div>
 

@@ -82,9 +82,15 @@
       }
 
       $(document).ready(function() {
-
+        
           // id of Cytoscape Web container div
           var div_id = "cytoscapeweb";
+
+          var bicluster_count = {{ gene.bicluster_set.count }};
+          if (bicluster_count == 0) {
+            $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
+            return;
+          }
 
           // initialization options
           var options = {
@@ -193,10 +199,8 @@
               }
           };
 
-          var django_mem_ids = {{ ret_mem_ids }}.join(",");
-
           $.ajax({
-              url: "/network/graphml?biclusters="+django_mem_ids,
+              url: "/network/graphml?gene={{ gene.name }}",
               success: function(data){
                   if (typeof data !== "string") { 
                       if (window.ActiveXObject) { // IE 
