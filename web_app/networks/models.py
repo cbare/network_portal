@@ -208,6 +208,9 @@ class Bicluster(models.Model):
     def __unicode__(self):
         return "Bicluster " + str(self.k)
 
+    class Meta:
+        ordering = ['k']
+
 class PSSM():
     """
     Position specific scoring matrix. Not a Django model 'cause one PSSM is

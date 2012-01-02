@@ -221,36 +221,12 @@ def gene(request, gene=None, network_id=None):
     # list of IDs for biclusters that this gene belongs to
     bicluster_ids = [ b.id for b in gene.bicluster_set.all() ]
 
-    # get all the regulators of the above biclusters and their total # of conditions
-    regulators = {}
-    bicl_reg_list = {}
-    other_member_regulons = {}
-    total_member_genes = 0
-    json_reg_list = []
-
+    # get regulatory influences for this gene
+    influence_biclusters = []
     for bicluster in member_bicluster:
-        if bicluster.id not in regulators:
-            regulators[bicluster.id] = {}
-            regulators[bicluster.id]['inf'] = bicluster.influences.count()
-            regulators[bicluster.id]['cond'] = bicluster.conditions.count()
-        json_reg_list.append(bicluster.id)
-
-        inf_list = []
-        for item in bicluster.influences.all():
-            inf_list.append(item)
-        bicl_reg_list[bicluster.id] = inf_list
-
-        regulon_members = Bicluster.objects.get(id=bicluster.id)
-        member_genes = regulon_members.genes.all()
-        total_member_genes += member_genes.count()
-
-        gene_list = []
-        for genex in member_genes:
-            gene_info = ()
-            gene_info = (genex.name, genex.description, genex.bicluster_set.all())
-            gene_list.append(gene_info)
-        other_member_regulons[bicluster.id] = gene_list
-    ret_mem_ids = json.JSONEncoder().encode(json_reg_list)
+        for influence in bicluster.influences.all():
+            influence_biclusters.append( (bicluster.id, influence) )
+    influence_biclusters = sorted(influence_biclusters, key=lambda bi: (bi[0], bi[1].name) )
     
     # get neighbor genes
     neighbor_genes = gene.neighbor_genes(network_id)
