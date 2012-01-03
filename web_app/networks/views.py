@@ -134,6 +134,7 @@ def species(request, species=None, species_id=None):
         chromosomes = species.chromosome_set.all()
         organism_info = "organism_info/" + species.short_name + ".html"
         return render_to_response('species.html', locals())
+
     except (ObjectDoesNotExist, AttributeError):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback.print_stack()
