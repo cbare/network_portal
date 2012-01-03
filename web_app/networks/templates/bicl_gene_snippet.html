@@ -1,12 +1,14 @@
-<p>species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
+<h3> Members for Regulon {{ bicluster.id }} </h3>
+<p>
   {% if filter == 'tf' %}
-  transcription factors: {{ gene_count }}
+ There are <b>{{ gene_count }}</b> transcription factors <b>Regulon {{ bicluster.id }}</b>
   {% else %}
-  genes: {{ gene_count }}
+  There are <b>{{ gene_count }}</b> genes in <b> Regulon {{ bicluster.id }}</b>
   {% endif %}
 </p>
 <div id = "main">
 <table id="genes-table">
+  <caption>Gene Member Table </caption>
   <thead>
     <tr>
       <th>Name</th>

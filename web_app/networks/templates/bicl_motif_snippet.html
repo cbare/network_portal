@@ -1,4 +1,14 @@
+<h3> Motif information </h3>
+<p>
+{% if motifs %}
+There are {{ motifs|length }} motifs predicted
+{% else %}
+No motif found
+{% endif %}
+</p>
+<div id="main">
 <table id="motif">
+  <caption> Motif Table </caption>
   <thead>
     <tr>
       <th>Motif Id</th>
@@ -30,3 +40,4 @@
   {% endif %}
   </tbody>
 </table>
+</div>
