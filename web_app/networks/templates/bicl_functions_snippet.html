@@ -1,0 +1,138 @@
+<h3> Functional Enrichment</h3>
+
+<div id = "main">
+
+<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+
+<!-- KEGG Table -->
+<table id="genes-table"><a name = "kegg"></a>
+ <caption>KEGG Enrichment Table </caption>
+  <thead>
+    <tr>
+      <th>Function Name</th>
+      <th>Function Type</th>
+      <th>Unadjusted pvalue</th>
+      <th>Benjamini& Hochberg pvalue</th>
+      <th>Genes with function</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in bicluster_functions %}
+    {% if s.function.type == "kegg" %}
+    {% if s.p_bh < 0.05 %}
+    <tr>
+      <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
+      <td>{{ s.function.type }}</td>
+      <td>{{ s.p }}</td>
+      <td>{{ s.p_bh }}</td>
+      <td>{{ s.gene_count }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+
+<table id="genes-table"><a name = "go"></a>
+ <caption>GO Enrichment Table </caption>
+  <thead>
+    <tr>
+      <th>Function Name</th>
+      <th>Function Type</th>
+      <th>Unadjusted pvalue</th>
+      <th>Benjamini& Hochberg pvalue</th>
+      <th>Genes with function</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in bicluster_functions %}
+    {% if s.function.type == "go" %}
+    {% if s.p_bh < 0.05 %}
+    <tr>
+      <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
+      <td>{{ s.function.type }}</td>
+      <td>{{ s.p }}</td>
+      <td>{{ s.p_bh }}</td>
+      <td>{{ s.gene_count }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+
+<table id="genes-table"><a name = "tigr"></a>
+ <caption>TIGRFam Enrichment Table </caption>
+  <thead>
+    <tr>
+      <th>Function Name</th>
+      <th>Function Type</th>
+      <th>Unadjusted pvalue</th>
+      <th>Benjamini& Hochberg pvalue</th>
+      <th>Genes with function</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in bicluster_functions %}
+    {% if s.function.type == "tigr" %}
+    {% if s.p_bh < 0.05 %}
+    <tr>
+      <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
+      <td>{{ s.function.type }}</td>
+      <td>{{ s.p }}</td>
+      <td>{{ s.p_bh }}</td>
+      <td>{{ s.gene_count }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+
+<table id="genes-table"><a name = "cog"></a>
+ <caption>COG Enrichment Table </caption>
+  <thead>
+    <tr>
+      <th>Function Name</th>
+      <th>Function Type</th>
+      <th>Unadjusted pvalue</th>
+      <th>Benjamini& Hochberg pvalue</th>
+      <th>Genes with function</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in bicluster_functions %}
+    {% if s.function.type == "cog" %}
+    {% if s.p_bh < 0.05 %}
+    <tr>
+      <td><a href="/function/{{s.function.id}}">{{ s.function.name }}</a></td>
+      <td>{{ s.function.type }}</td>
+      <td>{{ s.p }}</td>
+      <td>{{ s.p_bh }}</td>
+      <td>{{ s.gene_count }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<!--    
+{% for func, count in ret_bicl_functions.items %}
+    <tr>
+      <td>{{ s.func }}</td>
+      <td>{{ s.count }}</td>
+      <td>{{ s.function.id }} </td>
+    </tr>
+{% endfor %}
+   </tbody>
+</table> -->
+<br />
+</div>

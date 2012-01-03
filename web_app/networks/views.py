@@ -310,6 +310,17 @@ def bicluster(request, bicluster_id=None):
         if format == 'html':
             return render_to_response('bicluster_snippet.html', locals())
 
+    # get the functions for a bicluster, filtering on a bonferroni p value cutoff of 0.05
+    bicluster_functions = bicluster.bicluster_function_set.all()
+    ret_bicl_functions = {}
+    for f in bicluster_functions:
+        function = Function.objects.get(id=f.function_id)
+        if f.p_b <= 0.05:
+            ret_bicl_functions[function.name] = f.gene_count
+            print ", ".join([ str(x) for x in (function.type,
+                                               function.namespace, function.name, f.gene_count, f.m, f.n, f.k, f.p,
+                                               f.p_bh, f.p_b)])
+
     return render_to_response('bicluster.html', locals())
 
 def regulated_by(request, network_id, regulator):
