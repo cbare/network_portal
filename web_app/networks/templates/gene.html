@@ -36,15 +36,15 @@
 	    {% for bicluster in member_bicluster %}
 	      {% for regulator, influences in bicl_reg_list.items %}
 	        {% if bicluster.id == regulator %}
-	          {% for influence in influences %} 
-	            <tr>
-		      <td><a href="/gene/{{ influence }}">{{ influence }}</a></td>
-		      <td><a href="regulon">{{ regulator }}</a></td>
-		      <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-		      <td><a href="regulon_family">Fis</a></td>
-		      <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-		      <td><a href="regulon_weight">-0.23</a></td>
-		    </tr>
+	          {% for influence in influences %}
+	    <tr>
+	      <td><a href="/gene/{{ influence }}">{{ influence }}</a></td>
+	      <td><a href="regulon">{{ regulator }}</a></td>
+	      <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+	      <td><a href="regulon_family">FNR</a></td>
+	      <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+	      <td><a href="regulon_weight">-0.23</a></td>
+	    </tr>
 	          {% endfor %}
 	        {% endif %}
 	      {% endfor %}
@@ -132,7 +132,7 @@
 	{% include 'gene_network_snippet.html' %}
       </div>
       <div id="tab-regulator">
-	testing regulators tab
+	{% include 'gene_regulator_snippet.html' %}
       </div>
       <div id="tab-motif">
 	{% include 'bicl_motif_snippet.html' %}
