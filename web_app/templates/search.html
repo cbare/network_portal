@@ -73,7 +73,7 @@ $(document).ready(function() {
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
   </div>-->
 <div id="facet-display">
-  <h2>Search</h2>
+  <h5>Search</h5>
   <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
@@ -82,23 +82,24 @@ $(document).ready(function() {
     </ul>
   </form>
 
-  <p><b>Example 1: </b><span id="example1">DVU848 DVU0694 DVU0693 DVU0778 DVU0846</span>
+  <p><b>Example 1: </b><span id="example1">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
     <span id="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span id="example2">thioredoxin, oxidative</span>
     <span id="search_help">(Click to add)</span></p>
   </div>
+</p>
 
  <!-- <div id="search-results">-->
 
     {% if q %}
    <!-- <h3>Search Results</h3>-->
 <!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
-
+<h1></h1>
     {% if results %}
       {% if count == 1 %}
         <p> testing {{ results|length }}</p>
       {% else %}
-    <!--<p>Found {{ gene_count }} gene results for "{{ q }}".</p> -->
+    <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
       {% endif %}
 
 <!-- The following displays a unique list of functions found among
@@ -112,7 +113,8 @@ $(document).ready(function() {
     </ul>
 -->
 <!--    Uncomment if user wants to see Gene: Functions -->
-    <table id="gene-results">
+    
+<table id="gene-results">
       <caption> Search results</caption>
       <tr>
 	<th>Genes</th>
