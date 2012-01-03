@@ -1,38 +1,30 @@
-<h3> Regulon neighbourhood information for {{ gene }} </h3>
-
-<p>Species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
-<b>{{ gene }}</b> has total of </b>{{ total_member_genes }}</a></b> gene neighbors in regulons <b>
-{% for indv in gene.bicluster_set.all %}
-<a href="/bicluster/{{ indv.id }}">{{ indv.id }}</a>, 
-{% endfor %}</b>
-
+{% load filters %}
+<h3> Regulon neighborhood information for {{ gene }} </h3>
+<p>
+<b>{{ gene }}</b> has total of </b>{{ neighbor_genes|length }}</a></b> gene neighbors in regulons
+<b>{{ gene.bicluster_set.all|id|join:", " }}</b>
+</p>
 <div id="main">
+{% if neighbor_genes|length > 0 %}
 <table id="regulon-members-table">
-  <caption> Regulon neighbours</caption>
+  <caption> Gene neighbors</caption>
   <thead>
     <tr>
-      <th>Regulon</th>
       <th>Gene</th>
       <th>Description</th>
       <th>Regulon membership</th>
     </tr>
   </thead>
   <tbody>
-    {% for bicl, genes in other_member_regulons.items %}
-        {% for name, descr, bicls in genes %}
+  {% for neighbor_gene in neighbor_genes %}
     <tr>
-      <td>{{ bicl }}</td>
-      <td><a href="/gene/{{ name }}">{{ name }}</a></td>
-      <td>{{ descr }}</td>
-      <td>
-          {% for bicl in bicls %}
-	    <a href="/bicluster/{{ bicl.id }}">{{ bicl.id }}</a>,
-	  {% endfor %}
-      </td>
+      <td><a href="/gene/{{ neighbor_gene.name }}">{{ neighbor_gene.display_name }}</a></td>
+      <td>{{ neighbor_gene.description }}</td>
+      <td>{{ neighbor_gene.bicluster_set.all|id|join:", " }}</td>
     </tr>
-        {% endfor %}
-    {% endfor %}
+  {% endfor %}
   </tbody>
 </table>
 <br />
+{% endif %}
 </div>

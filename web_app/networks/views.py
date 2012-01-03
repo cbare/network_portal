@@ -61,7 +61,9 @@ def network_cytoscape_web(request):
 def network_as_graphml(request):
     if request.GET.has_key('biclusters'):
         bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
-    biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
+        biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
+    elif request.GET.has_key('gene'):
+        biclusters = Bicluster.objects.filter(genes__name=request.GET['gene'])
     
     expand = request.GET.has_key('expand') and request.GET['expand']=='true'
     
@@ -206,41 +208,29 @@ def gene(request, gene=None, network_id=None):
         gene_count = Gene.objects.count()
         species_count = Species.objects.count()
         return render_to_response('genes_empty.html', locals())
+    
+    # TODO: need to figure out how to handle cases where there's more than one network
+    if network_id:
+        network_id = int(network_id)
+    else:
+        network = gene.species.network_set.all()[:1].get()
+        network_id = network.id
 
     # get all biclusters that the gene is a member of
     member_bicluster = gene.bicluster_set.all()
-    ret_mem_bicl = member_bicluster #json.JSONEncoder().encode(member_bicluster)
+    
+    # list of IDs for biclusters that this gene belongs to
+    bicluster_ids = [ b.id for b in gene.bicluster_set.all() ]
 
-    # get all the regulators of the above biclusters and their total # of conditions
-    regulators = {}
-    bicl_reg_list = {}
-    other_member_regulons = {}
-    total_member_genes = 0
-    json_reg_list = []
-
+    # get regulatory influences for this gene
+    influence_biclusters = []
     for bicluster in member_bicluster:
-        if bicluster.id not in regulators:
-            regulators[bicluster.id] = {}
-            regulators[bicluster.id]['inf'] = bicluster.influences.count()
-            regulators[bicluster.id]['cond'] = bicluster.conditions.count()
-        json_reg_list.append(bicluster.id)
-
-        inf_list = []
-        for item in bicluster.influences.all():
-            inf_list.append(item)
-        bicl_reg_list[bicluster.id] = inf_list
-
-        regulon_members = Bicluster.objects.get(id=bicluster.id)
-        member_genes = regulon_members.genes.all()
-        total_member_genes += member_genes.count()
-
-        gene_list = []
-        for genex in member_genes:
-            gene_info = ()
-            gene_info = (genex.name, genex.description, genex.bicluster_set.all())
-            gene_list.append(gene_info)
-        other_member_regulons[bicluster.id] = gene_list
-    ret_mem_ids = json.JSONEncoder().encode(json_reg_list)
+        for influence in bicluster.influences.all():
+            influence_biclusters.append( (bicluster.id, influence) )
+    influence_biclusters = sorted(influence_biclusters, key=lambda bi: (bi[0], bi[1].name) )
+    
+    # get neighbor genes
+    neighbor_genes = gene.neighbor_genes(network_id)
 
     # compile functions into groups by functional system
     systems = []
@@ -249,12 +239,10 @@ def gene(request, gene=None, network_id=None):
         system['name'] = functional_systems[key].display_name
         system['functions'] = [ "(<a href=\"%s\">%s</a>) %s" % (function.link_to_term(), function.native_id, function.name,) \
                                 for function in functions ]
-        systems.append(system)  
+        systems.append(system)
     
     # if the gene is a transcription factor, how many biclusters does it regulate?
-    if network_id:
-        network_id = int(network_id)
-        count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
+    count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
     
     if request.GET.has_key('format'):
         format = request.GET['format']

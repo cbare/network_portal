@@ -23,33 +23,27 @@
 	    <img src="{{ STATIC_PREFIX }}images/circular.png">
 	  </p>
 
-	  <h3>Regulation</h3>
-	  <table id="gene-regulation">
-	    <tr>
-	      <th class="help">Regulator</th>
-	      <th>Regulon</th>
-	      <th>Mode</th>
-	      <th>Family</th>
-	      <th>Process</th>
-	      <th>Inferelator Weight</th>
-	    </tr>
-	    {% for bicluster in member_bicluster %}
-	      {% for regulator, influences in bicl_reg_list.items %}
-	        {% if bicluster.id == regulator %}
-	          {% for influence in influences %}
-	    <tr>
-	      <td><a href="/gene/{{ influence }}">{{ influence }}</a></td>
-	      <td><a href="regulon">{{ regulator }}</a></td>
-	      <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-	      <td><a href="regulon_family">FNR</a></td>
-	      <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-	      <td><a href="regulon_weight">-0.23</a></td>
-	    </tr>
-	          {% endfor %}
-	        {% endif %}
-	      {% endfor %}
-	    {% endfor %}
-	  </table>
+    <h3>Regulation</h3>
+    <table id="gene-regulation">
+      <tr>
+        <th class="help">Regulator</th>
+        <th>Regulon</th>
+        <th>Mode</th>
+        <th>Family</th>
+        <th>Process</th>
+        <th>Inferelator Weight</th>
+      </tr>
+      {% for bicluster_id, influence in influence_biclusters %}
+      <tr>
+        <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+        <td><a href="regulon">{{ bicluster_id }}</a></td>
+        <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+        <td><a href="regulon_family">Fis</a></td>
+        <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+        <td><a href="regulon_weight">-0.23</a></td>
+      </tr>
+      {% endfor %}
+    </table>
 
 	  <h3>Motifs</h3>
 	  <table>
@@ -99,16 +93,8 @@
 	      {% for bicluster in member_bicluster %}
 	    <tr>
 	      <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.id }}</a></td>
-	      {% for reg, val in regulators.items %}
-	        {% for id, count in val.items %}
-	        {% if reg == bicluster.id and id == 'inf' %}
-	      <td><a href="#">{{ count }}</a></td>
-	        {% endif %}
-	        {% if reg == bicluster.id and id == 'cond' %}
-	      <td><a href="#">{{ count }}</a></td>
-	        {% endif %}
-	        {% endfor %}
-	      {% endfor %}
+	      <td><a href="#">{{ bicluster.influences.count }}</a></td>
+	      <td><a href="#">{{ bicluster.conditions.count }}</a></td>
 	    </tr>
 	      {% endfor %}
 	  </table>
@@ -132,13 +118,13 @@
 	{% include 'gene_network_snippet.html' %}
       </div>
       <div id="tab-regulator">
-	{% include 'gene_regulator_snippet.html' %}
+        {% include 'gene_regulation_snippet.html' %}
       </div>
       <div id="tab-motif">
 	{% include 'bicl_motif_snippet.html' %}
       </div>
       <div id="tab-function">
-	FUNCTION tab
+	{% include 'gene_function_snippet.html' %}
       </div>
       <div id="tab-gene">
 	{% include 'gene_member_snippet.html' %}

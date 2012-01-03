@@ -12,9 +12,9 @@ $(function() {
 
     $("#query").autocomplete({
         source: function( request, response ) {
-                                 console.debug("term: " + request.term);
+                //console.debug("term: " + request.term);
                 $.ajax({
-                        url:      "http://ec2-50-17-134-33.compute-1.amazonaws.com:8983/solr/suggest/?wt=json&json.wrf=?",
+                        url:      "http://{{ request.META.SERVER_NAME }}:8983/solr/suggest/?wt=json&json.wrf=?",
                         dataType: "jsonp",
                         data: { q: request.term
                         },
@@ -39,24 +39,11 @@ $(function() {
     });
 
     $(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#query").val($("#example1").text());
-      });
-    });
-    $(document).ready(function() {
-      $("#example2").click(function(event) {
-        $("#query").val($("#example2").text());
+      $(".example-search").click(function(event) {
+        $("#query").val($(event.target).text());
       });
     });
 });
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#search_box").val($("#example1").text());
-      });
-    });  
 </script>
 
 <div id="main" class="sub-page">
@@ -72,29 +59,35 @@ $(document).ready(function() {
       </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
   </div>-->
-<div id="facet-display">
+
+
   <h5>Search</h5>
-  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+ <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
-      <input type="text" id="query" name="q">
+      <input type="text" id="query" name="q" value="{{ q }}">
       <input type="submit" value="Search">
     </ul>
   </form>
+  <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
 
-  <p><b>Example 1: </b><span id="example1">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
     <span id="search_help">(Click to add)</span></p>
-  <p><b>Example 2: </b><span id="example2">thioredoxin, oxidative</span>
+  <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
     <span id="search_help">(Click to add)</span></p>
+
+  
+  {% if error_message %}
+  <div id="error_message">
+    <h4>Search Error</h4>
+    <p>{{ error_message }}</p>
   </div>
-</p>
-
+  {% endif %}
  <!-- <div id="search-results">-->
 
     {% if q %}
    <!-- <h3>Search Results</h3>-->
 <!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
-<h1></h1>
+
     {% if results %}
       {% if count == 1 %}
         <p> testing {{ results|length }}</p>
@@ -195,6 +188,8 @@ $(document).ready(function() {
       <p>No regulon results for query &ldquo;{{ q }}&rdquo;</p>
       {% endif %} <!-- if biclusters -->
 
+      {% else %}
+      <p><b>No results found!</b></p>
       {% endif %} <!-- for results -->
       {% endif %} <!-- if q -->
       

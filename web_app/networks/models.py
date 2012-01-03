@@ -143,11 +143,28 @@ class Gene(models.Model):
         finally:
             cursor.close()
     
+    def neighbor_genes(self, network):
+        """
+        Return this genes neighbors, the set of genes with comembership in some bicluster with this gene.
+        """
+        if type(network)==int:
+            network_id = network
+        else:
+            network_id = network.id
+        result = set()
+        for bicluster in self.bicluster_set.all():
+            result.update(bicluster.genes.all())
+        return sorted(result)
+    
+    def __cmp__(self, other):
+        return cmp(self.name, other.name)
+    
     def __unicode__(self):
         return self.name
 
     class Meta:
         ordering = ['name']
+
 
 class Influence(models.Model):
     """
@@ -190,6 +207,9 @@ class Bicluster(models.Model):
     
     def __unicode__(self):
         return "Bicluster " + str(self.k)
+
+    class Meta:
+        ordering = ['k']
 
 class PSSM():
     """
