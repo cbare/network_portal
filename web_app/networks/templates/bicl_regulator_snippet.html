@@ -6,7 +6,7 @@
     <tr>
       <th>Regulator Name</th>
       <th>Regulator Type</th>
-      <th>Desc </th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
@@ -14,7 +14,8 @@
     <tr>
       <td>{{ influence.name }}</td>
       <td>{{ influence.type }}</td>
-      <td>{{ influence.id }}</td>
+     <td> {{ influence.biclusters_set.all }}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
