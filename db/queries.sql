@@ -238,4 +238,29 @@ and f.type='go'
 and f.namespace='biological_process';
 
 
+# get a translation table between kegg pathways and kegg subcategories
+select f1.name, f1.type, f1.namespace, fr.type, f2.name, f2.namespace
+from networks_function f1
+join networks_function_relationships fr on f1.id = fr.target_id
+join networks_function f2 on f2.id = fr.function_id
+where fr.type='parent'
+and f1.type='kegg'
+and f1.namespace='kegg subcategory'
+
+select f1.name, f1.type, f1.namespace, fr.type, f2.name, f2.namespace
+from networks_function f1
+join networks_function_relationships fr on f1.id = fr.target_id
+join networks_function f2 on f2.id = fr.function_id
+where fr.type='parent'
+and f1.type='cog'
+and f1.namespace='cog subcategory'
+and f1.name != 'General function prediction only'
+and f1.name != 'Function unknown'
+
+select f1.id, f1.name
+from networks_function f1
+join networks_function_relationships fr on f1.id = fr.target_id
+join networks_function f2 on f2.id = fr.function_id
+where fr.type='parent'
+and f2.id = 
 
