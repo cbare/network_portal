@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block content %}
 
 <script type="text/javascript">
@@ -49,11 +49,33 @@ $(function() {
 });
 </script>
 <div id="main">
+  <h5>Welcome to Network Portal  <img src="{{ STATIC_PREFIX }}images/logo_small.png" title="this is a image title" style="background:none;border:0px;position:relative; float:right;"></h5>
+<p> Network Portal provides analysis and visualization tools for selected gene regulatory networks to aid researchers in biological discovery and hypothesis development. [<a href="/about"> ..read more</a>]  
+</p>
+
+<h5>Method</h5> 
+<p> Network Portal integrates identification of conditionally co-regulated group of genes by using <a href="http://baliga.systemsbiology.net/cmonkey">cMonkey</a> and inference of regulatory influences by using <a href="http://baliga.systemsbiology.net/drupal/content/inferelator">Inferelator</a>. In addition, it is integrated with <a href="http://microbesonline.org">MicrobesOnline</a> for genomic information and <a href="http://regprecise.lbl.gov/RegPrecise">RegPrecise</a> for collection of manually curated regulatory inferences. [<a href="/about"> ..read more</a>]
+</p>
+
+<h5>Data Sources</h5>
+<a href="http://microbesonline.org"><img height=30 src="{{ STATIC_PREFIX }}images/microbesOnline150.gif"></a>
+<a href="http://regprecise.lbl.gov/RegPrecise/"><img height=30 src="{{ STATIC_PREFIX }}images/regprecise.gif"></a>
+<a href="http://www.ncbi.nlm.nih.gov/"><img height=30 src="{{ STATIC_PREFIX }}images/ncbi.gif"></a>
+<a href="http://www.genome.jp/kegg/"><img height=30 src="{{ STATIC_PREFIX }}images/kegg.gif"></a>
+<a href="http://www.geneontology.org/"><img height=30 caption="go" src="{{ STATIC_PREFIX }}images/go.jpg"></a>
+<p></p>
+
+ <h5> Developed by </h5>
+   
+<a href="http://systemsbiology.org">  <img  height=60 style="background:none;border:0px; position:relative; bottom:-10px;" src="{{ STATIC_PREFIX }}images/isb.gif"></a>
+<a href="http://baliga.systemsbiology.net">  <img  height=60 style="background:none;border:0px;" src="{{ STATIC_PREFIX }}images/baliga.png"></a>
+
+<!-- Begin Search Box --
   <div id="facet-display">
-  <h2>Search</h2>
+  <h5>Quick Search</h5>
   <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
-    <ul id="search">
+    <ul id="qsearch">
       <input type="text" id="query" name="q">
       <input type="submit" value="Search">
     </ul>
@@ -64,40 +86,28 @@ $(function() {
   <p><b>Example 2: </b><span id="example2">thioredoxin, oxidative</span>
     <span id="search_help">(Click to add)</span></p>
   </div>
+-- End Search Box -->
 </div><!-- End #main -->
-<div id="sidebar">
-  <h3>About</h3>
-  <p><strong>Network Portal</strong> aims to provide a comprehensive resource for analyzing and visualizing biological networks.
-  Network Portal was developed in <a href="http://baliga.systemsbiology.net/">Baliga Lab</a> at
-  <a href="http://systemsbiology.org">Institute for Systems Biology</a>.<br><a href="/about">...read more</a></p>
 
-  <h3>Portal News</h3>
-  <ul class="sidemenu">
-    <li>
-      <a href="/species/1">New species available<br />
-	<span>D. vulgaris hildenborough
-	</span>
-      </a>
-    </li>
-    <li>
-      <a href="/network/1">New network available<br />
-	<span>D. vulgaris Network is now available
-	</span>
-      </a>
-    </li>
-  </ul>
-  
-  <h3>Portal Statistics</h3>
+<div id="sidebar">
+  <h3>Quick Search</h3>
+<span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+  <form id="qsearch" action="/search/" method="get">
+      <input class="tbox" type="text" id="query" name="q" value="{{ q }}">
+      <input class="btn" type="image" name="searchsubmit" value="Search" src="{{STATIC_PREFIX}}images/search.gif">
+  </form>
+
+  <h3>Statistics</h3>
   <table>
     <tr>
       <th>Species</th>
       <th>Networks</th>
-      <th>Users</th>
+      <th>Version</th>
     </tr>
     <tr>
       <td><a href="/species/">{{ sp_count }}</a></td>
       <td><a href="/networks/">{{ net_count }}</a></td>
-      <td><a href="users.html">5</a></td>	  
+      <td> {{ version }}</td>	  
     </tr>
     <tr>
       <th>Regulons</th>
@@ -106,9 +116,31 @@ $(function() {
     </tr>
     <tr>
       <td><a href="biclusters.html">{{ bicl_count }}</a></td>
-      <td><a href="regulators.html">29</a></td>
+      <td>
+      <a href="/genes/dvu?filter=tf">{{ transcription_factor|length }}</a>
+      </td>
       <td><a href="motifs.html">{{ motif_count }}</a></td>
     </tr>
   </table>
+
+  <h3>What's New</h3>
+  <ul class="sidemenu">
+    <li> 
+      This version of Network Portal includes 3 organisms
+    </li>
+    <li>
+     Regulon functional enrichments from KEGG, GO, COG and TIGRFam are now implemented 
+    </li>
+  </ul>
+
+ <h3>Coming Soon</h3>
+  <ul class="sidemenu">
+    <li> 
+      New organisms; E. coli, Leishmania, H. pylori and more...
+    </li>
+    <li>
+     New Circular Regulon visualizer
+    </li>
+  </ul>
 </div><!-- end #sidebar -->
 {% endblock %}

@@ -21,13 +21,13 @@ def home(request):
     sp_count = Species.objects.count()
     net_count = Network.objects.count()
     motif_count = Motif.objects.count()
-
+    version = "0.0.1"
     #return render_to_response('home.html', {}, context_instance=RequestContext(request))
     return render_to_response('home.html', locals())
 
 def about(request):
     version = "0.0.1"
-    return render_to_response('about.html', locals())
+    return render_to_response('about.html', locals()) 
 
 def contact(request):
     return render_to_response('contact.html', locals())

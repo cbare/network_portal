@@ -1,0 +1,30 @@
+<div id="main">
+<table id="gene-regulation">
+  <caption> Regulators for {{ gene.name }}</caption>
+            <tr>
+              <th class="help">Regulator</th>
+              <th>Regulon</th>
+              <th>Mode</th>
+              <th>Family</th>
+              <th>Process</th>
+              <th>Inferelator Weight</th>
+            </tr>
+            {% for bicluster in member_bicluster %}
+              {% for regulator, influences in bicl_reg_list.items %}
+                {% if bicluster.id == regulator %}
+                  {% for influence in influences %}
+            <tr>
+              <td><a href="/gene/{{ influence }}">{{ influence }}</a></td>
+              <td><a href="regulon">{{ regulator }}</a></td>
+              <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+              <td><a href="regulon_family">FNR</a></td>
+              <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+              <td><a href="regulon_weight">-0.23</a></td>
+            </tr>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </table>
+</div>
+<div id="canvas"></div>

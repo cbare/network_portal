@@ -1,5 +1,10 @@
+<h3> Functional Enrichment for {{ gene }}</h3>
 {% if gene.functions.count %}
+<p>
+<b>{{ gene }}</b> is enriched for <b>{{ gene.functions.count }}</b> functions.
+<div id ="main">
 <table id="gene-function-table">
+  <caption> Enrichment Table</caption>
   <thead>
     <tr>
       <th>Function</th>
@@ -9,7 +14,7 @@
   <tbody>
     {% for function in gene.functions.all %}
     <tr>
-      <td>{{ function.name }}</td>
+      <td><a href="/function/{{ function.id }}">{{ function.name }}</a></td>
       <td>{{ function.type }}, {{ function.namespace}}</td>
     </tr>
     {% endfor %}
@@ -18,3 +23,4 @@
 {% else %}
 <p>no annotated functions...</p>
 {% endif %}
+</div>

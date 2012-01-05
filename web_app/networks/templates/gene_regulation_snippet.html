@@ -1,10 +1,10 @@
+ <h3> Regulation information for {{ gene }} </h3>
+<p>
+<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
 <div class="tab-contents">
-  
-  <h3> Regulon neighborhood information for {{ gene }} </h3>
-
-  <p>Species: <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
-
+<div id="main">
   <table id="gene-regulation">
+   <caption> Regulators for {{ gene }}
     <tr>
       <th class="help">Regulator</th>
       <th>Regulon</th>
@@ -24,5 +24,5 @@
     </tr>
     {% endfor %}
   </table>
-
+</div>
 </div>
