@@ -13,6 +13,71 @@ config$db.name = "network_portal"
 config$db.host = "localhost"
 
 
+# for each bicluster count genes grouped by function
+# return a data.frame w/ columns bicluster_id, function_id, count
+get.bicluster.function.counts <- function(con, network.id, type, ancestor.map=NULL) {
+
+  # don't limit this to a specific namespace, 'cause functions are annotated at
+  # the most specific level possible. We map them up to higher levels through
+  # the ancestor.map
+
+  #count number of genes for each function in each bicluster for a species
+  sql <- sprintf(paste(
+    "select b.id as bicluster_id, f.id as function_id, count(bg.gene_id) as count",
+    "from networks_bicluster b",
+    "join networks_bicluster_genes bg on b.id=bg.bicluster_id",
+    "join networks_gene_function gf on gf.gene_id=bg.gene_id",
+    "join networks_function f on gf.function_id=f.id",
+    "where b.network_id = %d",
+    "and f.type='%s'",
+    "group by b.id, f.id",
+    "order by b.id, f.id;"),
+    network.id, type)
+  df <- dbGetQuery(con, sql)
+  
+  # map lower level functions to their ancestors
+  if (is.null(ancestor.map))
+    ancestor.map <- get.ancestor.map(con, df$function_id)
+  merged.df <- merge(df, ancestor.map, by='function_id')
+  mm <- data.frame(`bicluster_id`=merged.df$`bicluster_id`, `function_id`=merged.df$`ancestor_id`, `count`=merged.df$`count`)
+  mm2 <- ddply(mm, .(bicluster_id, function_id), function(r) count=sum(r$count))
+  colnames(mm2)[3] <- 'count'
+  return(mm2)
+}
+
+# for each function, count all genes in genome with that function
+# return a data.frame w/ columns function_id, count
+get.function.gene.counts <- function(con, gene.ids, type=NULL, ancestor.map=NULL) {
+  
+  # don't limit this to a specific namespace, 'cause functions are annotated at
+  # the most specific level possible. We map them up to higher levels through
+  # the ancestor.map
+
+  # count total number of genes in the genome for each function
+  # (independent of a particular network, except that the set of
+  #  genes considered here should be the same as those considered
+  #  in the biclustering and network inference.)
+  sql <- sprintf(paste(
+    "select gf.function_id, count(gf.gene_id)",
+    "from networks_gene_function gf",
+    "join networks_gene g on g.id = gf.gene_id",
+    "join networks_function f on gf.function_id=f.id",
+    "where g.id in (%s)",
+    if (is.null(type)) { "" } else { sprintf("and f.type='%s'", type) },
+    "group by gf.function_id",
+    "order by gf.function_id;"),
+    paste(gene.ids,collapse=","), type)
+  df <- dbGetQuery(con, sql)
+  
+  if (is.null(ancestor.map))
+    ancestor.map <- get.ancestor.map(con, df$function_id)
+  merged.df <- merge(df, ancestor.map, by='function_id')
+  mm <- data.frame(`function_id`=merged.df$`ancestor_id`, `count`=merged.df$`count`)
+  mm2 <- ddply(mm, .(function_id), function(r) count=sum(r$count))
+  colnames(mm2)[2] <- 'count'
+  return(mm2)
+}
+
 
 # compute functional enrichment for all biclusters in the given network
 # with the given system and namespace. If gene.ids are not given, use the
@@ -38,7 +103,7 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
       # Here, we count the genes that are in some bicluster.
       # From the cMonkey side, the number we want might be this
       # nrow(env$ratios[[1]]). although Dave says these are filtered to
-      # remove genes that don't change much. Might we want to include thos
+      # remove genes that don't change much. Might we want to include those
       # genes in our background as well?
       # If it's true that each gene will be in at least one
       # bicluster, the count below will work. Otherwise, we should
@@ -55,7 +120,7 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
     }
     total.genes <- length(gene.ids)
     
-    #count number of genes in each bicluster for the species
+    #count number of genes in each bicluster in the network
     sql <- sprintf(paste(
       "select b.id as bicluster_id, count(bg.gene_id) as gene_count",
       "from networks_bicluster b ",
@@ -65,52 +130,16 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
       "order by b.id;"),
       network.id)
     bicluster.gene.counts <- dbGetQuery(con, sql)
-
-    # restrict functions to a particular type and namespace
-    # namespace has meaning in GO where it comes from the set
-    # {molecular_function, cellular_component, biological_process}
-    # in other systems it marks category/subcategory levels of the hierarchy
-    if (is.null(type)) {
-      where.type = ""
-    }
-    else {
-      where.type = sprintf("and f.type='%s'", type)
-    }
-    if (is.null(namespace)) {
-      where.namespace = ""
-    }
-    else {
-      where.namespace = sprintf("and f.namespace='%s'", namespace)
-    }
     
-    #count number of genes for each function in each bicluster for a species
-    sql <- sprintf(paste(
-      "select b.id as bicluster_id, f.id as function_id, count(bg.gene_id) as count",
-      "from networks_bicluster b",
-      "join networks_bicluster_genes bg on b.id=bg.bicluster_id",
-      "join networks_gene_function gf on gf.gene_id=bg.gene_id",
-      "join networks_function f on gf.function_id=f.id",
-      "where b.network_id = %d",
-      where.type,
-      where.namespace,
-      "group by b.id, f.id",
-      "order by b.id, f.id;"),
-      network.id)
-    bicluster.function.counts <- dbGetQuery(con, sql)
+    ancestor.map <- get.ancestor.map(con,type=type, namespace=namespace)
     
-    # count total number of genes for each function
-    sql <- sprintf(paste(
-      "select gf.function_id, count(gf.gene_id)",
-      "from networks_gene_function gf",
-      "join networks_gene g on g.id = gf.gene_id",
-      "join networks_function f on gf.function_id=f.id",
-      "where g.id in (%s)",
-      where.type,
-      where.namespace,
-      "group by gf.function_id",
-      "order by gf.function_id;"),
-      paste(gene.ids,collapse=","))
-    function.gene.counts <- dbGetQuery(con, sql)
+    # for each bicluster count genes grouped by function
+    # return a data.frame w/ columns bicluster_id, function_id, count
+    bicluster.function.counts <- get.bicluster.function.counts(con, network.id, type, ancestor.map)
+    
+    # for each function, count all genes in genome with that function
+    # return a data.frame w/ columns function_id, count
+    function.gene.counts <- get.function.gene.counts(con, gene.ids, type, ancestor.map)
     
     # phyper(q, m, n, k)
     # q = number of white balls drawn without replacement from an urn
@@ -134,9 +163,20 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
     p.bh <- p.adjust(p, method='BH')
     p.b  <- p.adjust(p, method='bonferroni')
     
+    sql <- sprintf(paste(
+      "select id, native_id, name, namespace ",
+      "from networks_function",
+      "where type='%s';"),
+      type)
+    functions <- dbGetQuery(con, sql)
+    functions <- functions[ match(bicluster.function.counts$function_id, functions$id), ]
+    
     # add columns to data frame
     return(data.frame(bicluster.id=bicluster.function.counts$bicluster_id,
                       function.id=bicluster.function.counts$function_id,
+                      native_id=functions$native_id,
+                      name=functions$name,
+                      namespace=functions$namespace,
                       gene.count=q,
                       m,n,k,p,p.bh, p.b))
   },
@@ -199,6 +239,7 @@ get.gene2go <- function(species.id, namespace='biological_process') {
   })
 }
 
+# pull the networks table into a data frame
 get.networks <- function() {
   tryCatch(
   expr={
@@ -236,6 +277,180 @@ let.it.rip <- function(insert=F) {
     }
   }
 }
+
+# read a mapping from a COG function to its parent category, which can be used to
+# compute enrichment at the higher level.
+get.hierarchy.map <- function() {
+  tryCatch(
+  expr={
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    
+    # retreive a set of mappings from cog subcategory to COG, excluding two generic categories
+    sql <- paste(
+      "select f1.id, f1.name, f2.id, f2.name",
+      "from networks_function f1",
+      "join networks_function_relationships fr on f1.id = fr.function_id",
+      "join networks_function f2 on f2.id = fr.target_id",
+      "where fr.type='parent'",
+      "and f1.type='cog'",
+      "and f1.namespace='cog'",
+      "and f2.type='cog'",
+      "and f2.namespace='cog subcategory'")
+    return(dbGetQuery(con, sql))
+  },
+  finally={
+    dbDisconnect(con)
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+  })
+}
+
+# read a mapping from a COG function to its parent category, which can be used to
+# compute enrichment at the higher level.
+get.tigr.hierarchy.map <- function() {
+  tryCatch(
+  expr={
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    
+    # retreive a set of mappings from cog subcategory to COG, excluding two generic categories
+    sql <- paste(
+      "select f1.id, f1.name, f2.id, f2.name",
+      "from networks_function f1",
+      "join networks_function_relationships fr on f1.id = fr.function_id",
+      "join networks_function f2 on f2.id = fr.target_id",
+      "where fr.type='parent'",
+      "and f1.type='tigr'",
+      "and f1.namespace='tigrfam'",
+      "and f2.type='tigr'",
+      "and f2.namespace='tigr sub1role'")
+    return(dbGetQuery(con, sql))
+  },
+  finally={
+    dbDisconnect(con)
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+  })
+}
+
+# count child functions of the function with the given id
+count.children <- function(con, id) {
+  sql <- sprintf(paste(
+    "select count(fr.function_id)",
+    "from networks_function_relationships fr",
+    "where fr.type='parent'",
+    "and fr.target_id = %d"),
+    id)
+  return( dbGetQuery(con, sql)[1,1] )
+}
+
+# return a data.frame with function ids, names for children of the given function id
+get.children <- function(con, id) {
+  sql <- sprintf(paste(
+    "select f1.id, f1.name",
+    "from networks_function f1",
+    "join networks_function_relationships fr on f1.id = fr.function_id",
+    "join networks_function f2 on f2.id = fr.target_id",
+    "where fr.type='parent'",
+    "and f2.id = %d"),
+    id)
+  children <- dbGetQuery(con, sql)
+}
+
+# return a vector containing ids of all descendent from the given function id
+get.descendants <- function(con, id) {
+  if (count.children(con, children[i,'id']) == 0) {
+    return( vector() )
+  }
+  children <- get.children(con, id)
+  descendant.ids <- children$id
+  for (child_id in children$id) {
+    descendant.ids <- append(descendant.ids, get.descendants(con, child_id))
+  }
+  return( descendant.ids )
+}
+
+get.hierarchy.map <- function(type, namespace) {
+  tryCatch(
+  expr={
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    
+    # retrieve a set of mappings from cog subcategory to COG, excluding two generic categories
+    sql <- sprintf(paste(
+      "select id, name",
+      "from networks_function",
+      "where type='%s'",
+      "and namespace='%s'"),
+      type, namespace)
+    parents <- dbGetQuery(con, sql)
+
+    hierarchy.map <- list()
+    for (i in 1:nrow(parents)) {
+      id <- parents[i,'id']
+      hierarchy.map[[as.character(id)]] <- data.frame(parent.function.id=id, descendant.id=c(id, get.descendants(con, id)))
+    }
+    
+    do.call(rbind, hierarchy.map)
+  },
+  finally={
+    dbDisconnect(con)
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+  })
+}
+
+# given a set of function ids, return their parent functions as a vector
+get.parents <- function(con, function_ids) {
+  sql <- sprintf(paste(
+    "select target_id",
+    "from networks_function_relationships",
+    "where function_id in (%s)"),
+    paste(function_ids,collapse=","))
+  df <- dbGetQuery(con, sql)
+  if (nrow(df)>0) return(df$target_id) else return(integer(0))
+}
+
+# given a set of function ids, return a vector of their ancestor's ids
+get.ancestors <- function(con, function_ids) {
+  ancestors <- get.parents(con, function_ids)
+  if (length(ancestors) > 0) {
+    ancestors <- c(ancestors, get.ancestors(con, ancestors))
+  }
+  return(ancestors)
+}
+
+# return a data.frame with two columns, function_id and ancestor_id mapping a function
+# to it's ancestors, where a function is considered to be it's own ancestor.
+get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) {
+  if (is.null(function_ids)) {
+    sql <- sprintf(paste("select id from networks_function where type='%s';"),type)
+    function_ids <- dbGetQuery(con, sql)$id
+  }
+  results <- list()
+  for (id in function_ids) {
+    results[[as.character(id)]] <- data.frame(function_id=id, ancestor_id=c(id, get.ancestors(con, id)))
+  }
+  df <- do.call(rbind, results)
+  
+  if (!is.null(namespace)) {
+    sql <- sprintf(paste(
+      "select id",
+      "from networks_function",
+      "where type='%s'",
+      "and namespace='%s';"),
+      type,namespace)
+    namespaces <- dbGetQuery(con, sql)
+    # this is an inner join, so it includes only ancestors that are of the requested namespace
+    merged <- merge(df, namespaces, by.x='ancestor_id', by.y='id')
+    df <- data.frame(function_id=merged$function_id, ancestor_id=merged$ancestor_id)
+  }
+  
+  return(df)
+}
+
+# ...for a different form of hierarchy.map which was a list of descendants for each parent
+# find.ancestors <- function(descendants, id) {
+#   as.integer(names(which(sapply(descendants, function(d) id %in% d))))
+# }
 
 # geneList <- factor(as.integer(names(gene2go) %in% sig.genes))
 # names(geneList) <- names(gene2go)

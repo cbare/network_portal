@@ -12,6 +12,18 @@ Home page
   Make news into RSS / Atom / or Twitter feed
 
 
+Data
+----
+  functional enrichment for biclusters
+   * at subcategory level
+   * use TopGO for GO annotations
+  import betas
+   * display activation/repression in networks
+  import condition descriptions
+   * see email from Dave Reiss
+  import data for links to RegPrecise
+
+
 Search
 ------
   Return genes, functions, biclusters, species
