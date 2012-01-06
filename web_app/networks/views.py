@@ -310,7 +310,10 @@ def bicluster(request, bicluster_id=None):
                                                function.namespace, function.name, f.gene_count, f.m, f.n, f.k, f.p,
                                                f.p_bh, f.p_b)])
 
-    return render_to_response('bicluster.html', locals())
+    variables = locals()
+    variables.update({'functional_systems':functional_systems})
+    
+    return render_to_response('bicluster.html', variables )
 
 def regulated_by(request, network_id, regulator):
     gene = Gene.objects.get(name=regulator)

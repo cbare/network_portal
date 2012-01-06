@@ -265,3 +265,14 @@ where fr.type='parent'
 and f2.id = 
 
 select * from networks_function where id in (40535,40616,40751,40753,40775,40797,40892,40905,41177,41240,41287,41288,41296,41412,41838,41895,42021,42073,42093,42124,42206,42207,42210,42323,42891,42953,43063);
+
+
+# get biclusters with significant enrichment for the kegg subcategory 'cellular motility'
+select b.id as bicluster_id, b.k as bicluster_k, f.type, f.namespace, f.native_id, f.name, bf.gene_count, bf.k, bf.p_bh
+from networks_bicluster_function bf
+join networks_function f on bf.function_id=f.id
+join networks_bicluster b on b.id=bf.bicluster_id
+where f.name ilike '%motil%'
+and f.namespace='kegg subcategory'
+and bf.p_b < 0.05
+and b.network_id=1;

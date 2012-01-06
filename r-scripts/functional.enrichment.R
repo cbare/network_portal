@@ -278,17 +278,18 @@ get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) 
 }
 
 let.it.rip <- function(insert=F) {
-  systems = list( c(type='kegg', namespace='kegg pathway'),
-                  c(type='tigr', namespace='tigrfam'),
-                  c(type='go',   namespace='biological_process'),
-                  c(type='go',   namespace='molecular_function'),
-                  c(type='cog',  namespace='cog') )
-  
+  systems = list( c(type='kegg', namespace='kegg subcategory'),
+                  c(type='kegg', namespace='kegg category'),
+                  c(type='tigr', namespace='tigr sub1role'),
+                  c(type='tigr', namespace='tigr mainrole'),
+                  c(type='cog',  namespace='cog subcategory'),
+                  c(type='cog',  namespace='cog category') )
+
   networks <- get.networks()
   for (id in networks$id) {
     for (system in systems) {
       en <- enrichment(id, system['type'], system['namespace'])
-      cat("enrichment network", id, "type=", system['type'], "namespace=", system['namespace'], "\n")
+      cat("enrichment network=", id, "type=", system['type'], "namespace=", system['namespace'], "\n")
       cat("dim(en) =", dim(en), "\n")
       cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
       cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
