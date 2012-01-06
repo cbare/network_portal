@@ -16,7 +16,7 @@
     {% for bicluster_id, influence in influence_biclusters %}
     <tr>
       <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
-      <td><a href="regulon">{{ bicluster_id }}</a></td>
+      <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
       <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
       <td><a href="regulon_family">Fis</a></td>
       <td><a href="regulon_process">Pyruvate Oxidation</a></td>

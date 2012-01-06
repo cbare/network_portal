@@ -2,7 +2,7 @@
 <h3> Regulon neighborhood information for {{ gene }} </h3>
 <p>
 <b>{{ gene }}</b> has total of </b>{{ neighbor_genes|length }}</a></b> gene neighbors in regulons
-<b>{{ gene.bicluster_set.all|id|join:", " }}</b>
+<b>{{ gene.bicluster_set.all|bicluster_links }}</b>
 </p>
 <div id="main">
 {% if neighbor_genes|length > 0 %}
@@ -20,7 +20,7 @@
     <tr>
       <td><a href="/gene/{{ neighbor_gene.name }}">{{ neighbor_gene.display_name }}</a></td>
       <td>{{ neighbor_gene.description }}</td>
-      <td>{{ neighbor_gene.bicluster_set.all|id|join:", " }}</td>
+      <td>{{ neighbor_gene.bicluster_set.all|bicluster_links }}</td>
     </tr>
   {% endfor %}
   </tbody>

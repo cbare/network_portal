@@ -22,25 +22,23 @@ Data
   import condition descriptions
    * see email from Dave Reiss
   import data for links to RegPrecise
+  import VIMSS IDs for linking to Microbes Online (in genomeInfo tsv files)
 
 
 Search
 ------
   Return genes, functions, biclusters, species
-  Accepts as input: genes, functions, species, plus related terms from descriptions and synonyms
-   * examples:
-      VNG0536*
-      sirR (any capitalization)
-      1447364 (gene ID)
-      "transcription repressor"
-      hal
-      halo
-      halobacterium
-      dvu
-      dvh
-      GO:0060286
-      flagellar cell motility
-      Alanine aspartate and glutamate metabolism
+  Accepts as input: genes, functions, species, plus related terms from descriptions and synonyms,
+  examples:
+    * VNG0536*
+    * sirR (any capitalization)
+    * 1447364 (gene ID)
+    * "transcription repressor"
+    * hal, halo, halobacterium
+    * dvu, dvh
+    * GO:0060286
+    * flagellar cell motility
+    * Alanine aspartate and glutamate metabolism
   limit search to a specific organism or network
 
 

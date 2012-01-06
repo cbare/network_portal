@@ -15,10 +15,9 @@
   <tbody>
     {% for influence in influences %}
     <tr>
-      <td>{{ influence.name }}</td>
+      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
       <td>{{ influence.type }}</td>
-     <td> {{ influence.biclusters_set.all }}
-      </td>
+      <td>{{ influence.biclusters_set.all }}</td>
     </tr>
     {% endfor %}
   </tbody>
