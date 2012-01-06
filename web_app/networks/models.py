@@ -204,9 +204,26 @@ class Bicluster(models.Model):
     conditions = models.ManyToManyField(Condition)
     genes = models.ManyToManyField(Gene)
     influences = models.ManyToManyField(Influence, symmetrical=False)
+    functions = models.ManyToManyField('Function', through='Bicluster_Function')
     
     def __unicode__(self):
         return "Bicluster " + str(self.k)
+
+    class Meta:
+        ordering = ['k']
+
+# find biclusters with a given function
+# optionally, restrict to a particular network, or filter by
+# bonferroni p value or benjamini-hochberg p value
+def find_biclusters_with_function(function, network=None, p_b_cutoff=None, p_bh_cutoff=None):
+    args = {'functions':function}
+    if network:
+        args['network'] = network
+    if p_b_cutoff:
+        args['bicluster_function__p_b__lte'] = p_b_cutoff
+    elif p_bh_cutoff:
+        args['bicluster_function__p_bh__lte'] = p_bh_cutoff
+    return Bicluster.objects.filter(**args)
 
 class PSSM():
     """

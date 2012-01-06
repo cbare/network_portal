@@ -1,0 +1,28 @@
+ <h3> Regulation information for {{ gene }} </h3>
+<p>
+<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
+<div class="tab-contents">
+<div id="main">
+  <table id="gene-regulation">
+   <caption> Regulators for {{ gene }}
+    <tr>
+      <th class="help">Regulator</th>
+      <th>Regulon</th>
+      <th>Mode</th>
+      <th>Family</th>
+      <th>Process</th>
+      <th>Inferelator Weight</th>
+    </tr>
+    {% for bicluster_id, influence in influence_biclusters %}
+    <tr>
+      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+      <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
+      <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+      <td><a href="regulon_family">Fis</a></td>
+      <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+      <td><a href="regulon_weight">-0.23</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+</div>

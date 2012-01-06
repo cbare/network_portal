@@ -59,22 +59,29 @@ $(function() {
       </form>
     <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
   </div>-->
-<div id="facet-display">
-  <h2>Search</h2>
-  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+
+
+  <h5>Search</h5>
+ <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
       <input type="text" id="query" name="q" value="{{ q }}">
       <input type="submit" value="Search">
     </ul>
   </form>
-
   <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
+
     <span id="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
     <span id="search_help">(Click to add)</span></p>
-  </div>
 
+  
+  {% if error_message %}
+  <div id="error_message">
+    <h4>Search Error</h4>
+    <p>{{ error_message }}</p>
+  </div>
+  {% endif %}
  <!-- <div id="search-results">-->
 
     {% if q %}
@@ -85,7 +92,7 @@ $(function() {
       {% if count == 1 %}
         <p> testing {{ results|length }}</p>
       {% else %}
-    <!--<p>Found {{ gene_count }} gene results for "{{ q }}".</p> -->
+    <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
       {% endif %}
 
 <!-- The following displays a unique list of functions found among
@@ -99,7 +106,8 @@ $(function() {
     </ul>
 -->
 <!--    Uncomment if user wants to see Gene: Functions -->
-    <table id="gene-results">
+    
+<table id="gene-results">
       <caption> Search results</caption>
       <tbody>
       <tr>
@@ -182,6 +190,8 @@ $(function() {
       <p>No regulon results for query &ldquo;{{ q }}&rdquo;</p>
       {% endif %} <!-- if biclusters -->
 
+      {% else %}
+      <p><b>No results found!</b></p>
       {% endif %} <!-- for results -->
       {% endif %} <!-- if q -->
       

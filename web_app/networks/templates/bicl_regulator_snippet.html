@@ -1,23 +1,26 @@
-<p>species: <a href="/species/{{ bicluster.network.species.short_name }}">{{ bicluster.network.species.name }}</a><br>
-  regulators: {{ inf_count }}
+<h3> Regulators for Regulon {{ bicluster.id }}</h3>
+<p>
+ There are <b>{{ inf_count }}</b> regulatory influences for <b>Regulon {{ bicluster.id }}</b> 
 </p>
+<div id = "main">
 <table id="regulators-table">
+  <caption>Regulator Table</caption>
   <thead>
     <tr>
       <th>Regulator Name</th>
       <th>Regulator Type</th>
-      <th>Desc </th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     {% for influence in influences %}
     <tr>
-      <td>{{ influence.name }}</td>
+      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
       <td>{{ influence.type }}</td>
-      <td>{{ influence.id }}</td>
+      <td>{{ influence.biclusters_set.all }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <br />
-
+</div>
