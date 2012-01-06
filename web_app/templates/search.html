@@ -101,6 +101,7 @@ $(function() {
 <!--    Uncomment if user wants to see Gene: Functions -->
     <table id="gene-results">
       <caption> Search results</caption>
+      <tbody>
       <tr>
 	<th>Genes</th>
 	<th>Description</th>
@@ -164,6 +165,7 @@ $(function() {
 	</td>
       </tr>
       {% endfor %} <!-- for result in genes -->
+      </tbody>
     </table>
 
       {% if biclusters %}
