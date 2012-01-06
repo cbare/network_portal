@@ -211,33 +211,6 @@ insert.enrichment <- function(en) {
   })
 }
 
-get.gene2go <- function(species.id, namespace='biological_process') {
-  tryCatch(
-  expr={
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-
-    sql <- sprintf(paste(
-      "select g.id, g.name, f.native_id",
-      "from networks_function f",
-      "join networks_gene_function gf on gf.function_id=f.id",
-      "join networks_gene g on gf.gene_id=g.id",
-      "where g.species_id=%d",
-      "and f.type='go'",
-      "and f.namespace='%s'",
-      "order by gf.gene_id;"),
-      species.id, namespace)
-    go.annos <- dbGetQuery(con, sql)
-    genes <- unique(go.annos$name)
-    gene2go <- lapply(genes, function(g) { go.annos$native_id[ go.annos$name==g ] })
-    names(gene2go) <- genes
-    return(gene2go)
-  },
-  finally={
-    dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-  })
-}
 
 # pull the networks table into a data frame
 get.networks <- function() {
@@ -248,149 +221,6 @@ get.networks <- function() {
     
     sql <- "select * from networks_network;"
     return(dbGetQuery(con, sql))
-  },
-  finally={
-    dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-  })
-}
-
-let.it.rip <- function(insert=F) {
-  systems = list( c(type='kegg', namespace='kegg pathway'),
-                  c(type='tigr', namespace='tigrfam'),
-                  c(type='go',   namespace='biological_process'),
-                  c(type='go',   namespace='molecular_function'),
-                  c(type='cog',  namespace='cog') )
-  
-  networks <- get.networks()
-  for (id in networks$id) {
-    for (system in systems) {
-      en <- enrichment(id, system['type'], system['namespace'])
-      cat("enrichment network", id, "type=", system['type'], "namespace=", system['namespace'], "\n")
-      cat("dim(en) =", dim(en), "\n")
-      cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
-      cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
-      print(head(en))
-      if (insert) {
-        insert.enrichment(en)
-      }
-    }
-  }
-}
-
-# read a mapping from a COG function to its parent category, which can be used to
-# compute enrichment at the higher level.
-get.hierarchy.map <- function() {
-  tryCatch(
-  expr={
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    
-    # retreive a set of mappings from cog subcategory to COG, excluding two generic categories
-    sql <- paste(
-      "select f1.id, f1.name, f2.id, f2.name",
-      "from networks_function f1",
-      "join networks_function_relationships fr on f1.id = fr.function_id",
-      "join networks_function f2 on f2.id = fr.target_id",
-      "where fr.type='parent'",
-      "and f1.type='cog'",
-      "and f1.namespace='cog'",
-      "and f2.type='cog'",
-      "and f2.namespace='cog subcategory'")
-    return(dbGetQuery(con, sql))
-  },
-  finally={
-    dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-  })
-}
-
-# read a mapping from a COG function to its parent category, which can be used to
-# compute enrichment at the higher level.
-get.tigr.hierarchy.map <- function() {
-  tryCatch(
-  expr={
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    
-    # retreive a set of mappings from cog subcategory to COG, excluding two generic categories
-    sql <- paste(
-      "select f1.id, f1.name, f2.id, f2.name",
-      "from networks_function f1",
-      "join networks_function_relationships fr on f1.id = fr.function_id",
-      "join networks_function f2 on f2.id = fr.target_id",
-      "where fr.type='parent'",
-      "and f1.type='tigr'",
-      "and f1.namespace='tigrfam'",
-      "and f2.type='tigr'",
-      "and f2.namespace='tigr sub1role'")
-    return(dbGetQuery(con, sql))
-  },
-  finally={
-    dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-  })
-}
-
-# count child functions of the function with the given id
-count.children <- function(con, id) {
-  sql <- sprintf(paste(
-    "select count(fr.function_id)",
-    "from networks_function_relationships fr",
-    "where fr.type='parent'",
-    "and fr.target_id = %d"),
-    id)
-  return( dbGetQuery(con, sql)[1,1] )
-}
-
-# return a data.frame with function ids, names for children of the given function id
-get.children <- function(con, id) {
-  sql <- sprintf(paste(
-    "select f1.id, f1.name",
-    "from networks_function f1",
-    "join networks_function_relationships fr on f1.id = fr.function_id",
-    "join networks_function f2 on f2.id = fr.target_id",
-    "where fr.type='parent'",
-    "and f2.id = %d"),
-    id)
-  children <- dbGetQuery(con, sql)
-}
-
-# return a vector containing ids of all descendent from the given function id
-get.descendants <- function(con, id) {
-  if (count.children(con, children[i,'id']) == 0) {
-    return( vector() )
-  }
-  children <- get.children(con, id)
-  descendant.ids <- children$id
-  for (child_id in children$id) {
-    descendant.ids <- append(descendant.ids, get.descendants(con, child_id))
-  }
-  return( descendant.ids )
-}
-
-get.hierarchy.map <- function(type, namespace) {
-  tryCatch(
-  expr={
-    postgreSQL.driver <- dbDriver("PostgreSQL")
-    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    
-    # retrieve a set of mappings from cog subcategory to COG, excluding two generic categories
-    sql <- sprintf(paste(
-      "select id, name",
-      "from networks_function",
-      "where type='%s'",
-      "and namespace='%s'"),
-      type, namespace)
-    parents <- dbGetQuery(con, sql)
-
-    hierarchy.map <- list()
-    for (i in 1:nrow(parents)) {
-      id <- parents[i,'id']
-      hierarchy.map[[as.character(id)]] <- data.frame(parent.function.id=id, descendant.id=c(id, get.descendants(con, id)))
-    }
-    
-    do.call(rbind, hierarchy.map)
   },
   finally={
     dbDisconnect(con)
@@ -447,26 +277,26 @@ get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) 
   return(df)
 }
 
-# ...for a different form of hierarchy.map which was a list of descendants for each parent
-# find.ancestors <- function(descendants, id) {
-#   as.integer(names(which(sapply(descendants, function(d) id %in% d))))
-# }
+let.it.rip <- function(insert=F) {
+  systems = list( c(type='kegg', namespace='kegg pathway'),
+                  c(type='tigr', namespace='tigrfam'),
+                  c(type='go',   namespace='biological_process'),
+                  c(type='go',   namespace='molecular_function'),
+                  c(type='cog',  namespace='cog') )
+  
+  networks <- get.networks()
+  for (id in networks$id) {
+    for (system in systems) {
+      en <- enrichment(id, system['type'], system['namespace'])
+      cat("enrichment network", id, "type=", system['type'], "namespace=", system['namespace'], "\n")
+      cat("dim(en) =", dim(en), "\n")
+      cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
+      cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
+      print(head(en))
+      if (insert) {
+        insert.enrichment(en)
+      }
+    }
+  }
+}
 
-# geneList <- factor(as.integer(names(gene2go) %in% sig.genes))
-# names(geneList) <- names(gene2go)
-# 
-# GOdata <- new("topGOdata", ontology = "BP",
-#               allGenes = geneList,
-#               annot = annFUN.gene2GO,
-#               gene2GO = gene2go)
-# 
-# resultFis <- getSigGroups(GOdata, test.stat)
-# 
-# GenTable(resultFis)
-# # Error in function (classes, fdef, mtable)  : 
-# #   unable to find an inherited method for function "GenTable", for signature "topGOresult"
-# 
-# my.group <- new("classicCount", testStatistic = GOFisherTest, name = "fisher", 
-#                 allMembers = names(gene2go),
-#                 groupMembers = gene2go,
-#                 sigMembers = sig.genes)
