@@ -1,7 +1,11 @@
 {% extends "base2.html" %}
-{% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
+{% block jsspecial %}
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+{% endblock %}
+{% block content %}
 
 <!--<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/ui-lightness/jquery-ui-1.8.14.custom.css">-->
 <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">
