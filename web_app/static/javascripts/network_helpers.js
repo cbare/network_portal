@@ -28,18 +28,18 @@ nwhelpers.show_msg = function(options) {
 };
 
 
-nwhelpers.pop_up = function(url, id) {
+nwhelpers.pop_up1 = function(url, id) {
     $.ajax({
         url: url,
         success: function(html){
             $("#pop_up").html(html);
-            //uiDialogPopUpReady(id);
         },
         error: function(){
             $("#pop_up").html("<p>Error!!</p>");
         }
     });
 };
+
 
 nwhelpers.SHAPE_MAPPER = {
     attrName: 'type',
@@ -78,17 +78,9 @@ nwhelpers.VISUAL_STYLE = {
     }
 };
 
-nwhelpers.initNetworkTab = function(bicluster_count, geneName,
-                                    swfPath, flashInstallerPath) {
-
+function initCytoscapeWeb(swfPath, flashInstallerPath) {
     // id of Cytoscape Web container div
     var div_id = "cytoscapeweb";
-    var vis;
-
-    if (bicluster_count == 0) {
-        $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
-        return;
-    }
 
     // initialization options
     var options = {
@@ -100,12 +92,15 @@ nwhelpers.initNetworkTab = function(bicluster_count, geneName,
     };
 
     // init and draw
-    vis = new org.cytoscapeweb.Visualization(div_id, options);
+    var vis = new org.cytoscapeweb.Visualization(div_id, options);
     // update gaggle data on selection events for the purpose of
     // broadcasting out lists of selected genes
     vis.addListener("select", "nodes", function(evt) {
         var selectedNodes = vis.selected("nodes");
     });
+    return vis;
+}
+function addCytoscapeClickListener(vis, popup_func) {
     node_click_listener = vis.addListener("click", "nodes", function(event) {
         var data = event.target.data;
         var url;
@@ -138,9 +133,55 @@ nwhelpers.initNetworkTab = function(bicluster_count, geneName,
             autoOpen: true,
             title: event.target.data.name,
             width: 600,
-            open: nwhelpers.pop_up(url, id)
+            open: function() { popup_func(url, id); }
         });
     });
+    return vis;
+}
+
+nwhelpers.initBiclusterNetworkTab = function(biclusterId, djangoPSSM,
+                                             swfPath, flashInstallerPath,
+                                             popup_func) {
+    var vis = initCytoscapeWeb(swfPath, flashInstallerPath);
+    addCytoscapeClickListener(vis, popup_func);
+
+    // load data
+    $.ajax({
+        url: "/network/graphml?biclusters=" + biclusterId,
+        success: function(data){
+            if (typeof data !== "string") { 
+                if (window.ActiveXObject) { // IE 
+                    data = data.xml; 
+                }
+                else { 
+                    data = (new XMLSerializer()).serializeToString(data); 
+                } 
+            }
+            vis.draw({network:data, visualStyle:nwhelpers.VISUAL_STYLE, layout:{name:'ForceDirected'}});
+        },
+        error: function(){
+            nwhelpers.show_msg({
+                type: "error",
+                target:"#cytoscapeweb",
+                message: "The file you specified could not be loaded. url=" + options.url,
+                heading: "File not found",
+            });
+        }
+    });
+    nwhelpers.initCanvas(djangoPSSM);
+    return vis;
+};
+
+nwhelpers.initNetworkTab = function(bicluster_count, geneName,
+                                    swfPath, flashInstallerPath) {
+    if (bicluster_count == 0) {
+        $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
+        return;
+    }
+    var vis = initCytoscapeWeb(swfPath, flashInstallerPath);
+    addCytoscapeClickListener(vis, nwhelpers.pop_up1);
+
+    // load data
     $.ajax({
         url: "/network/graphml?gene=" + geneName,
         success: function(data){
@@ -164,4 +205,19 @@ nwhelpers.initNetworkTab = function(bicluster_count, geneName,
         }
     });
     return vis;
+};
+
+nwhelpers.initCanvas = function(django_pssm) {
+    for (var motif_id in django_pssm)  {
+        var pssm = { alphabet: ['A', 'C', 'T', 'G'],
+                     values: django_pssm[motif_id]
+                   };
+        canvas_id = 'canvas_' + motif_id;
+        var canvasOptions = {
+            width: 300, //400,
+            height: 150, //300,
+            glyphStyle: '20pt Helvetica'
+        };
+        isblogo.makeLogo(canvas_id, pssm, canvasOptions);
+    }
 };
