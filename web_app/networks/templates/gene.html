@@ -20,104 +20,103 @@
 	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
 	<li><a class="help" href="#tab-help">Help</a></li>
       </ul>
-
+      
       <div id="tab-main">
 	<div id="main">
 	  <h3>{{ gene.name }}</h3>
 	  <p>
-	    <img src="{{ STATIC_PREFIX }}images/circular.png">
-	    </p>
+	    <img id="circvis" src="{{ STATIC_PREFIX }}images/circular.png" />
+	  </p>
 
-    <h3>Regulation</h3>
-    <table id="gene-regulation">
-      <tr>
-        <th class="help">Regulator</th>
-        <th>Regulon</th>
-        <th>Mode</th>
-        <th>Family</th>
-        <th>Process</th>
-        <th>Inferelator Weight</th>
-      </tr>
-      {% for bicluster_id, influence in influence_biclusters %}
-      <tr>
-        <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
-        <td><a href="regulon">{{ bicluster_id }}</a></td>
-        <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-        <td><a href="regulon_family">Fis</a></td>
-        <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-        <td><a href="regulon_weight">-0.23</a></td>
-      </tr>
-      {% endfor %}
-    </table>
+          <h3>Regulation</h3>
+          <table id="gene-regulation">
+            <tr>
+              <th class="help">Regulator</th>
+              <th>Regulon</th>
+              <th>Mode</th>
+              <th>Family</th>
+              <th>Process</th>
+              <th>Inferelator Weight</th>
+            </tr>
+            {% for bicluster_id, influence in influence_biclusters %}
+            <tr>
+              <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+              <td><a href="regulon">{{ bicluster_id }}</a></td>
+              <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+              <td><a href="regulon_family">Fis</a></td>
+              <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+              <td><a href="regulon_weight">-0.23</a></td>
+            </tr>
+            {% endfor %}
+          </table>
 
-    <h3>Motifs</h3>
-    <table>
-      <tr>
-	<th class="help">Logo</th>
-	<th>Location</th>
-	<th>e-value</th>
-	<th>Motif match</th>
-	<th>Match e-value</th>
-      </tr>
-      <tr>
-	<td>
-	  <a href="regulator_id">
-	    <img src="{{ STATIC_PREFIX }}images/motif_0074-1.png">
-	    </a>
-	  </td>
-	  <td>-20</td>
-	  <td>0.016</td>
-	  <td><a href="moif_match">FNR</a></td>
-	  <td>4.6e-08</td>
-	</tr>
-      </table>
-	  
-      <h3>Gene Neighborhood</h3>
-    <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png">
+          <h3>Motifs</h3>
+          <table>
+            <tr>
+	      <th class="help">Logo</th>
+	      <th>Location</th>
+	      <th>e-value</th>
+	      <th>Motif match</th>
+	      <th>Match e-value</th>
+            </tr>
+            <tr>
+	      <td>
+	        <a href="regulator_id">
+	          <img src="{{ STATIC_PREFIX }}images/motif_0074-1.png" />
+	        </a>
+	      </td>
+	      <td>-20</td>
+	      <td>0.016</td>
+	      <td><a href="moif_match">FNR</a></td>
+	      <td>4.6e-08</td>
+	    </tr>
+          </table>
+	    
+          <h3>Gene Neighborhood</h3>
+          <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png" />
 
+        </div>{# main #}
+        <div id="sidebar">
+          <h4>Gene Info</h4>
+          <p>
+            <b> Organism: </b> <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br/>
+            <b> Locus tag: </b> {{ gene.name }} <br/>
+            <b> Aliases: </b> <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&term={{ gene.geneid }}">{{ gene.geneid }} (NCBI) </a>, <a href="http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=206275&disp=0">206275 (MicrobesOnline) </a><br/>
+            <b> Gene Name: </b> <i> {% if gene.common_name %} {{ gene.common_name }} {% else %} N/A {% endif %}</i><br/>
+          </p>
 
-  </div>{# main #}
-  <div id="sidebar">
-    <h4>Gene Info</h4>
-    <p>
-      <b> Organism: </b> <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
-      <b> Locus tag: </b> {{ gene.name }} <br>
-      <b> Aliases: </b> <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&term={{ gene.geneid }}">{{ gene.geneid }} (NCBI) </a>, <a href="http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=206275&disp=0">206275 (MicrobesOnline) </a><br>
-      <b> Gene Name: </b> <i> {% if gene.common_name %} {{ gene.common_name }} {% else %} N/A {% endif %}</i><br>
-    </p>
+          <h4>Regulation</h4>
+          <table>
+            <tr>
+              <th class="help">Regulons</th>
+              <th>Regulators</th>
+              <th>Conditions</th>
+            </tr>
+            {% if member_bicluster %}
+            {% for bicluster in member_bicluster %}
+            <tr>
+              <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.id }}</a></td>
+              <td><a href="#">{{ bicluster.influences.count }}</a></td>
+              <td><a href="#">{{ bicluster.conditions.count }}</a></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr><td colspan="3">Not assigned to any regulons</td></tr>
+            {% endif %}
+          </table>
 
-    <h4>Regulation</h4>
-    <table>
-      <tr>
-        <th class="help">Regulons</th>
-        <th>Regulators</th>
-        <th>Conditions</th>
-      </tr>
-      {% if member_bicluster %}
-      {% for bicluster in member_bicluster %}
-      <tr>
-        <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.id }}</a></td>
-        <td><a href="#">{{ bicluster.influences.count }}</a></td>
-        <td><a href="#">{{ bicluster.conditions.count }}</a></td>
-      </tr>
-      {% endfor %}
-      {% else %}
-      <tr><td colspan="3">Not assigned to any regulons</td></tr>
-      {% endif %}
-    </table>
-
-    <h4>Ontology</h4>
-    <p>
-      <b> KEGG: </b> <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br>
-      <b> GO: </b> {{ gene.name }}<br>
-      <b> TIGR: </b> <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&term=2795199">2795199  (NCBI) </a>, <a href="http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=206275&disp=0">206275 (MicrobesOnline) </a><br>
-    </p>
-    <h4>Protein Info</h4>
-    <p>
-      <b> COG (MicrobesOnline): </b>
-      <b> InterPro: </b>
-    </p>
-    </div>{# #sidebar #}
+          <h4>Ontology</h4>
+          <p>
+            <b> KEGG: </b> <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br/>
+            <b> GO: </b> {{ gene.name }}<br/>
+            <b> TIGR: </b> <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&term=2795199">2795199  (NCBI) </a>, <a href="http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=206275&disp=0">206275 (MicrobesOnline) </a><br/>
+          </p>
+          <h4>Protein Info</h4>
+          <p>
+            <b> COG (MicrobesOnline): </b>
+            <b> InterPro: </b>
+          </p>
+        </div>{# #sidebar #}
       </div>
       <div id="tab-network">
 	{% include 'gene_network_snippet.html' %}
@@ -135,10 +134,10 @@
 	{% include 'gene_member_snippet.html' %}
       </div>
       <!--
-      <div id="tab-add-cart">
-	add cart tab <br />
-	...TO BE DONE...
-      </div>
+          <div id="tab-add-cart">
+	  add cart tab <br />
+	  ...TO BE DONE...
+          </div>
       -->
       <div id="tab-help">
 	HELP tab
@@ -146,5 +145,4 @@
     </div>{# top-tabs #}
   </div>{# post-top #}
 </div>{# bicluster-top #}
-
 {% endblock %}

@@ -1,8 +1,5 @@
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
-<!-- THIS TEMPLATE BASE IS FOR A PAGE THAT HAS NO SIDEBAR; 
-     IT DOESN'T HAVE A VERTICAL LINE DOWN THE MIDDLE OF #CONTENT 
-     WHICH IS DUE TO wrap.gif -->
 <!DOCTYPE html>
 <meta http-equiv="Content-Type" content="text/javascript; charset=UTF-8" />
 <html>
@@ -10,7 +7,7 @@
   <title>{% block title %}Network Portal{% endblock %}</title>
   {% block stylesheets %}
   <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/portal-style.css">  
-  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
+  {# <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" /> #}
   {% endblock %}
   {% block jscommon %}
   <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
@@ -19,12 +16,10 @@
   {% endblock %}
   {% block jsspecial %}
   {% endblock %}
-  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
+  {# <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script> #}
   <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/collapsing_divs.js"></script>
 </head>
-
 <body>
   {% block basewrap %}
   <div id="wrap-no-line">
@@ -40,7 +35,6 @@
 	</ul>
       </div>
     </div>{# end header #}
-
     {% load nav_tags %}
     <div id="nav">
       <ul>
@@ -52,10 +46,8 @@
         <li class="{% active request "^/analysis/gene" %}"><a href="/analysis/gene">Analysis Example</a></li>
       </ul>
     </div>{# end nav #}
-
     <div id="content">
       {% block content %}
-      
       {% endblock %}
     </div>{# content #}
     <div id="footer">
