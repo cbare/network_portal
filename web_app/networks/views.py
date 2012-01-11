@@ -15,6 +15,7 @@ from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
 from web_app.networks.helpers import nice_string
 from pprint import pprint
+from django.utils import simplejson
 import json
 import networkx as nx
 import re
@@ -347,3 +348,85 @@ def function(request, name):
 def motif(request, motif_id=None):
     motif = Motif.objects.get(id=motif_id)
     return render_to_response('motif_snippet.html', locals())
+
+def circvis(request):
+    elem = request.GET['elem']
+    species_id = 2 # TODO: get from request
+    data = make_circvis_data(elem, species_id)
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
+def make_circvis_data(elem, species_id):
+    """helper function to build a CircVis object"""
+    species = Species.objects.get(id=species_id)
+    chromosomes = species.chromosome_set.all()
+    chromosome_names = [chromosome.name for chromosome in chromosomes]
+    chromosome_lengths = [chromosome.length for chromosome in chromosomes]
+    genes = species.gene_set.all()
+    wedge_data = []
+    for gene in genes:
+        wedge_item = {
+            'chr': gene.name,
+            'start': gene.start,
+            'end': gene.end,
+            'options': 'label=p47.11,type=gneg',
+            'value': '#ff0000'
+            }
+        wedge_data.append(wedge_item)
+    network_data = []
+
+    genome_params = {
+        'DATA': {
+            'key_order': chromosome_names,
+            'key_length': chromosome_lengths
+            },
+        'OPTIONS': {
+            'radial_grid_line_width': 2,
+            'label_layout_style': 'clock',
+            'label_font_style': '16px helvetica'
+            }
+        }
+    wedge_params = {
+        'PLOT': {
+            'height': 10,
+            'type': 'karyotype'
+            },
+        'DATA': {
+            'data_array': wedge_data
+            },
+        'OPTIONS': {
+            'legend_label': 'Genes',
+            'legend_description': 'Genes',
+            'outer_padding': 15
+            }
+        }
+    network_params = {
+        'DATA': {
+            'data_array': network_data
+            },
+        'OPTIONS': {
+            'outer_padding': 10,
+            'node_highlight_mode': 'isolate',
+            'node_fill_style': 'steelblue',
+            'link_stroke_style': 'red',
+            'link_alpha': 0.3
+            }
+        }
+    plot_params = {
+        'container': elem,
+        'width': 640,
+        'height': 480,
+        'vertical_padding': 20,
+        'horizontal_padding': 10,
+        'enable_pan': False,
+        'enable_zoom': False,
+        'show_legend': True,
+        'legend_corner': 'ne',
+        'legend_radius': 35
+        }
+
+    data = { 'PLOT': plot_params,
+             'GENOME': genome_params,
+             'WEDGE': wedge_params,
+             'NETWORK': network_params
+             }
+    return data
