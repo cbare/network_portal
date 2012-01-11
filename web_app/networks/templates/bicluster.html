@@ -1,4 +1,11 @@
 {% extends "base2.html" %}
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+{% block jsspecial %}
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+{% endblock %}
 {% block content %}
 <div id="bicluster-top">
   <div class="post-top">
