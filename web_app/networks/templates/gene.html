@@ -1,13 +1,14 @@
-{% extends "base2.html" %}
-{% load static %}
-{% get_static_prefix as STATIC_PREFIX %}
-{% block jsspecial %}
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
-{% endblock %}
-{% block content %}
-<div id="bicluster-top">
+{% extends "base2.html" %}{% load static %}{% get_static_prefix as STATIC_PREFIX %}
+{% block cssspecial %}<link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css">{% endblock %}
+{% block jsspecial %}<script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+    <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/protovis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>{% endblock %}
+{% block content %}<div id="bicluster-top">
   <div class="post-top">
     <div id="top-tabs">
       <ul id="gene-tab-links">
@@ -20,12 +21,29 @@
 	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
 	<li><a class="help" href="#tab-help">Help</a></li>
       </ul>
-      
       <div id="tab-main">
+        <script type="text/javascript">
+          $(document).ready(function() {
+              var circle_vis = new vq.CircVis();
+              console.log('CircVis created');
+              $.ajax({
+                  url: '/json/circvis/?species=1&gene={{ gene.name }}',
+                  success: function(json) {
+                      var cvdata = vqhelpers.makeCircVisData('circvis', json.chromosomes,
+                                                             json.genes, json.network);
+                      circle_vis.draw(cvdata);
+                  },
+                  error: function() {
+                      console.debug('could not read data');
+                  }
+              });
+          });
+        </script>
 	<div id="main">
 	  <h3>{{ gene.name }}</h3>
 	  <p>
-	    <img id="circvis" src="{{ STATIC_PREFIX }}images/circular.png" />
+	    <!-- <img id="circvis" src="{{ STATIC_PREFIX }}images/circular.png" /> -->
+            <div id="circvis">CircVis</div>
 	  </p>
 
           <h3>Regulation</h3>
