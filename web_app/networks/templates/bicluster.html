@@ -1,10 +1,15 @@
 {% extends "base2.html" %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
+{% block cssspecial %}
+  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css">
+{% endblock %}
 {% block jsspecial %}
   <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
 {% endblock %}
 {% block content %}
 <div id="bicluster-top">
@@ -17,7 +22,7 @@
 	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
 	<li><a class="function" href="#tab-function">Functions</a>|</li>
 	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
-	<!-- <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> -->
+	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
 	<li><a class="help" href="#tab-help">Help</a></li>
       </ul>
 

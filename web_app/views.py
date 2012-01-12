@@ -56,8 +56,8 @@ def search(request):
                     if 'bicluster_id' in result and result['bicluster_id'] not in bicluster_ids:
                         bicluster_ids.append(result['bicluster_id'])
 
-                if result['doc_type']=='GENE':
-                    gene_count+=1
+                if result['doc_type'] == 'GENE':
+                    gene_count += 1
                     if ('gene_function_type' in result):
                         # create sorted list of functions per gene; 
                         # use if user wants to display Gene: Functions
@@ -68,7 +68,6 @@ def search(request):
                                 result['gene_function_native_id'][index] = kegg_id.group(1)
                         tuple(result['gene_function_native_id'])
                         functions = zip(result['gene_function_type'], result['gene_function_name'], result['gene_function_native_id'])
-                            
                         gene_functions[result['gene_name']] = functions
                         ret = sorted(gene_functions.items())
                         # create a list of unique functions found among the collection

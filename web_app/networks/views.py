@@ -350,83 +350,40 @@ def motif(request, motif_id=None):
     return render_to_response('motif_snippet.html', locals())
 
 def circvis(request):
-    elem = request.GET['elem']
-    species_id = 2 # TODO: get from request
-    data = make_circvis_data(elem, species_id)
+    gene = request.GET['gene']
+    data = make_circvis_data(gene)
     return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
-def make_circvis_data(elem, species_id):
+def make_circvis_data(gene):
     """helper function to build a CircVis object"""
-    species = Species.objects.get(id=species_id)
-    chromosomes = species.chromosome_set.all()
-    chromosome_names = [chromosome.name for chromosome in chromosomes]
-    chromosome_lengths = [chromosome.length for chromosome in chromosomes]
-    genes = species.gene_set.all()
-    wedge_data = []
-    for gene in genes:
-        wedge_item = {
-            'chr': gene.name,
-            'start': gene.start,
-            'end': gene.end,
-            'options': 'label=p47.11,type=gneg',
-            'value': '#ff0000'
-            }
-        wedge_data.append(wedge_item)
-    network_data = []
+    gene1 = Gene.objects.filter(name=gene)[0]
+    species = gene1.species
+    chromosomes = [{'name': ch.name, 'length': ch.length} for ch in species.chromosome_set.all()]
+    genes = [{'name': g.name,
+              'chr': g.chromosome.name,
+              'start': g.start,
+              'end': g.end} for g in species.gene_set.all()]
+    network = []
+    gene_biclusters = Bicluster.objects.filter(genes__name=gene)
+    for bicluster in gene_biclusters:
+        for gene2 in bicluster.genes.all():
+            network.append({
+                    'linkValue': 4.123,
+                    'node1': {
+                        'chr': gene1.chromosome.name,
+                        'options': 'color=dorange,thickness=4.078,z=0.2452',
+                        'start': gene1.start,
+                        'end': gene1.end
+                        },
+                    'node2': {
+                        'chr': gene2.chromosome.name,
+                        'options': 'color=dorange,thickness=4.078,z=0.2452',
+                        'start': gene2.start,
+                        'end': gene2.end
+                        }
+                    })
 
-    genome_params = {
-        'DATA': {
-            'key_order': chromosome_names,
-            'key_length': chromosome_lengths
-            },
-        'OPTIONS': {
-            'radial_grid_line_width': 2,
-            'label_layout_style': 'clock',
-            'label_font_style': '16px helvetica'
-            }
-        }
-    wedge_params = {
-        'PLOT': {
-            'height': 10,
-            'type': 'karyotype'
-            },
-        'DATA': {
-            'data_array': wedge_data
-            },
-        'OPTIONS': {
-            'legend_label': 'Genes',
-            'legend_description': 'Genes',
-            'outer_padding': 15
-            }
-        }
-    network_params = {
-        'DATA': {
-            'data_array': network_data
-            },
-        'OPTIONS': {
-            'outer_padding': 10,
-            'node_highlight_mode': 'isolate',
-            'node_fill_style': 'steelblue',
-            'link_stroke_style': 'red',
-            'link_alpha': 0.3
-            }
-        }
-    plot_params = {
-        'container': elem,
-        'width': 640,
-        'height': 480,
-        'vertical_padding': 20,
-        'horizontal_padding': 10,
-        'enable_pan': False,
-        'enable_zoom': False,
-        'show_legend': True,
-        'legend_corner': 'ne',
-        'legend_radius': 35
-        }
-
-    data = { 'PLOT': plot_params,
-             'GENOME': genome_params,
-             'WEDGE': wedge_params,
-             'NETWORK': network_params
-             }
-    return data
+    size = len(genes)
+    if size % 2 == 1:
+        size -= 1
+    return {'chromosomes': chromosomes, 'genes': genes[0:size], 'network': network}
