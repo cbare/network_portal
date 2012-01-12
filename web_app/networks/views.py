@@ -383,7 +383,4 @@ def make_circvis_data(gene):
                         }
                     })
 
-    size = len(genes)
-    if size % 2 == 1:
-        size -= 1
-    return {'chromosomes': chromosomes, 'genes': genes[0:size], 'network': network}
+    return {'chromosomes': chromosomes, 'genes': genes, 'network': network}
