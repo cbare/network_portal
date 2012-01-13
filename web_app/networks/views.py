@@ -359,14 +359,13 @@ def make_circvis_data(gene):
     gene1 = Gene.objects.filter(name=gene)[0]
     species = gene1.species
     chromosomes = [{'name': ch.name, 'length': ch.length} for ch in species.chromosome_set.all()]
-    genes = [{'name': g.name,
-              'chr': g.chromosome.name,
-              'start': g.start,
-              'end': g.end} for g in species.gene_set.all()]
     network = []
+    used_genes = [gene1]
     gene_biclusters = Bicluster.objects.filter(genes__name=gene)
     for bicluster in gene_biclusters:
         for gene2 in bicluster.genes.all():
+            if gene2 != gene1:
+                used_genes.append(gene2)
             network.append({
                     'linkValue': 4.123,
                     'node1': {
@@ -383,4 +382,8 @@ def make_circvis_data(gene):
                         }
                     })
 
+    genes = [{'name': g.name,
+              'chr': g.chromosome.name,
+              'start': g.start,
+              'end': g.end} for g in used_genes]
     return {'chromosomes': chromosomes, 'genes': genes, 'network': network}
