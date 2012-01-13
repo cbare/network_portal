@@ -1,3 +1,4 @@
+// Javascript helper functions for VisQuick display
 var vqhelpers;
 if (!vqhelpers) {
     vqhelpers = {};
@@ -45,8 +46,8 @@ if (!vqhelpers) {
                 data_array: geneValues
             },
             OPTIONS: {
-                legend_label: 'Halo !',
-                legend_description: 'HALODESC',
+                legend_label: 'Biclusters',
+                legend_description: 'Biclusters',
                 listener: function () { return null; },
                 outer_padding: 10
             }
@@ -86,8 +87,8 @@ if (!vqhelpers) {
             container: elem,
             width: 400,
             height: 300,
-            vertical_padding: 10,
-            horizontal_padding: 5,
+            vertical_padding: 15,
+            horizontal_padding: 10,
             enable_pan: false,
             enable_zoom: false,
             show_legend: true,

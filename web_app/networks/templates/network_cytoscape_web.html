@@ -13,6 +13,7 @@
   <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
   <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
   <script type="text/javascript" src="/static/javascripts/main.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
   
   <!-- JSON support for IE (needed to use JS API) -->
   <script type="text/javascript" src="/static/cytoscapeweb/js/json2.min.js"></script>
@@ -32,35 +33,6 @@
   <script type="text/javascript">
   
       var vis = null;
-      var expanded = false;
-      
-      function showObject(obj) {
-        var a = []
-        for (key in obj) {
-          a.push(key + "=" + obj[key]);
-        }
-        return a.join(", ")
-      }
-
-      function show_msg( options ){
-          if (typeof(options)=="string") {
-              options = {message: options}
-          }
-          var options = $.extend({
-              type: "info",
-              target: "#output",
-              heading: "Message"
-          }, options);
-          var msg = $(  "<div class=\"" + options.type + "_screen screen\">\
-                              <div class=\"notification\">\
-                                  <div class=\"icon\"></div>\
-                                  <div class=\"heading\">" + (options.heading || "") + "</div>\
-                                  <div class=\"message\">" + (options.message || "") + "</div>\
-                              </div>\
-                         </div>");
-          $(options.target).append(msg);
-      }
-
       function pop_up(url) {
           $.ajax({
               url: url,
@@ -87,9 +59,8 @@
         }
       }
 
-
       $(document).ready(function() {
-        
+          var expanded = false;
           $("#toggle_expand").click(function(event) {
             if (expanded) {
               filter_on();
@@ -100,47 +71,13 @@
               expanded = true;
             }
           });
-
-          // id of Cytoscape Web container div
-          var div_id = "cytoscapeweb";
-
-          // initialization options
-          var options = {
-              // where you have the Cytoscape Web SWF
-              swfPath: "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
-              // where you have the Flash installer SWF
-              flashInstallerPath: "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
-              flashAlternateContent: "Cytoscape Web network viewer requires Flash."
-          };
-
-          // init and draw
-          vis = new org.cytoscapeweb.Visualization(div_id, options);
+          vis = nwhelpers.initCytoscapeWeb("{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
+                                           "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall");
           
           vis.ready(function() {
             filter_on();
           });
-          
-          // update gaggle data on selection events for the purpose of
-          // broadcasting out lists of selected genes
-          vis.addListener("select", "nodes", function(evt) {
-              var selectedNodes = vis.selected("nodes");
-          });
-          
-          // vis.addListener("filter", "edges", function(evt) {
-          //   $("#count_edges").html(vis.edges().length);
-          // });
-          
-          // vis.addListener("deselect", "nodes", function(evt) {
-          //     var nodes = evt.target;
-          //     var result = []
-          //     for (i in selectedNodes) {
-          //       for (i in nodes) {
-          //       
-          //         if (nodes[i] == selectedNodes[j])
-          //       }
-          //     }
-          // });
-          
+          //nwhelpers.addCytoscapeClickListener(vis, pop_up);
           node_click_listener = vis.addListener("click", "nodes", function(event) {
               var data = event.target.data;
               var url;
@@ -177,44 +114,6 @@
               });
           });
 
-          var shapeMapper = {
-              attrName: 'type',
-              entries:  [ { attrValue: 'gene', value: 'ELLIPSE' },
-                          { attrValue: 'bicluster', value: 'ROUNDRECT' },
-                          { attrValue: 'regulator', value: 'TRIANGLE' },
-                          { attrValue: 'motif', value: 'DIAMOND' } ]
-          };
-          
-          var colorMapper = {
-              attrName: 'type',
-              entries:  [ { attrValue: 'gene', value: '#ccffcc' },
-                          { attrValue: 'bicluster', value: '#f7f7f7' },
-                          { attrValue: 'regulator', value: '#ffcccc' },
-                          { attrValue: 'motif', value: '#ccccff'} ]
-          }
-          
-          // visual style we will use
-          var visualStyle = {
-              global: {
-                  backgroundColor: "#FFFFFF"
-              },
-              nodes: {
-                  shape: { discreteMapper: shapeMapper },
-                  label: { passthroughMapper: { attrName: "name" } },
-                  color: { discreteMapper: colorMapper },
-                  borderWidth: 2,
-                  labelHorizontalAnchor: "center"
-              },
-              edges: {
-                  width: {
-                      defaultValue: 1,
-                      continuousMapper: { attrName: "weight", minAttrValue:0.0, maxAttrValue:1.0, minValue: 1, maxValue: 12 }
-                      //passthroughMapper: { attrName: "weight" }
-                  },
-                  color: "#0B94B1"
-              }
-          };
-
           $.ajax({
               url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}{{expand}}",
               success: function(data){
@@ -226,10 +125,10 @@
                           data = (new XMLSerializer()).serializeToString(data); 
                       } 
                   }
-                  vis.draw({network:data, visualStyle:visualStyle, layout:{name:'ForceDirected'}});
+                  vis.draw({network:data, visualStyle:nwhelpers.VISUAL_STYLE, layout:{name:'ForceDirected'}});
               },
               error: function(){
-                  show_msg({
+                  nwhelpers.show_msg({
                       type: "error",
                       target:"#cytoscapeweb",
                       message: "The file you specified could not be loaded. url=" + options.url,

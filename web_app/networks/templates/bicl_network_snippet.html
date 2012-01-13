@@ -4,30 +4,33 @@
 <script type="text/javascript">
 var django_pssm = {{ pssm_logo_dict }};
 
-      function uiDialogPopUpReady(id) {
+      function uiDialogPopUpReady(motifId) {
           var pssm;
-          for (var motif_id in django_pssm)  {
-              if (motif_id == id) {
+          var found = false;
+          for (var id in django_pssm)  {
+              if (id == motifId) {
                   pssm = { alphabet: ['A', 'C', 'T', 'G'],
-                           values: django_pssm[motif_id]
-                  };
+                           values: django_pssm[motifId]
+                         };
+                  found = true;
               }
           }
-          var options = {
-                    width: 300,
-                    height: 150,
-                    glyphStyle: '20pt Helvetica'
-          };
-          isblogo.makeLogo("canvas", pssm, options);
+          if (found) {
+              var options = {
+                  width: 300,
+                  height: 150,
+                  glyphStyle: '20pt Helvetica'
+              };
+              isblogo.makeLogo("canvas", pssm, options);
+          }
       }
 
-      function pop_up(url, id) {
-
+      function load_popup(url, motifId) {
           $.ajax({
               url: url,
               success: function(html){
                   $("#pop_up").html(html);
-                  uiDialogPopUpReady(id);
+                  uiDialogPopUpReady(motifId);
               },
               error: function(){
                   $("#pop_up").html("<p>Error!!</p>");
@@ -39,7 +42,7 @@ var django_pssm = {{ pssm_logo_dict }};
           var vis = nwhelpers.initBiclusterNetworkTab({{ bicluster.id }}, django_pssm,
                                                       "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
                                                       "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
-                                                      pop_up);
+                                                      load_popup);
       });
 </script>
 <div id="cytoscapeweb">
