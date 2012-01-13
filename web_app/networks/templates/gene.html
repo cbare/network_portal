@@ -26,7 +26,6 @@
         <script type="text/javascript">
           $(document).ready(function() {
               var circle_vis = new vq.CircVis();
-              console.log('CircVis created');
               $.ajax({
                   url: '/json/circvis/?species=1&gene={{ gene.name }}',
                   success: function(json) {

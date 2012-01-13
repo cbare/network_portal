@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    function popup(url, id) {
+    function load_popup(url, id) {
         $.ajax({
             url: url,
             success: function(html) {
@@ -18,7 +18,7 @@ $(document).ready(function() {
     var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
                                         "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
                                         "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
-                                        popup);
+                                        load_popup);
       });
 </script>
 <div id="cytoscapeweb">

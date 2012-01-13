@@ -33,8 +33,6 @@
   <script type="text/javascript">
   
       var vis = null;
-      var expanded = false;
-      
       function pop_up(url) {
           $.ajax({
               url: url,
@@ -61,9 +59,8 @@
         }
       }
 
-
       $(document).ready(function() {
-        
+          var expanded = false;
           $("#toggle_expand").click(function(event) {
             if (expanded) {
               filter_on();
@@ -80,7 +77,7 @@
           vis.ready(function() {
             filter_on();
           });
-          
+          //nwhelpers.addCytoscapeClickListener(vis, pop_up);
           node_click_listener = vis.addListener("click", "nodes", function(event) {
               var data = event.target.data;
               var url;

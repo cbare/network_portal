@@ -82,12 +82,12 @@ if (!nwhelpers) {
         return vis;
     };
 
-    nwhelpers.addCytoscapeClickListener = function(vis, popup_callback) {
+    nwhelpers.addCytoscapeClickListener = function(vis, load_content) {
         node_click_listener = vis.addListener("click", "nodes", function(event) {
-            console.debug('click');
             var data = event.target.data;
             var url;
-            if (data.type=='gene') {
+            var id;
+            if (data.type == 'gene') {
                 url = "/gene/" + data.id + "?format=html";
             } else if (data.type=='regulator') {
                 if (data.name.indexOf("~~") < 0) {
@@ -106,23 +106,19 @@ if (!nwhelpers) {
             } else {
                 return;
             }
-            
+            load_content(url, id);
             $("#pop_up").wijdialog({
                 autoOpen: true,
                 title: event.target.data.name,
-                width: 600,
-                open: function() {
-                    console.debug('DIALOG OPENED EEK');
-                    popup_callback(url, id);
-                }
+                width: 600
             });
         });
         return vis;
     };
 
-    function initAndLoadCytoscapeWeb(dataURL, swfPath, flashInstallerPath, popup_callback) {
+    function initAndLoadCytoscapeWeb(dataURL, swfPath, flashInstallerPath, load_popup_content) {
         var vis = nwhelpers.initCytoscapeWeb(swfPath, flashInstallerPath);
-        nwhelpers.addCytoscapeClickListener(vis, popup_callback);
+        nwhelpers.addCytoscapeClickListener(vis, load_popup_content);
 
         // load data
         $.ajax({
@@ -152,22 +148,22 @@ if (!nwhelpers) {
 
     nwhelpers.initBiclusterNetworkTab = function(biclusterId, djangoPSSM,
                                                  swfPath, flashInstallerPath,
-                                                 popup_callback) {
+                                                 load_popup_content) {
         var vis = initAndLoadCytoscapeWeb("/network/graphml?biclusters=" + biclusterId,
-                                          swfPath, flashInstallerPath, popup_callback);
+                                          swfPath, flashInstallerPath, load_popup_content);
         nwhelpers.initCanvas(djangoPSSM);
         return vis;
     };
 
     nwhelpers.initNetworkTab = function(bicluster_count, geneName,
                                         swfPath, flashInstallerPath,
-                                        popup_callback) {
+                                        load_popup_content) {
         if (bicluster_count == 0) {
             $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
             return;
         }
         return initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
-                                       swfPath, flashInstallerPath, popup_callback);
+                                       swfPath, flashInstallerPath, load_popup_content);
     };
 
     // This helper does not belong here, it feeds ISB logo
