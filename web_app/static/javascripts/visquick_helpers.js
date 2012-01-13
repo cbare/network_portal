@@ -1,3 +1,4 @@
+// Javascript helper functions for VisQuick display
 var vqhelpers;
 if (!vqhelpers) {
     vqhelpers = {};
