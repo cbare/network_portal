@@ -4,6 +4,34 @@ if (!nwhelpers) {
     nwhelpers = {};
 }
 (function() {
+    nwhelpers.load_popup = function(url, motifURL) {
+        $.ajax({
+            url: url,
+            success: function(html){
+                $("#pop_up").html(html);
+            },
+            error: function(){
+                $("#pop_up").html("<p>Error!!</p>");
+            }
+        });
+        if (motifURL != null) {
+            $.ajax({
+                url: motifURL,
+                success: function(pssm){
+                    var options = {
+                        width: 300,
+                        height: 150,
+                        glyphStyle: '20pt Helvetica'
+                    };
+                    isblogo.makeLogo("canvas", pssm, options);
+                },
+                error: function(){
+                    $("#pop_up").html("<p>Error!!</p>");
+                }
+            });
+        }
+    };
+
     nwhelpers.show_msg = function(options) {
         if (typeof(options) == "string") {
             options = {message: options};
@@ -86,7 +114,7 @@ if (!nwhelpers) {
         node_click_listener = vis.addListener("click", "nodes", function(event) {
             var data = event.target.data;
             var url;
-            var id;
+            var motifURL = null;
             if (data.type == 'gene') {
                 url = "/gene/" + data.id + "?format=html";
             } else if (data.type=='regulator') {
@@ -96,17 +124,18 @@ if (!nwhelpers) {
                     url = "/regulator/" + data.name + "?format=html"
                 }
             } else if (data.type=='bicluster') {
-                pattern = /bicluster:(\d+)/;
-                id = pattern.exec(data.id)[1];
+                var pattern = /bicluster:(\d+)/;
+                var id = pattern.exec(data.id)[1];
                 url = "/bicluster/" + id + "?format=html";
             } else if (data.type=='motif') {
-                pattern = /motif:(\d+)/;
-                id = pattern.exec(data.id)[1];
+                var pattern = /motif:(\d+)/;
+                var id = pattern.exec(data.id)[1];
                 url = "/motif/" + id + "?format=html";
+                motifURL = "/json/pssm?motif_id=" + id;
             } else {
                 return;
             }
-            load_content(url, id);
+            load_content(url, motifURL);
             $("#pop_up").wijdialog({
                 autoOpen: true,
                 title: event.target.data.name,
@@ -146,12 +175,11 @@ if (!nwhelpers) {
         return vis;
     }
 
-    nwhelpers.initBiclusterNetworkTab = function(biclusterId, djangoPSSM,
+    nwhelpers.initBiclusterNetworkTab = function(biclusterId,
                                                  swfPath, flashInstallerPath,
                                                  load_popup_content) {
         var vis = initAndLoadCytoscapeWeb("/network/graphml?biclusters=" + biclusterId,
                                           swfPath, flashInstallerPath, load_popup_content);
-        nwhelpers.initCanvas(djangoPSSM);
         return vis;
     };
 
@@ -164,21 +192,5 @@ if (!nwhelpers) {
         }
         return initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
                                        swfPath, flashInstallerPath, load_popup_content);
-    };
-
-    // This helper does not belong here, it feeds ISB logo
-    nwhelpers.initCanvas = function(django_pssm) {
-        for (var motif_id in django_pssm)  {
-            var pssm = { alphabet: ['A', 'C', 'T', 'G'],
-                         values: django_pssm[motif_id]
-                       };
-            canvas_id = 'canvas_' + motif_id;
-            var canvasOptions = {
-                width: 300, //400,
-                height: 150, //300,
-                glyphStyle: '20pt Helvetica'
-            };
-            isblogo.makeLogo(canvas_id, pssm, canvasOptions);
-        }
     };
 }());

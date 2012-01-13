@@ -3,22 +3,10 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    function load_popup(url, id) {
-        $.ajax({
-            url: url,
-            success: function(html) {
-                $("#pop_up").html(html);
-            },
-            error: function() {
-                $("#pop_up").html("<p>Error!!</p>");
-            }
-        });
-    };
-
     var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
                                         "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
                                         "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
-                                        load_popup);
+                                        nwhelpers.load_popup);
       });
 </script>
 <div id="cytoscapeweb">
