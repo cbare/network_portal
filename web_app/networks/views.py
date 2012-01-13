@@ -279,22 +279,6 @@ def bicluster(request, bicluster_id=None):
     img_url = img_url_prefix + cluster_id + ".svgz"
     print img_url
 
-    # create motif object to hand to wei-ju's logo viewer
-    alphabet = ['A','C','T','G']
-    pssm_logo_dict = {}
-    for m in motifs:
-        motif = Motif.objects.get(id=m.id)
-        pssm_list = []
-        for positions in motif.pssm():
-            position_list = []
-            for pos, val in positions.items():
-                position_list.append(val)
-            pssm_list.append(position_list)
-
-        pssm_logo = {'alphabet':alphabet, 'values':pssm_list }
-        pssm_logo_dict[m.id] = pssm_list
-        ret_pssm = json.JSONEncoder().encode(pssm_logo)
-
     if request.GET.has_key('format'):
         format = request.GET['format']
         if format == 'html':
@@ -346,8 +330,24 @@ def function(request, name):
     return render_to_response('function.html', locals())
 
 def motif(request, motif_id=None):
+    """This renders the motif popup dialog"""
     motif = Motif.objects.get(id=motif_id)
     return render_to_response('motif_snippet.html', locals())
+
+def pssm(request):
+    """Returns a JSON representation of the specified motif's PSSM"""
+    motif_id = request.GET['motif_id']
+    motif = Motif.objects.get(id=motif_id)
+    alphabet = ['A','C','T','G']
+    pssm_list = []
+    for positions in motif.pssm():
+        position_list = []
+        for pos, val in positions.items():
+            position_list.append(val)
+        pssm_list.append(position_list)
+
+    data = {'alphabet':alphabet, 'values':pssm_list }
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
 def circvis(request):
     gene = request.GET['gene']

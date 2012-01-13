@@ -57,6 +57,7 @@ urlpatterns = patterns('',
     (r'^analysis/motif/$', 'networks.views.motif'),
     (r'^analysis/function/$', 'networks.views.function'),
     (r'^json/circvis/$', 'networks.views.circvis'),
+    (r'^json/pssm/$', 'networks.views.pssm'),
 
     #(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_URL }),
 
