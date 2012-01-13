@@ -193,4 +193,20 @@ if (!nwhelpers) {
         return initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
                                        swfPath, flashInstallerPath, load_popup_content);
     };
+
+
+    nwhelpers.initCanvas = function(django_pssm) {
+        for (var motif_id in django_pssm)  {
+            var pssm = { alphabet: ['A', 'C', 'T', 'G'],
+                         values: django_pssm[motif_id]
+                       };
+            canvas_id = 'canvas_' + motif_id;
+            var canvasOptions = {
+                width: 300, //400,
+                height: 150, //300,
+                glyphStyle: '20pt Helvetica'
+            };
+            isblogo.makeLogo(canvas_id, pssm, canvasOptions);
+        }
+    };
 }());
