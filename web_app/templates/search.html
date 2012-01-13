@@ -106,7 +106,7 @@ $(function() {
     </ul>
 -->
 <!--    Uncomment if user wants to see Gene: Functions -->
-    
+
 <table id="gene-results">
       <caption> Search results</caption>
       <tbody>
@@ -180,7 +180,7 @@ $(function() {
         {% for bi_result in biclusters %}
           {% for gene in bi_result.bi_gene_name %}
             {% if result.gene_name == gene %}
-            <!-- <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>-->
+             <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>
             {% else %}
             <!--<p>{{ q }} is not a member of a regulon </p>-->
 	    {% endif %}
@@ -194,6 +194,8 @@ $(function() {
       <p><b>No results found!</b></p>
       {% endif %} <!-- for results -->
       {% endif %} <!-- if q -->
+
       
+
 </div><!-- End #main -->
 {% endblock %}
