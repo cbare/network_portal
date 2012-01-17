@@ -1,54 +1,29 @@
 {% extends "base2.html" %}
 {% block title %}Network Portal - Welcome{% endblock %}
-{% block content %}
-
+{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
+{% block jsspecial %}
 <script type="text/javascript">
-$(function() {
-    function log(message) {
-             $("<div />").text(message).prependTo("#log");
-             $("#log").scrollTop(0);
-    }
-
+  $(document).ready(function() {
     $("#query").autocomplete({
-        source: function( request, response ) {
-                                 console.debug("term: " + request.term);
-                $.ajax({
-                        url:      "http://ec2-50-17-134-33.compute-1.amazonaws.com:8983/solr/suggest/?wt=json&json.wrf=?",
-                        dataType: "jsonp",
-                        data: { q: request.term
-                        },
-                        success: function( data ) {
-                                 //console.debug("data: " + data.toSource());
-                                 response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
-                                              //console.debug("key 1: " + key);
-                                              //console.debug("val 1: " + value);
-				}));
-                        }
-                });         
-
-        },
-        minLength: 1,
-        select: function (event, ui) {
-		console.debug("log event, ui: " + ui.item.label);
-                $("#query").val(ui.item.label);
-		log (ui.item.label ?
-                       "Selected: " + ui.item.label :
-                       "Nothing selected, input was " + this.value);
-        }
+      source: function(request, response) {
+        $.ajax({
+          url:      "http://{{ request.META.SERVER_NAME }}:8983/solr/suggest/?wt=json&json.wrf=?",
+          crossDomain: true,
+          dataType: "jsonp",
+          async: false,
+          data: { q: request.term },
+          success: function(data) {
+              response(data.spellcheck.suggestions[1].suggestion);
+          }
+        });
+      },
+      minLength: 1,
+      select: function (event, ui) { }
     });
-
-    $(document).ready(function() {
-      $("#example1").click(function(event) {
-        $("#query").val($("#example1").text());
-      });
-    });
-    $(document).ready(function() {
-      $("#example2").click(function(event) {
-        $("#query").val($("#example2").text());
-      });
-    });
-});
+  });
 </script>
+{% endblock %}
+{% block content %}
 <div id="main">
   <h5>Welcome to Network Portal  <img src="{{ STATIC_PREFIX }}images/logo_small.png" title="this is a image title" style="background:none;border:0px;position:relative; float:right;"></h5>
 <p> Network Portal provides analysis and visualization tools for selected gene regulatory networks to aid researchers in biological discovery and hypothesis development. [<a href="/about"> ..read more</a>]  
@@ -71,23 +46,6 @@ $(function() {
 <a href="http://systemsbiology.org">  <img  height=60 style="background:none;border:0px; position:relative; bottom:-10px;" src="{{ STATIC_PREFIX }}images/isb.gif"></a>
 <a href="http://baliga.systemsbiology.net">  <img  height=60 style="background:none;border:0px;" src="{{ STATIC_PREFIX }}images/baliga.png"></a>
 
-<!-- Begin Search Box --
-  <div id="facet-display">
-  <h5>Quick Search</h5>
-  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
-  <form action="/search/" method="get">
-    <ul id="qsearch">
-      <input type="text" id="query" name="q">
-      <input type="submit" value="Search">
-    </ul>
-  </form>
-
-  <p><b>Example 1: </b><span id="example1">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
-    <span id="search_help">(Click to add)</span></p>    
-  <p><b>Example 2: </b><span id="example2">thioredoxin, oxidative</span>
-    <span id="search_help">(Click to add)</span></p>
-  </div>
--- End Search Box -->
 </div><!-- End #main -->
 
 <div id="sidebar">
