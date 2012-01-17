@@ -71,12 +71,16 @@
 	  <table>
 	    <tr>
 	      <th>Regulators</th>
-	      <th>Process</th>
+	      <th>Type</th>
 	    </tr>
 	    {% for influence in influences %}
 	    <tr>
 	      <td><a href="pssm_1">{{ influence.name }}</a></td>
-	      <td><a href="pssm_1">{{ influence.type }}</a></td>
+	      {% if influence.type == "tf" %}
+	      <td><a href="pssm_1">TF</a></td>
+	      {% else %}
+	      <td><a href="pssm_1">Logic Gate</a></td>
+	      {% endif %}
 	    </tr>
 	    {% endfor %}
 	  </table>

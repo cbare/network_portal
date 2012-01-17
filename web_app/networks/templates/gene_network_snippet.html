@@ -1,6 +1,3 @@
-<img src="{{ STATIC_PREFIX }}images/network_gene.png" style="background:none;border:0px;position:relative;bottom:-10px;">Regulon member <img src="{{ STATIC_PREFIX }}images/network_regulator.png" style="background:none;border:0px;position:relative; bottom:-10px;">Regulator  <img src="{{ STATIC_PREFIX }}images/network_motif.png" style="background:none;border:0px;position:relative; bottom:-10px;">Motif
-
-
 <script type="text/javascript">
 $(document).ready(function() {
     var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
@@ -9,11 +6,18 @@ $(document).ready(function() {
                                         nwhelpers.load_popup);
       });
 </script>
+<img src="{{ STATIC_PREFIX }}images/network_gene.png" style="background:none;border:0px;position:relative;bottom:-10px;">Regulon member <img src="{{ STATIC_PREFIX }}images/network_regulator.png" style="background:none;border:0px;position:relative; bottom:-10px;">Regulator  <img src="{{ STATIC_PREFIX }}images/network_motif.png" style="background:none;border:0px;position:relative; bottom:-10px;">Motif <p>
 <div id="cytoscapeweb">
+  {% if member_bicluster %}
   {% for bicluster in member_bicluster %}
   {{ bicluster.id }}
   {% endfor %}
   Cytoscape Web
+  {% else %}
+  <p>
+  {{ gene }} is not assigned to any regulons
+  </p>
+  {% endif %}
 </div>
 <div id="pop_up">
 </div>
