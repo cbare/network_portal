@@ -1,8 +1,7 @@
 {% extends "base2.html" %}
 {% block title %}Network Portal - Welcome{% endblock %}
 {% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
-{% block jsspecial %}
-<script type="text/javascript">
+{% block jsspecial %}<script type="text/javascript">
   $(document).ready(function() {
     $("#query").autocomplete({
       source: function(request, response) {
@@ -21,39 +20,35 @@
       select: function (event, ui) { }
     });
   });
-</script>
-{% endblock %}
-{% block content %}
-<div id="main">
+</script>{% endblock %}
+{% block content %}<div id="main">
   <h5>Welcome to Network Portal  <img src="{{ STATIC_PREFIX }}images/logo_small.png" title="this is a image title" style="background:none;border:0px;position:relative; float:right;"></h5>
-<p> Network Portal provides analysis and visualization tools for selected gene regulatory networks to aid researchers in biological discovery and hypothesis development. [<a href="/about"> ..read more</a>]  
-</p>
+  <p> Network Portal provides analysis and visualization tools for selected gene regulatory networks to aid researchers in biological discovery and hypothesis development. [<a href="/about"> ..read more</a>]</p>
 
-<h5>Method</h5> 
-<p> Network Portal integrates identification of conditionally co-regulated group of genes by using <a href="http://baliga.systemsbiology.net/cmonkey">cMonkey</a> and inference of regulatory influences by using <a href="http://baliga.systemsbiology.net/drupal/content/inferelator">Inferelator</a>. In addition, it is integrated with <a href="http://microbesonline.org">MicrobesOnline</a> for genomic information and <a href="http://regprecise.lbl.gov/RegPrecise">RegPrecise</a> for collection of manually curated regulatory inferences. [<a href="/about"> ..read more</a>]
-</p>
+  <h5>Method</h5> 
+  <p> Network Portal integrates identification of conditionally co-regulated group of genes by using <a href="http://baliga.systemsbiology.net/cmonkey">cMonkey</a> and inference of regulatory influences by using <a href="http://baliga.systemsbiology.net/drupal/content/inferelator">Inferelator</a>. In addition, it is integrated with <a href="http://microbesonline.org">MicrobesOnline</a> for genomic information and <a href="http://regprecise.lbl.gov/RegPrecise">RegPrecise</a> for collection of manually curated regulatory inferences. [<a href="/about"> ..read more</a>]</p>
 
-<h5>Data Sources</h5>
-<a href="http://microbesonline.org"><img height=30 src="{{ STATIC_PREFIX }}images/microbesOnline150.gif"></a>
-<a href="http://regprecise.lbl.gov/RegPrecise/"><img height=30 src="{{ STATIC_PREFIX }}images/regprecise.gif"></a>
-<a href="http://www.ncbi.nlm.nih.gov/"><img height=30 src="{{ STATIC_PREFIX }}images/ncbi.gif"></a>
-<a href="http://www.genome.jp/kegg/"><img height=30 src="{{ STATIC_PREFIX }}images/kegg.gif"></a>
-<a href="http://www.geneontology.org/"><img height=30 caption="go" src="{{ STATIC_PREFIX }}images/go.jpg"></a>
-<p></p>
+  <h5>Data Sources</h5>
+  <a href="http://microbesonline.org"><img height=30 src="{{ STATIC_PREFIX }}images/microbesOnline150.gif"></a>
+  <a href="http://regprecise.lbl.gov/RegPrecise/"><img height=30 src="{{ STATIC_PREFIX }}images/regprecise.gif"></a>
+  <a href="http://www.ncbi.nlm.nih.gov/"><img height=30 src="{{ STATIC_PREFIX }}images/ncbi.gif"></a>
+  <a href="http://www.genome.jp/kegg/"><img height=30 src="{{ STATIC_PREFIX }}images/kegg.gif"></a>
+  <a href="http://www.geneontology.org/"><img height=30 caption="go" src="{{ STATIC_PREFIX }}images/go.jpg"></a>
+  <p></p>
 
- <h5> Developed by </h5>
+  <h5> Developed by </h5>
    
-<a href="http://systemsbiology.org">  <img  height=60 style="background:none;border:0px; position:relative; bottom:-10px;" src="{{ STATIC_PREFIX }}images/isb.gif"></a>
-<a href="http://baliga.systemsbiology.net">  <img  height=60 style="background:none;border:0px;" src="{{ STATIC_PREFIX }}images/baliga.png"></a>
+  <a href="http://systemsbiology.org">  <img  height=60 style="background:none;border:0px; position:relative; bottom:-10px;" src="{{ STATIC_PREFIX }}images/isb.gif"></a>
+  <a href="http://baliga.systemsbiology.net">  <img  height=60 style="background:none;border:0px;" src="{{ STATIC_PREFIX }}images/baliga.png"></a>
 
 </div><!-- End #main -->
 
 <div id="sidebar">
   <h3>Quick Search</h3>
-<span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form id="qsearch" action="/search/" method="get">
-      <input class="tbox" type="text" id="query" name="q" value="{{ q }}">
-      <input class="btn" type="image" name="searchsubmit" value="Search" src="{{STATIC_PREFIX}}images/search.gif">
+    <input class="tbox" type="text" id="query" name="q" value="{{ q }}"></input>
+    <input class="btn" type="image" name="searchsubmit" value="Search" src="{{STATIC_PREFIX}}images/search.gif"></input>
   </form>
 
   <h3>Statistics</h3>
@@ -66,7 +61,7 @@
     <tr>
       <td><a href="/species/">{{ sp_count }}</a></td>
       <td><a href="/networks/">{{ net_count }}</a></td>
-      <td> {{ version }}</td>	  
+      <td>{{ version }}</td>	  
     </tr>
     <tr>
       <th>Regulons</th>
@@ -86,17 +81,17 @@
       This version of Network Portal includes 3 organisms
     </li>
     <li>
-     Regulon functional enrichments from KEGG, GO, COG and TIGRFam are now implemented 
+      Regulon functional enrichments from KEGG, GO, COG and TIGRFam are now implemented 
     </li>
   </ul>
 
- <h3>Coming Soon</h3>
+  <h3>Coming Soon</h3>
   <ul class="sidemenu">
     <li> 
       New organisms; E. coli, Leishmania, H. pylori and more...
     </li>
     <li>
-     New Circular Regulon visualizer
+      New Circular Regulon visualizer
     </li>
   </ul>
 </div><!-- end #sidebar -->

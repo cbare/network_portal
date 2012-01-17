@@ -30,69 +30,49 @@ $(document).ready(function() {
 </script>
 
 <div id="main" class="sub-page">
- <!-- <div class="ui-widget">
-    <h2>Search</h2>
-    <form action="/search/" method="get">
-      <ul id="search">
-	<input type="text" id="query" name="q">
-	<input type="submit" value="Search">
-      </ul>
-      <textarea rows="1" cols="60" name="q" id="query"></textarea>
-      <textarea rows="4" cols="60" name="q" id="search_box">{% if q %}{{ q }}{% endif %}</textarea>
-      </form>
-    <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
-  </div>-->
-
-
   <h5>Search</h5>
- <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
-      <input type="text" id="query" name="q" value="{{ q }}">
-      <input type="submit" value="Search">
+      <input type="text" id="query" name="q" value="{{ q }}"></input>
+      <input type="submit" value="Search"></input>
     </ul>
   </form>
   <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
-
-    <span id="search_help">(Click to add)</span></p>
+  <span id="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
-    <span id="search_help">(Click to add)</span></p>
-
-  
+  <span id="search_help">(Click to add)</span></p>
   {% if error_message %}
   <div id="error_message">
     <h4>Search Error</h4>
     <p>{{ error_message }}</p>
   </div>
   {% endif %}
- <!-- <div id="search-results">-->
+  <!-- <div id="search-results">-->
+  {% if q %}
+  <!-- <h3>Search Results</h3>-->
+  <!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
 
-    {% if q %}
-   <!-- <h3>Search Results</h3>-->
-<!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
-
-    {% if results %}
-      {% if count == 1 %}
-        <p> testing {{ results|length }}</p>
-      {% else %}
-    <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
-      {% endif %}
-
-<!-- The following displays a unique list of functions found among
-     the queried set of Genes
--->
-<!-- Uncomment if user wants to see Genes/Functions/Regulons separted into respective chunks
-    <ul>
-      {% for term in unique %}
-      <li id="gene-function">{{ term }} </li>
-      {% endfor %}
-    </ul>
--->
-<!--    Uncomment if user wants to see Gene: Functions -->
-    
-<table id="gene-results">
-      <caption> Search results</caption>
-      <tbody>
+  {% if results %}
+  {% if count == 1 %}
+  <p> testing {{ results|length }}</p>
+  {% else %}
+  <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
+  {% endif %}
+  <!-- The following displays a unique list of functions found among
+       the queried set of Genes
+  -->
+  <!-- Uncomment if user wants to see Genes/Functions/Regulons separted into respective chunks
+       <ul>
+       {% for term in unique %}
+       <li id="gene-function">{{ term }} </li>
+       {% endfor %}
+       </ul>
+  -->
+  <!--    Uncomment if user wants to see Gene: Functions -->
+  <table id="gene-results">
+    <caption> Search results</caption>
+    <tbody>
       <tr>
 	<th>Genes</th>
 	<th>Description</th>
