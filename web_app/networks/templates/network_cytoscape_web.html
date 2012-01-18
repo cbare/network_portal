@@ -1,156 +1,65 @@
-{% load static %}
-{% get_static_prefix as STATIC_PREFIX %}
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{ network.name }}</title>
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">
-  <link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/portal-style.css">  
-  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
-
-  <script type="text/javascript" src="/static/javascripts/jquery-1.5.1.min.js"></script>
-  <script type="text/javascript" src="/static/javascripts/jquery-ui-1.8.16.custom.min.js"></script>
-  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
-  <script type="text/javascript" src="/static/javascripts/collapsing_divs.js"></script>
-  <script type="text/javascript" src="/static/javascripts/main.js"></script>
-  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
-  
-  <!-- JSON support for IE (needed to use JS API) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/json2.min.js"></script>
-
-  <!-- Flash embedding utility (needed to embed Cytoscape Web) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/AC_OETags.min.js"></script>
-
-  <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
-  <script type="text/javascript" src="/static/cytoscapeweb/js/cytoscapeweb.min.js"></script>
-
-  <style type="text/css">
-      /* The Cytoscape Web container must have its dimensions set. */
-      html, body { height: 100%; width: 100%; padding: 0; margin: 0; }
-      #cytoscapeweb { width: 100%; height: 90%; }
-  </style>
-
-  <script type="text/javascript">
-  
-      var vis = null;
-      function pop_up(url) {
-          $.ajax({
-              url: url,
-              success: function(data){
-                  $("#pop_up").html(data);
-              },
-              error: function(){
-                  $("#pop_up").html("<p>Error!!</p>");
-              }
-          });
-      }
-      
-      function filter_on() {
+{% extends "base2.html" %}{% load static %}{% get_static_prefix as STATIC_PREFIX %}
+{% block title %}Network Portal - Network View{% endblock %}
+{% block cssspecial %}<link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css">{% endblock %}
+{% block jsspecial %}<script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+    <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/protovis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>{% endblock %}
+{% block content %}
+<script type="text/javascript">
+    var vis = null;
+    function pop_up(url) {
+        $.ajax({
+            url: url,
+            success: function(data){
+                $("#pop_up").html(data);
+            },
+            error: function(){
+                $("#pop_up").html("<p>Error!!</p>");
+            }
+        });
+    }
+ 
+    function filter_on() {
         if (vis) {
-          vis.filter(null, function(edge) {
+            vis.filter(null, function(edge) {
               return !edge.data.expanded;
-          }, true);
+            }, true);
         }
-      }
+    }
       
-      function expand() {
+    function expand() {
         if (vis) {
-          vis.removeFilter(null);
+            vis.removeFilter(null);
         }
-      }
+    }
 
-      $(document).ready(function() {
-          var expanded = false;
-          $("#toggle_expand").click(function(event) {
+    $(document).ready(function() {
+        var expanded = false;
+        $("#toggle_expand").click(function(event) {
             if (expanded) {
-              filter_on();
-              expanded = false;
+                filter_on();
+                expanded = false;
             }
             else {
-              expand();
-              expanded = true;
+                expand();
+                expanded = true;
             }
-          });
-          vis = nwhelpers.initCytoscapeWeb("{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
-                                           "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall");
-          
-          vis.ready(function() {
+        });
+        vis = nwhelpers.initAndLoadCytoscapeWeb("/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}{{expand}}",
+                                                "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
+                                                "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
+                                                nwhelpers.load_popup);
+        vis.ready(function() {
             filter_on();
-          });
-          //nwhelpers.addCytoscapeClickListener(vis, pop_up);
-          node_click_listener = vis.addListener("click", "nodes", function(event) {
-              var data = event.target.data;
-              var url;
-              if (data.type=='gene') {
-                url = "/gene/" + data.id + "?format=html";
-              }
-              else if (data.type=='regulator') {
-                if (data.name.indexOf("~~") < 0) {
-                  url = "/network/" + {{network.id}} + "/gene/" + data.name + "?format=html";
-                }
-                else {
-                  url = "/regulator/" + data.name + "?format=html";
-                }
-              }
-              else if (data.type=='bicluster') {
-                pattern = /bicluster:(\d+)/;
-                id = pattern.exec(data.id)[1];
-                url = "/bicluster/" + id + "?format=html";
-              }
-              else if (data.type=='motif') {
-                pattern = /motif:(\d+)/;
-                id = pattern.exec(data.id)[1];
-                url = "/motif/" + id + "?format=html";
-              }
-              else {
-                return;
-              }
-
-              $("#pop_up").wijdialog({
-                  autoOpen: true,
-                  title: event.target.data.name,
-                  width: 600,
-                  open: pop_up(url)
-              });
-          });
-
-          $.ajax({
-              url: "/network/graphml?biclusters={{ network.bicluster_ids|join:"," }}{{expand}}",
-              success: function(data){
-                  if (typeof data !== "string") { 
-                      if (window.ActiveXObject) { // IE 
-                          data = data.xml; 
-                      }
-                      else { 
-                          data = (new XMLSerializer()).serializeToString(data); 
-                      } 
-                  }
-                  vis.draw({network:data, visualStyle:nwhelpers.VISUAL_STYLE, layout:{name:'ForceDirected'}});
-              },
-              error: function(){
-                  nwhelpers.show_msg({
-                      type: "error",
-                      target:"#cytoscapeweb",
-                      message: "The file you specified could not be loaded. url=" + options.url,
-                      heading: "File not found",
-                  });
-              }
-          });
-          
-      });
-  </script>
-</head>
-<body>
-  <div id="cytoscapeweb">
-    Cytoscape Web
-  </div>
-  <div id="menu">
-    <a href="/">home</a> | <a href="/search">search</a> | 
-    {% if expand %}<a id="toggle_expand">expand</a> |{% endif %}
-    [controls to be added here or in sidebar]
-  </div>
-  <div id="pop_up">
-    
-  </div>
-</body>
-</html>
+        });
+    });
+</script>
+<div id="cytoscapeweb">Cytoscape Web</div>
+<div id="pop_up"></div>
+{% endblock %}
