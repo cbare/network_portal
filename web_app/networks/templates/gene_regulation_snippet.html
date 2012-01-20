@@ -1,8 +1,9 @@
- <h3> Regulation information for {{ gene }} </h3>
+<h3> Regulation information for {{ gene }} </h3>
 <p>
-<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
 <div class="tab-contents">
 <div id="main">
+{% if influence_biclusters|length > 0 %}
+<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
   <table id="gene-regulation">
    <caption> Regulators for {{ gene }}
     <tr>
@@ -24,5 +25,10 @@
     </tr>
     {% endfor %}
   </table>
+{% else %}
+		<div id="error_message">
+		No regulators were found for {{ gene }}.
+		</div>
+{% endif %}
 </div>
 </div>

@@ -48,6 +48,7 @@
 	  </p>
 
           <h3>Regulation</h3>
+	  {% if influence_biclusters %}
           <table id="gene-regulation">
             <tr>
               <th class="help">Regulator</th>
@@ -55,21 +56,32 @@
               <th>Mode</th>
               <th>Family</th>
               <th>Process</th>
-              <th>Inferelator Weight</th>
+             <!-- <th>Inferelator Weight</th>-->
             </tr>
             {% for bicluster_id, influence in influence_biclusters %}
-            <tr>
-              <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
-              <td><a href="regulon">{{ bicluster_id }}</a></td>
-              <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-              <td><a href="regulon_family">Fis</a></td>
-              <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-              <td><a href="regulon_weight">-0.23</a></td>
-            </tr>
-            {% endfor %}
-          </table>
+              <tr>
+                <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+                <td><a href="regulon">{{ bicluster_id }}</a></td>
+                <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
+                <td><a href="regulon_family">Fis</a></td>
+                <td><a href="regulon_process">Pyruvate Oxidation</a></td>
+               <!-- <td><a href="regulon_weight">-0.23</a></td>-->
+              </tr>
+             {% endfor %}
+
+	      </table>
+
+	  {% else %}
+		<div id="error_message">
+		  <p>
+		  No regulatory information has been found!
+		  </p>
+		</div>
+		{% endif %}
+		
 
           <h3>Motifs</h3>
+	  {% if motif %}
           <table>
             <tr>
 	      <th class="help">Logo</th>
@@ -90,8 +102,15 @@
 	      <td>4.6e-08</td>
 	    </tr>
           </table>
+	   {% else %}
+		<div id="error_message">
+		  <p>
+		  No motif information has been found!
+		  </p>
+		</div>
+		{% endif %}
 	    
-          <h3>Gene Neighborhood</h3>
+          <h3>Genomic Neighborhood</h3>
           <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png" />
 
         </div>{# main #}
@@ -124,18 +143,31 @@
             {% endif %}
           </table>
 
-          <h4>Ontology</h4>
-          <p>
-            <b> KEGG: </b> <a href="/species/{{ gene.species.short_name }}">{{ gene.species.name }}</a><br/>
-            <b> GO: </b> {{ gene.name }}<br/>
-            <b> TIGR: </b> <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&term=2795199">2795199  (NCBI) </a>, <a href="http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=206275&disp=0">206275 (MicrobesOnline) </a><br/>
-          </p>
-          <h4>Protein Info</h4>
-          <p>
-            <b> COG (MicrobesOnline): </b>
-            <b> InterPro: </b>
-          </p>
-        </div>{# #sidebar #}
+          <h4>Functional Annotations</h4>
+	  {% if gene.functions.count %}
+	  <table id="gene-function-table">
+	     <thead>
+	      <tr>
+		<th>Function</th>
+		<th>System</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      {% for function in gene.functions.all %}
+	      <tr>
+		<td><a href="/function/{{ function.id }}">{{ function.name }}</a></td>
+		<td>{{ function.type }}, {{ function.namespace}}</td>
+	     {% endfor %}
+	      </tr>
+	    </tbody>
+	  </table>
+	  
+	  {% else %}
+	  <div id="error_message">
+	    No annotated functions !
+	  </div>
+	  {% endif %}
+	</div>{# #sidebar #}
       </div>
       <div id="tab-network">
 	{% include 'gene_network_snippet.html' %}
