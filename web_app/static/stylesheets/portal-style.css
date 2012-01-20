@@ -150,6 +150,40 @@ caption {
 	font-size:1.2em;
 	font-weight: bold;
 }
+/* Start Sort Table Styling */
+table.tablesorter {
+	width: 100%;
+	border: 1px solid #000;
+}
+table.tablesorter th {
+	text-align: left;
+	padding: 5px;
+}
+table.tablesorter td {
+	padding: 5px;
+}
+table.tablesorter .even {
+	background-color: #FFFFF2;
+}
+table.tablesorter .odd {
+	background-color: #FFFFFF;
+}
+table.tablesorter .header {
+	background-image: url("../images/sort_bg.png");
+	background-repeat: no-repeat;
+	padding-left: 25px;
+	background-position: left center;
+	height: auto;
+}
+table.tablesorter .headerSortUp {
+	background-image: url("../images/sort_asc.png");
+	background-repeat: no-repeat;
+}
+table.tablesorter .headerSortDown {
+	background-image: url("../images/sort_dsc.png");
+	background-repeat: no-repeat;
+}
+
 /* end - table */
 
 /* form elements */
@@ -247,9 +281,9 @@ input.button {
 	color: #332616;
 	
 	/* change the values of top and left to adjust the position of the logo*/
-	top: 75px; left: 55px;	
+	top: 10px; left: 55px;	
 }
-#header p#slogan {
+#header p#slogan a {
 	position: absolute;
 	margin: 0; padding: 0;
 	font: bold 15px 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
@@ -257,7 +291,7 @@ input.button {
 	letter-spacing: -0.5px;
 	
 	/* change the values of top and left to adjust the position of the slogan*/
-	top: 148px; left: 150px;		
+	top: 25px; right: 30px;		
 }
 
 /* top-menu */
@@ -289,7 +323,7 @@ input.button {
 .underlinemenu ul{
     padding: 6px 0 -20px 0; /*6px should equal top padding of "ul li a" below, 7px should equal bottom padding + bottom border of "ul li a" below*/
     float:right;
-    margin: -20px 2px;
+    margin: -45px 2px;
     text-align: right; //set value to "left", "center", or "right"*/
 }
 
@@ -1345,4 +1379,9 @@ table#motif {
 #error_message {
     color: red;
     font-weight: bold;
+}
+#tablepager, #pager-block {
+	display:block;
+	position:relative;
+	margin-top: -200px;
 }
