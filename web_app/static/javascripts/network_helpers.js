@@ -145,7 +145,7 @@ if (!nwhelpers) {
         return vis;
     };
 
-    function initAndLoadCytoscapeWeb(dataURL, swfPath, flashInstallerPath, load_popup_content) {
+    nwhelpers.initAndLoadCytoscapeWeb = function(dataURL, swfPath, flashInstallerPath, load_popup_content) {
         var vis = nwhelpers.initCytoscapeWeb(swfPath, flashInstallerPath);
         nwhelpers.addCytoscapeClickListener(vis, load_popup_content);
 
@@ -178,8 +178,8 @@ if (!nwhelpers) {
     nwhelpers.initBiclusterNetworkTab = function(biclusterId,
                                                  swfPath, flashInstallerPath,
                                                  load_popup_content) {
-        var vis = initAndLoadCytoscapeWeb("/network/graphml?biclusters=" + biclusterId,
-                                          swfPath, flashInstallerPath, load_popup_content);
+        var vis = nwhelpers.initAndLoadCytoscapeWeb("/network/graphml?biclusters=" + biclusterId,
+                                                    swfPath, flashInstallerPath, load_popup_content);
         return vis;
     };
 
@@ -190,8 +190,8 @@ if (!nwhelpers) {
             $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
             return;
         }
-        return initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
-                                       swfPath, flashInstallerPath, load_popup_content);
+        return nwhelpers.initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
+                                                 swfPath, flashInstallerPath, load_popup_content);
     };
 
 
