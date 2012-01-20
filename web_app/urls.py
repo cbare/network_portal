@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^about$', 'web_app.views.about', name='about'),
     url(r'^contact$', 'web_app.views.contact', name='contact'),
     url(r'^search', 'web_app.views.search', name='search'),
+    url(r'^help', 'web_app.views.help', name='help'),
 
     url(r'^network/test/$', 'web_app.networks.views.network_cytoscape_web_test', name='network'),
     url(r'^network/xmltest/$', 'web_app.networks.views.network_as_graphml', name='network'),

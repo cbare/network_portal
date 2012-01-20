@@ -93,3 +93,5 @@ def logout_page(request):
     """
     logout(request)
     return HttpResponseRedirect('/')
+def help(request):
+    return render_to_response('help.html', locals())

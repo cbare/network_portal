@@ -10,12 +10,14 @@
     {% block jsspecial %}{% endblock %}
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/collapsing_divs.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.tablesorter.pager.js"></script>
   </head>
   <body>
     {% block basewrap %}<div id="wrap-no-line">{% endblock %}
     <div id="header">
-      <h1 id="logo-text"></h1>
-      <p id="slogan"></p>
+      <h1 id="logo-text"><a href="/"></a></h1>
+      <p id="slogan"><a href="http://www.systemsbiology.org"><img src="{{ STATIC_PREFIX }}images/isb_logo.png"></a></p>
       <div id="underlinemenu" class="underlinemenu">
 	<ul>
 	  <li><a href="/about">About</a></li>
@@ -31,6 +33,8 @@
           <li class="{% active request "^/species" %}"><a href="/species">Species</a></li>
           <li class="{% active request "^/function" %}"><a href="/functions/">Function</a></li>
           <li class="{% active request "^/networks" %}"><a href="/networks/">Networks</a></li>
+           <li class="{% active request "^/help" %}"><a href="/help/">Help</a></li>
+
          <!-- <li class="{% active request "^/analysis/gene" %}"><a href="/analysis/gene">Analysis Example</a></li>-->
         </ul>
       </div>{# end nav #}
