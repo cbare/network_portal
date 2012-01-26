@@ -117,6 +117,16 @@ def sviewer_cgi(request):
 
     url = proxied_url + data
     req = urllib2.Request(url)
+
+    cookies = ''
+    count = 0
+    for key, value in request.COOKIES.items():
+        if count > 0:
+            cookies += '; '
+        cookies += ("%s=%s" % (key, value))
+    if len(cookies) > 0:
+        req.addHeader('Cookie', cookies)
+
     response = urllib2.urlopen(req, None)
     info = response.info()
     retresponse = HttpResponse(response.read())
