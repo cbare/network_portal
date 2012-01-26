@@ -6,7 +6,7 @@
     $("#query").autocomplete({
       source: function(request, response) {
         $.ajax({
-          url:      "http://{{ request.META.SERVER_NAME }}:8983/solr/suggest/?wt=json&json.wrf=?",
+          url:      "http://networks.systemsbiology.net:8983/solr/suggest/?wt=json&json.wrf=?",
           crossDomain: true,
           dataType: "jsonp",
           async: false,
