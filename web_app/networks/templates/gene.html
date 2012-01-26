@@ -10,14 +10,13 @@
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>
-    <!-- These are required for loading NCBI sequence viewer in gene page   
+    <!-- These are required for loading NCBI sequence viewer in gene page  -->
     <script type='text/javascript' src='http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js'></script>
     <script type='text/javascript' src='http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/ext-all.js'></script>
-    <script type="text/javascript"> window.sv_base_url = "http://www.ncbi.nlm.nih.gov/projects/sviewer/"</script>
+    <script type="text/javascript"> window.sv_base_url = "sviewer/"</script>
     <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/projects/sviewer/css/style.css" media="screen, projection, print"/>
     <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/>
-    <script type="text/javascript">window.sv_base_url = "{{ STATIC_PREFIX }}"</script>    
-    <meta http-equiv="Access-Control-Allow-Origin" content="*"> -->
+   
     {% endblock %}
 
 {% block content %}<div id="bicluster-top">
@@ -121,10 +120,10 @@
 		{% endif %}
 	    
           <h3>Genomic Neighborhood</h3>
-	  <!--<div id="genomic_context" class="SeqViewerApp">
-	  <a href="?embedded=true&id=NC_003284&from=13598210&to=13599776&mk=13598700:13598925|Marker 1|008000"></a>
+	  <div id="genomic_context" class="SeqViewerApp">
+	  <a href="?embedded=true&id={{ gene.geneid }}"></a>
           </div>
-	 <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png" />-->
+	<!-- <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png" />-->
 	  Not yet implemented in this version of the portal!
 
         </div>{# main #}
