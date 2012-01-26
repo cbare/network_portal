@@ -7,11 +7,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import logout
+
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
 
 import search as s
 import itertools
+import urllib2
 
 def home(request):
     #return render_to_response('home.html', locals())
@@ -93,5 +95,33 @@ def logout_page(request):
     """
     logout(request)
     return HttpResponseRedirect('/')
+
 def help(request):
     return render_to_response('help.html', locals())
+
+def sviewer_cgi(request):
+    """Proxy for the NCBI data CGIs"""
+    def allowed_header(header):
+        return header != 'transfer-encoding' and header != 'connection'
+
+    base_url = 'http://www.ncbi.nlm.nih.gov/projects/sviewer/'
+    script_name = request.path.split('/')[-1]
+    proxied_url = base_url + script_name
+    data = '?'
+    count = 0
+    for key,value in request.REQUEST.items():
+        if count > 0:
+            data += '&'
+        data += ("%s=%s" % (key, value))
+        count += 1
+
+    url = proxied_url + data
+    req = urllib2.Request(url)
+    response = urllib2.urlopen(req, None)
+    info = response.info()
+    retresponse = HttpResponse(response.read())
+    for key, value in info.items():
+        if allowed_header(key.lower()):
+            retresponse[key] = value
+
+    return retresponse
