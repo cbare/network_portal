@@ -16,3 +16,9 @@ insert into networks_synonym (target_id, target_type, name, type) values (5, 'ch
 insert into networks_chromosome (name, species_id, length, topology, refseq) values ('chromosome', 3, 1661137, 'circular', 'NC_005791');
 insert into networks_synonym (target_id, target_type, name, type) values (6, 'chromosome', 'chr', 'ucsc');
 
+-- sequence for syf
+insert into networks_chromosome (name, species_id, length, topology, refseq) values ('chromosome', 4, 2695903, 'circular', 'NC_007604');
+insert into networks_chromosome (name, species_id, length, topology, refseq) values ('plasmid', 4, 46366, 'circular', 'NC_007595');
+
+insert into networks_synonym (target_id, target_type, name, type) values (7, 'chromosome', 'chr', 'ucsc');
+insert into networks_synonym (target_id, target_type, name, type) values (8, 'chromosome', 'plasmid 1', 'ucsc');
