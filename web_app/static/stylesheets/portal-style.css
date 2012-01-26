@@ -611,12 +611,12 @@ input.button {
 }
 #footer p {
 	padding:10px 0;
-}
+	clear: both;
+	}
 #footer a:hover { 
-	color: #444; 
 	text-decoration: none;
-}
-
+	clear: both;
+      }
 /* postmeta */
 .post-footer {
 	padding: 8px 10px;
