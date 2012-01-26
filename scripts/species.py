@@ -14,3 +14,5 @@ species_dict['dvu'] = Species("Desulfovibrio vulgaris Hildenborough",
 species_dict['dvh'] = species_dict['dvu']
 species_dict['mmp'] = Species("Methanococcus maripaludis S2",
                               {'chromosome':'chromosome'})
+species_dict['syf'] = Species("Synechococcus elongatus PCC 7942",
+                              {'chromosome':'chromosome', 'plasmid':'plasmid'})
