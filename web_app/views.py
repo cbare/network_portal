@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import logout
+from django.contrib.csrf.middleware import csrf_exempt
 
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
@@ -103,11 +104,11 @@ def sviewer_cgi(request):
     """Proxy for the NCBI data CGIs"""
     def allowed_header(header):
         return header != 'transfer-encoding' and header != 'connection'
-
     base_url = 'http://www.ncbi.nlm.nih.gov/projects/sviewer/'
     script_name = request.path.split('/')[-1]
     proxied_url = base_url + script_name
-    data = '?'
+    #data = '?'
+    data = ''
     count = 0
     for key,value in request.REQUEST.items():
         if count > 0:
@@ -115,8 +116,7 @@ def sviewer_cgi(request):
         data += ("%s=%s" % (key, value))
         count += 1
 
-    url = proxied_url + data
-    req = urllib2.Request(url)
+    req = urllib2.Request(proxied_url)
 
     cookies = ''
     count = 0
@@ -126,12 +126,12 @@ def sviewer_cgi(request):
         cookies += ("%s=%s" % (key, value))
     if len(cookies) > 0:
         req.addHeader('Cookie', cookies)
-
-    response = urllib2.urlopen(req, None)
+    response = urllib2.urlopen(req, data)
     info = response.info()
     retresponse = HttpResponse(response.read())
     for key, value in info.items():
         if allowed_header(key.lower()):
             retresponse[key] = value
-
     return retresponse
+
+sviewer_cgi = csrf_exempt(sviewer_cgi)

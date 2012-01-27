@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>{% block title %}Network Portal{% endblock %}</title>
+    {% block cssreset %}{% endblock %}
     {% block csscommon %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/portal-style.css">{% endblock %}
     {% block cssspecial %}{% endblock %}
     {% block jscommon %}<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
