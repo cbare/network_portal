@@ -3,8 +3,7 @@ import urllib
 from django.utils import simplejson
 
 def make_query_string(q):
-    """each search term automatically includes a wildcard at the end now"""
-    return '+'.join([urllib.quote((comp + '*').encode('utf-8')) for comp in q.split(' ')])
+    return '+'.join([urllib.quote(comp.encode('utf-8')) for comp in q.split(' ')])
 
 def search(q):
     """We send our query directly to Solr without going through the sunburnt library.
