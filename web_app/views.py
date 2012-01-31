@@ -124,8 +124,8 @@ def sviewer_cgi(request):
         if count > 0:
             cookies += '; '
         cookies += ("%s=%s" % (key, value))
-    if len(cookies) > 0:
-        req.addHeader('Cookie', cookies)
+   # if len(cookies) > 0:
+   #     req.addHeader('Cookie', cookies)
     response = urllib2.urlopen(req, data)
     info = response.info()
     retresponse = HttpResponse(response.read())
