@@ -150,8 +150,8 @@
               <th>Regulators</th>
               <th>Conditions</th>
             </tr>
-            {% if member_bicluster %}
-            {% for bicluster in member_bicluster %}
+            {% if member_biclusters %}
+            {% for bicluster in member_biclusters %}
             <tr>
               <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.id }}</a></td>
               <td><a href="#">{{ bicluster.influences.count }}</a></td>

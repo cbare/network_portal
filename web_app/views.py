@@ -11,6 +11,7 @@ from django.contrib.csrf.middleware import csrf_exempt
 
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
+from web_app.networks.helpers import get_influence_biclusters
 
 import search as s
 import itertools
@@ -18,12 +19,15 @@ import urllib2
 
 class GeneResultEntry:
     def __init__(self, id, name, species,
-                 description, bicluster_ids):
+                 description, bicluster_ids, influence_biclusters,
+                 regulated_biclusters):
         self.id = id
         self.name = name
         self.species = species
         self.description = description
         self.bicluster_ids = bicluster_ids
+        self.influence_biclusters = influence_biclusters
+        self.regulated_biclusters = regulated_biclusters
 
 
 def home(request):
@@ -57,10 +61,14 @@ def search(request):
             genes = []
             for gene_obj in gene_objs:
                 bicluster_ids = [b.id for b in gene_obj.bicluster_set.all()]
+                regulates = Bicluster.objects.filter(influences__name__contains=gene_obj.name)
+                _, influence_biclusters = get_influence_biclusters(gene_obj)
                 genes.append(GeneResultEntry(gene_obj.id, gene_obj.name,
                                              gene_obj.species.id,
                                              gene_obj.description,
-                                             bicluster_ids))
+                                             bicluster_ids,
+                                             influence_biclusters,
+                                             regulates))
         except Exception as e:
             error_message = str(e)
             
