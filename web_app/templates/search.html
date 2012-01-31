@@ -26,6 +26,55 @@ $(document).ready(function() {
     $(".example-search").click(function(event) {
         $("#query").val($(event.target).text());
     });
+    // Selections in result table
+    var geneMap = {};
+    {% for result in genes %}
+    geneMap[{{result.id}}] = {species: '{{result.species_name}}',
+                              biclusters: [{% if biclusters %}{% for bi_result in biclusters %}{% for k in bi_result.bi_gene_name %}{% if result.gene_name == k %}{{bi_result.bicluster_id}}, {% endif %}{% endfor %}{% endfor %}]{% endif %}
+                             };{% endfor %}
+
+    function check_selection(geneMap) {
+        var selectBoxes = $('[id^=sel_gene]');
+        var selectedGenes = [];
+        for (i = 0; i < selectBoxes.length; i++) {
+            if (selectBoxes[i].checked) {
+                var comps = selectBoxes[i].id.split('_');
+                var id = comps[comps.length - 1];
+                selectedGenes[selectedGenes.length] = geneMap[id];
+            }
+        }
+        if (selectedGenes.length === 0) {
+            $('<div id="display-network"></div>').replaceAll('#display-network');
+            return;
+        }
+        var species = selectedGenes[0].species;
+        var biclusters = [];
+        for (i = 0; i < selectedGenes.length; i++) {
+            if (species !== selectedGenes[i].species) {
+                biclusters = [];
+                break;
+            }
+            for (j = 0; j < selectedGenes[i].biclusters.length; j++) {
+                if (biclusters.indexOf(selectedGenes[i].biclusters[j]) === -1) {
+                    biclusters[biclusters.length] = selectedGenes[i].biclusters[j];
+                }
+            }
+        }
+        if (biclusters.length > 0) {
+            var ids = biclusters.join(',');
+            $('<div id="display-network"><a href="/network?biclusters=' + ids + '">view network for selected regulons (' + biclusters.length + ')</a></div>').replaceAll('#display-network');
+        } else {
+            $('<div id="display-network"></div>').replaceAll('#display-network');
+        }
+    }
+
+    $("#sel_all_genes").click(function(event) {
+        $('[id^=sel_gene]').prop('checked', $('#sel_all_genes').prop('checked'));
+        check_selection(geneMap);
+    });
+    $('[id^=sel_gene]').click(function(event) {
+        check_selection(geneMap);
+    });
 });
 </script>
 
@@ -48,12 +97,7 @@ $(document).ready(function() {
     <p>{{ error_message }}</p>
   </div>
   {% endif %}
-  <!-- <div id="search-results">-->
   {% if q %}
-  <!-- <h3>Search Results</h3>-->
-  <!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
-
-
   {% if results %}
   {% if count == 1 %}
   <p> testing {{ results|length }}</p>
@@ -63,7 +107,7 @@ $(document).ready(function() {
   <!-- The following displays a unique list of functions found among
        the queried set of Genes
   -->
-  <!-- Uncomment if user wants to see Genes/Functions/Regulons separted into respective chunks
+  <!-- Uncomment if user wants to see Genes/Functions/Regulons separated into respective chunks
        <ul>
        {% for term in unique %}
        <li id="gene-function">{{ term }} </li>
@@ -75,6 +119,7 @@ $(document).ready(function() {
     <caption> Search results</caption>
     <tbody>
       <tr>
+        <th><input type="checkbox" id="sel_all_genes"></input></th>
 	<th>Genes</th>
 	<th>Description</th>
 	<th>Regulated by</th>
@@ -87,6 +132,7 @@ $(document).ready(function() {
       </tr>
       {% for result in genes %}
       <tr>
+        <td><input type="checkbox" id="sel_gene_{{result.id}}"></input></td>
         <td><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></td>
         <td>{{ result.gene_description }}</td>
 	{% if ret %}
@@ -145,19 +191,10 @@ $(document).ready(function() {
       {% endfor %} <!-- for result in genes -->
       </tbody>
     </table>
-
-      {% if biclusters %}
-      <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>
-      {% else %}
-      <p>No regulon results for query &ldquo;{{ q }}&rdquo;</p>
-      {% endif %} <!-- if biclusters -->
-
-      {% else %}
-      <p><b>No results found!</b></p>
-      {% endif %} <!-- for results -->
-      {% endif %} <!-- if q -->
-
-      
-
+    <p><div id="display-network"></div></p>
+    {% else %}
+    <p><b>No results found!</b></p>
+    {% endif %} <!-- for results -->
+    {% endif %} <!-- if q -->
 </div><!-- End #main -->
 {% endblock %}
