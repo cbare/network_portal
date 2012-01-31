@@ -27,9 +27,7 @@ class GeneResultEntry:
 
 
 def home(request):
-    #return render_to_response('home.html', locals())
     genes = Gene.objects.all()
-
     bicl_count = Bicluster.objects.count()
     sp_count = Species.objects.count()
     net_count = Network.objects.count()
@@ -85,7 +83,6 @@ def sviewer_cgi(request):
     base_url = 'http://www.ncbi.nlm.nih.gov/projects/sviewer/'
     script_name = request.path.split('/')[-1]
     proxied_url = base_url + script_name
-    #data = '?'
     data = ''
     count = 0
     for key,value in request.REQUEST.items():
