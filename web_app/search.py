@@ -12,7 +12,7 @@ def search(q):
     solr_url = 'http://localhost:8983/solr/select/'
     req = urllib2.Request(solr_url)
     query_string = make_query_string(q)
-    response = urllib2.urlopen(solr_url, 'wt=json&q=' + query_string)
+    response = urllib2.urlopen(solr_url, 'wt=json&rows=10000&q=' + query_string)
     resp = simplejson.loads(response.read())['response']
     start = resp['start']
     num_found = resp['numFound']
