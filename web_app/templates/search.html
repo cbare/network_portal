@@ -28,10 +28,8 @@ $(document).ready(function() {
     });
     // Selections in result table
     var geneMap = {};
-    {% for result in genes %}
-    geneMap[{{result.id}}] = {species: '{{result.species_name}}',
-                              biclusters: [{% if biclusters %}{% for bi_result in biclusters %}{% for k in bi_result.bi_gene_name %}{% if result.gene_name == k %}{{bi_result.bicluster_id}}, {% endif %}{% endfor %}{% endfor %}]{% endif %}
-                             };{% endfor %}
+    {% for gene in genes %}geneMap[{{gene.id}}] = {species: {{gene.species}}, biclusters: [{{ gene.bicluster_ids|join:"," }}]};
+    {% endfor %}
 
     function check_selection(geneMap) {
         var selectBoxes = $('[id^=sel_gene]');
@@ -102,19 +100,8 @@ $(document).ready(function() {
   {% if count == 1 %}
   <p> testing {{ results|length }}</p>
   {% else %}
-  <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
+  <p><font color=#FF4040>Found {{ genes|length }} gene results for "{{ q }}".</font></p>
   {% endif %}
-  <!-- The following displays a unique list of functions found among
-       the queried set of Genes
-  -->
-  <!-- Uncomment if user wants to see Genes/Functions/Regulons separated into respective chunks
-       <ul>
-       {% for term in unique %}
-       <li id="gene-function">{{ term }} </li>
-       {% endfor %}
-       </ul>
-  -->
-  <!--    Uncomment if user wants to see Gene: Functions -->
   <table id="gene-results">
     <caption> Search results</caption>
     <tbody>
@@ -125,76 +112,28 @@ $(document).ready(function() {
 	<th>Regulated by</th>
 	<th>Regulates</th>
 	<th>In Regulons</th>
-	<!--<th>GO</th>
-	<th>KEGG</th>
-	<th>COG</th>
-	<th>Regulons</th>-->
       </tr>
-      {% for result in genes %}
+      {% for gene in genes %}
       <tr>
-        <td><input type="checkbox" id="sel_gene_{{result.id}}"></input></td>
-        <td><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></td>
-        <td>{{ result.gene_description }}</td>
-	{% if ret %}
-	{% for gname, func in ret %}
-	{% if gname == result.gene_name %}
+        <td><input type="checkbox" id="sel_gene_{{gene.id}}"></input></td>
+        <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
+        <td>{{ gene.description }}</td>
 	<td>Regulated by</td>
-	<td>Regulates</td>
-	
-<!--	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'go' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://amigo.geneontology.org/cgi-bin/amigo/term_details?term={{term_id}}">{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
+	<td>Regulates</td>	
 	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'kegg' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://www.genome.jp/kegg-bin/show_pathway?map{{ term_id }}">path:{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
-	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'cog' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://www.ncbi.nlm.nih.gov/COG/grace/wiew.cgi?{{ term_id }}">{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
-	{% endif %} <!--if gname -->
-	{% endfor %} <!-- for gname -->
-	{% else %}
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	{% endif %} <!-- if ret -->
-	<td>
-
-	{% if biclusters %}
-	  {% for bi_result in biclusters %}
-	    {% for k in bi_result.bi_gene_name %}
-	      {% if result.gene_name == k %}
-	        <li id="gene-regulon"><a href="/bicluster/{{ bi_result.bicluster_id }}">regulon {{ bi_result.bicluster_id }}</a>,</li>
-	      {% endif %}
-	    {% endfor %}
-	  {% endfor %}
-	{% endif %} <!-- if biclusters -->
-	</td>
+	  {% for bicluster_id in gene.bicluster_ids %}
+	  <li id="gene-regulon"><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
+          {% endfor %}
+        </td>
       </tr>
       {% endfor %} <!-- for result in genes -->
-      </tbody>
-    </table>
-    <p><div id="display-network"></div></p>
-    {% else %}
-    <p><b>No results found!</b></p>
-    {% endif %} <!-- for results -->
-    {% endif %} <!-- if q -->
+    </tbody>
+  </table>
+
+  <p><div id="display-network"></div></p>
+  {% else %}
+  <p><b>No results found!</b></p>
+  {% endif %} <!-- for results -->
+  {% endif %} <!-- if q -->
 </div><!-- End #main -->
 {% endblock %}
