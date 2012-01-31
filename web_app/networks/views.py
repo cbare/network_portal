@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
-from web_app.networks.helpers import nice_string
+from web_app.networks.helpers import nice_string, get_influence_biclusters
 from pprint import pprint
 from django.utils import simplejson
 import json
@@ -216,20 +216,8 @@ def gene(request, gene=None, network_id=None):
     else:
         network = gene.species.network_set.all()[:1].get()
         network_id = network.id
+    member_biclusters, influence_biclusters = get_influence_biclusters(gene)
 
-    # get all biclusters that the gene is a member of
-    member_bicluster = gene.bicluster_set.all()
-    
-    # list of IDs for biclusters that this gene belongs to
-    bicluster_ids = [ b.id for b in gene.bicluster_set.all() ]
-
-    # get regulatory influences for this gene
-    influence_biclusters = []
-    for bicluster in member_bicluster:
-        for influence in bicluster.influences.all():
-            influence_biclusters.append( (bicluster.id, influence) )
-    influence_biclusters = sorted(influence_biclusters, key=lambda bi: (bi[0], bi[1].name) )
-    
     # get neighbor genes
     neighbor_genes = gene.neighbor_genes(network_id)
 
