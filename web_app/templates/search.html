@@ -3,6 +3,7 @@
 {% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
 {% block content %}
 {% load static %}
+{% load filters %}
 {% get_static_prefix as STATIC_PREFIX %}
 <script type="text/javascript">
 $(document).ready(function() {
@@ -99,10 +100,11 @@ $(document).ready(function() {
   {% endif %}
   {% if q %}
   {% if results %}
-  <p><font color=#FF4040>Found {{ genes|length }} gene results for "{{ q }}".</font></p>
+  <p><font color=#FF4040>{{ species_genes|search_result_map:species_names }} for "{{ q }}".</font></p>
   {% for species_id, genes in species_genes.items %}
+  <a name="species_{{species_id}}"></a>
   <table class="gene-results">
-    <!-- <caption> Search results</caption> -->
+    <caption> Search results for '{{ species_names|lookup:species_id }}'</caption>
     <tbody>
       <tr>
         <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>
@@ -123,13 +125,7 @@ $(document).ready(function() {
         {% else %}
 	<td><a href="/gene/{{ gene.name }}?view=regulation">regulates {{ gene.regulated_biclusters|length }}</a></td>
         {% endif %}
-	<td>
-          <ul class="gene-regulon">
-	  {% for bicluster_id in gene.bicluster_ids %}
-	  <li><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
-          {% endfor %}
-          </ul>
-        </td>
+	<td>{{ gene.bicluster_ids|bicluster_id_links}}</td>
       </tr>
       {% endfor %} <!-- for result in genes -->
     </tbody>
