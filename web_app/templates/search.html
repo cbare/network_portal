@@ -97,11 +97,7 @@ $(document).ready(function() {
   {% endif %}
   {% if q %}
   {% if results %}
-  {% if count == 1 %}
-  <p> testing {{ results|length }}</p>
-  {% else %}
   <p><font color=#FF4040>Found {{ genes|length }} gene results for "{{ q }}".</font></p>
-  {% endif %}
   <table id="gene-results">
     <caption> Search results</caption>
     <tbody>
@@ -109,7 +105,7 @@ $(document).ready(function() {
         <th><input type="checkbox" id="sel_all_genes"></input></th>
 	<th>Genes</th>
 	<th>Description</th>
-	<th>Regulated by</th>
+	<th>Regulated&nbsp;by</th>
 	<th>Regulates</th>
 	<th>In Regulons</th>
       </tr>
@@ -119,11 +115,17 @@ $(document).ready(function() {
         <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
         <td>{{ gene.description }}</td>
 	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.influence_biclusters|length }} influences</a></td>
+        {% if gene.regulated_biclusters|length == 0 %}
+        <td>-</td>
+        {% else %}
 	<td><a href="/gene/{{ gene.name }}?view=regulation">regulates {{ gene.regulated_biclusters|length }}</a></td>
+        {% endif %}
 	<td>
+          <ul class="gene-regulon">
 	  {% for bicluster_id in gene.bicluster_ids %}
-	  <li id="gene-regulon"><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
+	  <li><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
           {% endfor %}
+          </ul>
         </td>
       </tr>
       {% endfor %} <!-- for result in genes -->
@@ -132,7 +134,7 @@ $(document).ready(function() {
 
   <p><div id="display-network"></div></p>
   {% else %}
-  <p><b>No results found!</b></p>
+  <p><b>No results found !</b></p>
   {% endif %} <!-- for results -->
   {% endif %} <!-- if q -->
 </div><!-- End #main -->

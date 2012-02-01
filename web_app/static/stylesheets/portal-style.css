@@ -1263,15 +1263,12 @@ li#gene-function {
     display: inline-block;
 }
 
-#gene-regulon {
-    padding-left: 10px;
+ul.gene-regulon {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
 }
-
-td #gene-regulon {
-    width: 90px;
-}
-
-li#gene-regulon {
+ul.gene-regulon li {
     display: inline-block;
 }
 
