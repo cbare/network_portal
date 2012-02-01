@@ -30,5 +30,29 @@
   No regulators were found for {{ gene }}.
 </div>
 {% endif %}
+{% if regulated_biclusters|length > 0 %}
+<a name="regulates"></a>
+<b> {{ gene }}</b> possibly regulates <b>{{ regulated_biclusters|length }}</b> regulons.
+  <table class="gene-regulation">
+   <caption> Regulated by {{ gene }}
+    <tr>
+      <th>Regulon</th>
+      <th>genes</th>
+      <th>residual</th>
+    </tr>
+    {% for bicluster in regulated_biclusters %}
+    <tr>
+      <td><a href="/bicluster/{{bicluster.id}}">{{bicluster.id}}</a></td>
+      <td>{{bicluster.genes.count}}</td>
+      <td>{{bicluster.residual}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+{% else %}
+<div id="error_message">
+  {{ gene }} does not regulate anything.
+</div>
+{% endif %}
+
 </div>
 </div>

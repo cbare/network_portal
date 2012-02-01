@@ -123,7 +123,7 @@ $(document).ready(function() {
         {% if gene.regulated_biclusters|length == 0 %}
         <td>-</td>
         {% else %}
-	<td><a href="/gene/{{ gene.name }}?view=regulation">regulates {{ gene.regulated_biclusters|length }}</a></td>
+	<td><a href="/gene/{{ gene.name }}?view=regulation#regulates">regulates {{ gene.regulated_biclusters|length }}</a></td>
         {% endif %}
 	<td>{{ gene.bicluster_ids|bicluster_id_links}}</td>
       </tr>
