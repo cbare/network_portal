@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/resources/css/ext-all.css" />
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/resources/css/xtheme-gray.css" id="theme" />
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/coreweb/styles/ncbi_templates.css" />
-<link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/projects/sviewer/css/style.css" media="screen, projection, print"/>
+<link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/projects/sviewer/css/style.css" />
 {% endblock %}
 {% block cssspecial %}<link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />{% endblock %}
 {% block jsspecial %}<script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
@@ -16,14 +16,11 @@
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>
-    <!-- These are required for loading NCBI sequence viewer in gene page  -->
-    <script type='text/javascript' src='http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js'></script>
-    <script type='text/javascript' src='http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/ext-all.js'></script>
-<!--
-    <script type="text/javascript">
-      window.sv_base_url = "/sviewer/"
-    </script>
-    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/> -->
+    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/ext-all.js"></script>
+    <script type="text/javascript">window.sv_base_url = "/sviewer/"</script>
+<!-- These are required for loading NCBI sequence viewer in gene page -->
+<!--<script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/>-->
     {% endblock %}
 
 {% block content %}<div id="bicluster-top">
@@ -130,13 +127,24 @@
 		{% endif %}
 	    
           <h3>Genomic Neighborhood</h3>
-	  <div id="genomic_context" class="SeqViewerApp">
-	  <a href="?id={{ gene.geneid }}&appname=nwportal"></a>
-          </div>
+	  <p>
+
+	    <div style="padding:10px;clear:both;">
+	{% if gene.species.short_name == "dvu" %}
+		<div id="SeqViewer0" class="SeqViewerApp" style="clear:both;"> <a href="?embedded=compact&amp;noslider=true&amp;noviewheader=true&amp;id=NC_002937&amp;v={{ gene.start }}:{{ gene.end }}&strand=true&amp"></a> 
+	      {% endif %}
+	       {% if gene.species.short_name == "mmp" %}
+	      <div id="SeqViewer0" class="SeqViewerApp" style="clear:both;"> <a href="?embedded=full&amp;noslider=1&amp;id=NC_005791&amp;v={{ gene.start }}:{{ gene.end }}&strand=true&amp"></a> 
+	      {% endif %}
+	       {% if gene.species.short_name == "hal" %}
+	      <div id="SeqViewer0" class="SeqViewerApp" style="clear:both;"> <a href="?embedded=full&amp;noslider=1&amp;id=NC_002607&amp;v={{ gene.start }}:{{ gene.end }}&strand=true&amp"></a> 
+	      {% endif %}
+	    </div>
+	    </div>
+	  </p>
 	<!-- <img src="{{ STATIC_PREFIX }}images/dvu0848_genome.png" />-->
 	  Not yet implemented in this version of the portal!
-
-        </div>{# main #}
+	</div>{# main #}
         <div id="sidebar">
           <h4>Gene Info</h4>
           <p>
