@@ -58,11 +58,17 @@ def search(request):
                     gene_ids.append(result['id'])
 
             gene_objs = Gene.objects.filter(pk__in=gene_ids)
+            species_genes = {}
             genes = []
             for gene_obj in gene_objs:
                 bicluster_ids = [b.id for b in gene_obj.bicluster_set.all()]
                 regulates = Bicluster.objects.filter(influences__name__contains=gene_obj.name)
                 _, influence_biclusters = get_influence_biclusters(gene_obj)
+
+                if not species_genes.has_key(gene_obj.species.id):
+                    species_genes[gene_obj.species.id] = []
+                genes = species_genes[gene_obj.species.id]
+
                 genes.append(GeneResultEntry(gene_obj.id, gene_obj.name,
                                              gene_obj.species.id,
                                              gene_obj.description,
