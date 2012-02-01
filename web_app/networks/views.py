@@ -195,6 +195,11 @@ def genes(request, species=None, species_id=None):
         #     raise Http404("No species specified.")
 
 def gene(request, gene=None, network_id=None):
+    if request.GET.has_key('view'):
+        view = request.GET['view']
+    else:
+        view = ""
+
     if gene:
         try:
             gene_id = int(gene)

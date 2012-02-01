@@ -42,6 +42,9 @@
       <div id="tab-main">
         <script type="text/javascript">
           $(document).ready(function() {
+              {% if view == "regulation" %}
+              $('#top-tabs').tabs("select", 2);
+              {% endif %}
               var circle_vis = new vq.CircVis();
               $.ajax({
                   url: '/json/circvis/?species=1&gene={{ gene.name }}',
