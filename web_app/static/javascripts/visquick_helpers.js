@@ -93,7 +93,7 @@ if (!vqhelpers) {
             enable_zoom: false,
             show_legend: true,
             legend_corner: 'ne',
-            legend_radius: 25
+            legend_radius: 15
         };
 
         var data = {
