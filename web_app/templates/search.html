@@ -83,6 +83,7 @@ $(document).ready(function() {
     <ul id="search">
       <input type="text" id="query" name="q" value="{{ q }}"></input>
       <input type="submit" value="Search"></input>
+      <input type="reset" value="Reset"></input>
     </ul>
   </form>
   <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
@@ -119,7 +120,7 @@ $(document).ready(function() {
         <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
         <td>{{ gene.description }}</td>
 	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.influence_biclusters|length }} influences</a></td>
-	<td><a href="/gene/{{ gene.name }}?view=regulation">regulates {{ gene.regulated_biclusters|length }}</a></td>
+	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.regulated_biclusters|length }} regulons</a></td>
 	<td>
 	  {% for bicluster_id in gene.bicluster_ids %}
 	  <li id="gene-regulon"><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
