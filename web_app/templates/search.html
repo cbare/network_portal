@@ -3,6 +3,7 @@
 {% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
 {% block content %}
 {% load static %}
+{% load filters %}
 {% get_static_prefix as STATIC_PREFIX %}
 <script type="text/javascript">
 $(document).ready(function() {
@@ -28,30 +29,28 @@ $(document).ready(function() {
     });
     // Selections in result table
     var geneMap = {};
-    {% for gene in genes %}geneMap[{{gene.id}}] = {species: {{gene.species}}, biclusters: [{{ gene.bicluster_ids|join:"," }}]};
+    {% for species_id, genes in species_genes.items %}
+    geneMap[{{species_id}}] = {};
+    {% for gene in genes %}geneMap[{{species_id}}][{{gene.id}}] = {biclusters: [{{ gene.bicluster_ids|join:"," }}]};
+    {% endfor %}
     {% endfor %}
 
-    function check_selection(geneMap) {
-        var selectBoxes = $('[id^=sel_gene]');
+    function check_selection(geneMap, speciesId) {
+        var selectBoxes = $('[id^=sel_gene_' + speciesId + ']');
         var selectedGenes = [];
         for (i = 0; i < selectBoxes.length; i++) {
             if (selectBoxes[i].checked) {
                 var comps = selectBoxes[i].id.split('_');
-                var id = comps[comps.length - 1];
-                selectedGenes[selectedGenes.length] = geneMap[id];
+                var geneId = comps[comps.length - 1];
+                selectedGenes[selectedGenes.length] = geneMap[speciesId][geneId];
             }
         }
         if (selectedGenes.length === 0) {
-            $('<div id="display-network"></div>').replaceAll('#display-network');
+            $('<div id="display-network_' + speciesId + '"></div>').replaceAll('#display-network_' + speciesId);
             return;
         }
-        var species = selectedGenes[0].species;
         var biclusters = [];
         for (i = 0; i < selectedGenes.length; i++) {
-            if (species !== selectedGenes[i].species) {
-                biclusters = [];
-                break;
-            }
             for (j = 0; j < selectedGenes[i].biclusters.length; j++) {
                 if (biclusters.indexOf(selectedGenes[i].biclusters[j]) === -1) {
                     biclusters[biclusters.length] = selectedGenes[i].biclusters[j];
@@ -60,18 +59,22 @@ $(document).ready(function() {
         }
         if (biclusters.length > 0) {
             var ids = biclusters.join(',');
-            $('<div id="display-network"><a href="/network?biclusters=' + ids + '">view network for selected regulons (' + biclusters.length + ')</a></div>').replaceAll('#display-network');
+            $('<div id="display-network_' + speciesId + '"><a href="/network?biclusters=' + ids + '">view network for selected regulons (' + biclusters.length + ')</a></div>').replaceAll('#display-network_' + speciesId);
         } else {
-            $('<div id="display-network"></div>').replaceAll('#display-network');
+            $('<div id="display-network_' + speciesId + '"></div>').replaceAll('#display-network_' + speciesId);
         }
     }
 
-    $("#sel_all_genes").click(function(event) {
-        $('[id^=sel_gene]').prop('checked', $('#sel_all_genes').prop('checked'));
-        check_selection(geneMap);
+    $('[id^=sel_all_genes]').click(function(event) {
+        var comps = event.target.id.split('_');
+        var speciesId = comps[comps.length - 1];
+        $('[id^=sel_gene_' + speciesId + ']').prop('checked', event.target.checked);
+        check_selection(geneMap, speciesId);
     });
     $('[id^=sel_gene]').click(function(event) {
-        check_selection(geneMap);
+        var comps = event.target.id.split('_');
+        var speciesId = comps[comps.length - 2];
+        check_selection(geneMap, speciesId);
     });
 });
 </script>
@@ -90,6 +93,8 @@ $(document).ready(function() {
   <span id="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
   <span id="search_help">(Click to add)</span></p>
+  <h5>Search Result Summary</h5>
+   <span id="search_help">(Click on numbers to see results for specific organism)</span>
   {% if error_message %}
   <div id="error_message">
     <h4>Search Error</h4>
@@ -98,42 +103,40 @@ $(document).ready(function() {
   {% endif %}
   {% if q %}
   {% if results %}
-  {% if count == 1 %}
-  <p> testing {{ results|length }}</p>
-  {% else %}
-  <p><font color=#FF4040>Found {{ genes|length }} gene results for "{{ q }}".</font></p>
-  {% endif %}
-  <table id="gene-results">
-    <caption> Search results</caption>
+  <font color=#FF4040>{{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}".</font>
+  {% for species_id, genes in species_genes.items %}
+  <a name="species_{{species_id}}"></a>
+  <table class="gene-results">
+    <caption> Search results for '{{ species_names|lookup:species_id }}'</caption>
     <tbody>
       <tr>
-        <th><input type="checkbox" id="sel_all_genes"></input></th>
+        <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>
 	<th>Genes</th>
 	<th>Description</th>
-	<th>Regulated by</th>
+	<th>Regulated&nbsp;by</th>
 	<th>Regulates</th>
 	<th>In Regulons</th>
       </tr>
       {% for gene in genes %}
       <tr>
-        <td><input type="checkbox" id="sel_gene_{{gene.id}}"></input></td>
+        <td><input type="checkbox" id="sel_gene_{{species_id}}_{{gene.id}}"></input></td>
         <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
         <td>{{ gene.description }}</td>
 	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.influence_biclusters|length }} influences</a></td>
-	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.regulated_biclusters|length }} regulons</a></td>
-	<td>
-	  {% for bicluster_id in gene.bicluster_ids %}
-	  <li id="gene-regulon"><a href="/bicluster/{{ bicluster_id }}">regulon {{ bicluster_id }}</a>,</li>
-          {% endfor %}
-        </td>
+        {% if gene.regulated_biclusters|length == 0 %}
+        <td>-</td>
+        {% else %}
+	<td><a href="/gene/{{ gene.name }}?view=regulation">regulates {{ gene.regulated_biclusters|length }}</a></td>
+        {% endif %}
+	<td>{{ gene.bicluster_ids|bicluster_id_links}}</td>
       </tr>
       {% endfor %} <!-- for result in genes -->
     </tbody>
   </table>
-
-  <p><div id="display-network"></div></p>
+  <p><div id="display-network_{{ species_id }}"></div></p>
+  {% endfor %}
   {% else %}
-  <p><b>No results found!</b></p>
+  <p><b>No results found !</b></p>
   {% endif %} <!-- for results -->
   {% endif %} <!-- if q -->
 </div><!-- End #main -->
