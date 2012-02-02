@@ -1,10 +1,13 @@
 {% extends "base2.html" %}
-{% block title %}Network Portal - Search{% endblock %}
-{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
-{% block content %}
 {% load static %}
 {% load filters %}
 {% get_static_prefix as STATIC_PREFIX %}
+{% block title %}Network Portal - Search{% endblock %}
+{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
+{% block jsspecial %}
+<script src="{{ STATIC_PREFIX }}/javascripts/search_helpers.js"></script>
+{% endblock %}
+{% block content %}
 <script type="text/javascript">
 $(document).ready(function() {
     $("#query").autocomplete({
@@ -35,47 +38,7 @@ $(document).ready(function() {
     {% endfor %}
     {% endfor %}
 
-    function check_selection(geneMap, speciesId) {
-        var selectBoxes = $('[id^=sel_gene_' + speciesId + ']');
-        var selectedGenes = [];
-        for (i = 0; i < selectBoxes.length; i++) {
-            if (selectBoxes[i].checked) {
-                var comps = selectBoxes[i].id.split('_');
-                var geneId = comps[comps.length - 1];
-                selectedGenes[selectedGenes.length] = geneMap[speciesId][geneId];
-            }
-        }
-        if (selectedGenes.length === 0) {
-            $('<div id="display-network_' + speciesId + '"></div>').replaceAll('#display-network_' + speciesId);
-            return;
-        }
-        var biclusters = [];
-        for (i = 0; i < selectedGenes.length; i++) {
-            for (j = 0; j < selectedGenes[i].biclusters.length; j++) {
-                if (biclusters.indexOf(selectedGenes[i].biclusters[j]) === -1) {
-                    biclusters[biclusters.length] = selectedGenes[i].biclusters[j];
-                }
-            }
-        }
-        if (biclusters.length > 0) {
-            var ids = biclusters.join(',');
-            $('<div id="display-network_' + speciesId + '"><a href="/network?biclusters=' + ids + '">view network for selected regulons (' + biclusters.length + ')</a></div>').replaceAll('#display-network_' + speciesId);
-        } else {
-            $('<div id="display-network_' + speciesId + '"></div>').replaceAll('#display-network_' + speciesId);
-        }
-    }
-
-    $('[id^=sel_all_genes]').click(function(event) {
-        var comps = event.target.id.split('_');
-        var speciesId = comps[comps.length - 1];
-        $('[id^=sel_gene_' + speciesId + ']').prop('checked', event.target.checked);
-        check_selection(geneMap, speciesId);
-    });
-    $('[id^=sel_gene]').click(function(event) {
-        var comps = event.target.id.split('_');
-        var speciesId = comps[comps.length - 2];
-        check_selection(geneMap, speciesId);
-    });
+    searchhelpers.bindResultTableEvents(geneMap);
 });
 </script>
 
