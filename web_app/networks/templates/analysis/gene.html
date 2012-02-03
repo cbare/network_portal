@@ -1210,8 +1210,9 @@
 
 
     $.ajax({
-        //url: "/images/dvh_portal_files/flagella_inf_motif_union.xgmml",
-        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/flagella_union.xgmml",
+       // url: "http://baliga.systemsbiology.net/dvh/cytoscape/dvh_mutant_mapping_all.xgmml",
+	//url: "/images/dvh_portal_files/flagella_inf_motif_union.xgmml",
+        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/dvh_mutant_mapping_meth.xgmml",
         success: function(data){
             if (typeof data !== "string") {
                 if (window.ActiveXObject) { // IE
