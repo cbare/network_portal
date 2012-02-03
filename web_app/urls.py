@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^contact$', 'web_app.views.contact', name='contact'),
     url(r'^search', 'web_app.views.search', name='search'),
     url(r'^help', 'web_app.views.help', name='help'),
+    url(r'^seqviewer', 'web_app.views.seqviewer', name='seqviewer'),
+
     # Proxy URLs
     url(r'^sviewer/ncfetch.cgi', 'web_app.views.sviewer_cgi', name='ncfetch'),
     url(r'^sviewer/objinfo.cgi', 'web_app.views.sviewer_cgi', name='objinfo'),

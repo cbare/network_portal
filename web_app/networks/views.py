@@ -294,7 +294,7 @@ def bicluster(request, bicluster_id=None):
         format = request.GET['format']
         if format == 'html':
             return render_to_response('bicluster_snippet.html', locals())
-
+       
     # get the functions for a bicluster, filtering on a bonferroni p value cutoff of 0.05
     bicluster_functions = bicluster.bicluster_function_set.all()
     ret_bicl_functions = {}
