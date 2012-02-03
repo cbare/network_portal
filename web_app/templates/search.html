@@ -103,12 +103,11 @@ $(document).ready(function() {
   {% if results %}
     <h5>Search Result Summary</h5>
    <span id="search_help">(Click on numbers to see results for specific organism)</span>
-  <font color=#FF4040>{{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}".</font>
-  {% for species_id, genes in species_genes.items %}
+   <font color=#FF4040> {{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}"</font>.
+   {% for species_id, genes in species_genes.items %}
   <a name="species_{{species_id}}"></a>
   <table class="gene-results">
-    <caption> Search results for '{{ species_names|lookup:species_id }}' <span id="search_help">(Selecting genes will enable link to their network)</span>
-</caption>
+    <caption> Search results for '{{ species_names|lookup:species_id }}'</caption>
     <tbody>
       <tr>
         <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>
@@ -134,6 +133,7 @@ $(document).ready(function() {
       {% endfor %} <!-- for result in genes -->
     </tbody>
   </table>
+   <span id="search_help">* Selecting genes will enable link to their network</span>
   <p><div id="display-network_{{ species_id }}"></div></p>
   {% endfor %}
   {% else %}
