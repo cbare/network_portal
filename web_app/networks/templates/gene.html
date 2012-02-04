@@ -65,7 +65,7 @@
 
           <h3>Regulation</h3>
 	  {% if influence_biclusters %}
-          <table id="gene-regulation">
+          <table class="gene-regulation">
             <tr>
               <th class="help">Regulator</th>
               <th>Regulon</th>
@@ -88,12 +88,10 @@
 	      </table>
 
 	  {% else %}
-		<div id="error_message">
-		  <p>
-		  No regulatory information has been found!
-		  </p>
-		</div>
-		{% endif %}
+	    <div class="error_message">
+	      <p>No regulatory information has been found!</p>
+	    </div>
+	  {% endif %}
 		
 
           <h3>Motifs</h3>
@@ -119,12 +117,10 @@
 	    </tr>
           </table>
 	   {% else %}
-		<div id="error_message">
-		  <p>
-		  No motif information has been found!
-		  </p>
-		</div>
-		{% endif %}
+             <div class="error_message">
+	       <p>No motif information has been found!</p>
+	     </div>
+	   {% endif %}
 	    
           <h3>Genomic Neighborhood</h3>
 	  <p>
@@ -194,7 +190,7 @@
 	  </table>
 	  
 	  {% else %}
-	  <div id="error_message">
+	  <div class="error_message">
 	    No annotated functions !
 	  </div>
 	  {% endif %}

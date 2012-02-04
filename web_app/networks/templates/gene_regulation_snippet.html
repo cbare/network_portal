@@ -4,7 +4,7 @@
 <div id="main">
 {% if influence_biclusters|length > 0 %}
 <b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
-  <table id="gene-regulation">
+  <table class="gene-regulation">
    <caption> Regulators for {{ gene }}
     <tr>
       <th class="help">Regulator 1</th>
@@ -38,9 +38,7 @@
     {% endfor %}
   </table>
 {% else %}
-<div id="error_message">
-  No regulators were found for {{ gene }}.
-</div>
+<div class="error_message">No regulators were found for {{ gene }}.</div>
 {% endif %}
 {% if regulated_biclusters|length > 0 %}
 <a name="regulates"></a>
@@ -61,9 +59,7 @@
     {% endfor %}
    </table>
 {% else %}
-<div id="error_message">
-  No regulons are regulated by {{ gene }}.
-</div>
+<div class="error_message">{{ gene }} does not regulate anything.</div>
 {% endif %}
 
 </div>
