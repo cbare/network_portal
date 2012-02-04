@@ -4,8 +4,13 @@
 {% get_static_prefix as STATIC_PREFIX %}
 {% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
 {% block jsspecial %}
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/main.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
   <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+
 {% endblock %}
 {% block content %}
 
@@ -191,11 +196,12 @@
                 if (len == 1) {
     	            // bicluster   
                     if(target[p].data.type == "bicluster") { 
-
 	                svglink=target[p].data["url"];
                         svglink=svglink.replace("htmls" , "svgs").replace("html", "svgz");
+                        biclname=target[p].data.canonicalName;
+                        biclrename=biclname.replace("bicluster_", "");
 		        print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + " | " +
-		               "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank href=" + target[p].data["url"] + ">" + target[p].data.canonicalName + " page" + "</a>");
+		               "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank href=" + "/bicluster/" + biclrename + ">" + target[p].data.canonicalName + " page" + "</a>");
                         print("<iframe width=530 height=500 scrolling=no src=" + svglink + ">"  + "</iframe>"  );
                         //print("<iframe width=0 height=0 src=" + target[p].data["url"] + ">"  + "</iframe>"  );
 	            }
@@ -204,13 +210,16 @@
                     if(target[p].data.type == "gene" ) {
                         print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target[p].data.type + "<p>");
                         print("<hr>");
-                        print("<ul>");
-                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.label + ">" + target[p].data.label + "</a>" +  " , " + "</b>" + target[p].data["long.name"]+"</li>");
-                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target[p].data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
+	                print("<ul>");
+                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "/gene/" + target[p].data.label + ">" + target[p].data.label + "</a>" +  " , " + "</b>" + target[p].data["long.name"] + "</li>" + "<p>");
+                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target[p].data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>");
                         print("<hr>");
                         print("</ul>" + "<ul>");
-
-                        if (target[p].data.TIGRRoles) {
+                        print("<li type=\"square\">" + "<b class=\"ex\">" + "# of transposon mutants : " + "<font color=\"green\">" + "</b>"  + target[p].data.transposon + "</font>" + "<p>");
+                        print("<li type=\"square\">" + "<b class=\"ex\">" + "# of co-culture mutants : " + "<font color=\"red\">" + "</b>"  + target[p].data["co-culture_mutants"] + "</font>" + "</b>" + "<p>");
+                        print("<hr>");
+                        print("</ul>" + "<ul>");
+if (target[p].data.TIGRRoles) {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target[p].data.TIGRRoles + "</li>" + "<p>");
                         } else {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
@@ -227,9 +236,9 @@
                         } else {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
                         }
-							
+
                         print("</ul>" + "<ul>");
-                         	  
+    
                         if (target[p].data["pathway.2"] =="NA") {
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
                         } else {
@@ -239,7 +248,7 @@
                         }
                     }   
     
-   	            // regulator 
+                // regulator 
                     if(target[p].data.type == "regulator" ) {
                         print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target[p].data.type + "<p>");
                         print("<hr>");
@@ -266,7 +275,7 @@
                         } else {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
                         }
-							
+
                         print("</ul>" + "<ul>");
                         if (target[p].data["pathway.2"] =="NA") {
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
@@ -275,13 +284,13 @@
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target[p].data["pathway.1"] + "</li>" + "<p>");
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target[p].data.pathway + ">" + target[p].data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
                         }
-							
-		        print("</ul>" + "<ul>");
-		        print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target[p].data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
-							
+
+            print("</ul>" + "<ul>");
+          print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target[p].data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
+
                     }
  
-	            // motif   
+                // motif   
                     if(target[p].data.type == "motif") { 
                         print("<b class=\"ex\">" + "Type : " + "</b>"+ target[p].data.type + "<p>");
                         print("<ul>");
@@ -293,12 +302,12 @@
                         print("</li></ul>");
                     }
                            
-	            // edge   
+            // edge   
                     if(event.group == "edges") { 
                         print("<ul>");
-		        print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "<p>");
+          print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "<p>");
 
-		        if (target[p].data.interaction=="motif"){
+            if (target[p].data.interaction=="motif"){
                             print("<ul>" + "<b class=\"ex\">" + "E value : " + "</b>" + target[p].data["e.value"] + "</li><li>" + 
                                   "<b class=\"ex\">" + "# of Sites : " + "</b>" + target[p].data.nsites + "</li><li>" +
                                   "<b class=\"ex\">" + "Llr : " + "</b>" + target[p].data.llr +  "</li><li>" +
@@ -316,138 +325,75 @@
                             }
 
                             if (target[p].data.interaction =="combines"){
-                                print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"orange\">"+ target[p].data.interaction + "</font>" + "<p>");
+                                print("<b class=\"ex\">"  + "Interaction :  "<p>");
                             }
 
                             if (target[p].data.weight){
                                 print("<ul>");
                                 print( "<b class=\"ex\">" + "Inferelator Weight : " + "</b>" + target[p].data.weight + "<p>");
                             }
-	                }
+	                      }
                     }
             
-	            //AND-GATE
+	                  //AND-GATE
                     if(target[p].data["logic.gate"]) {
                         print("<b class=\"ex\">" + "Type : " + "</b>"+ "Logic gate" + "<p>");
                         print("<ul>");
-                        print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "</li></ul>" + "<p>");
-                    }
+                        print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "</li></ul>" + "<p                  
+																               var gene_data = {};
+																               var reg_data = {};
+																               var mot_data = {};
+																               var and_data = {};
+
+																               var bi_array = [];
+																               var gene_array = [];
+																               var reg_array = [];
+																               var mot_array = [];
+																               var and_array = [];
 
 
-                } else { // multiselection part of if/else
-                    //print ("Going to display some table here composed of the following items ");
-                    //print("NAME = " + target[p].data.canonicalName + "; TYPE = " + target[p].data.type);
-	            var bi_data = {};                    
-	            var gene_data = {};
-	            var reg_data = {};
-	            var mot_data = {};
-	            var and_data = {};
-
-	            var bi_array = [];
-	            var gene_array = [];
-	            var reg_array = [];
-	            var mot_array = [];
-	            var and_array = [];
-	  
-
-	            // bicluster   
+																               // bicluster   
                     if(target[p].data.type== "bicluster") { 
-	                bi_data["Name"] = target[p].data.canonicalName;
-	                bi_data["Short Name"] = target[p].data["short.name"];
-	                bi_data["Long Name"] = target[p].data["long.name"];
-	                bi_array = bi_data;
-	                all_bicl.push(bi_array);
-	                items["Biclusters"] = all_bicl; //bi_array.push(bi_data);
-	            }
+																                   bi_data["Name"] = target[p].data.canLong Name"] = target[p].data["long.name"];
+																											                       gene_data["COG"] = target[p].data.COG;
+																															      mot_data["E Value"] = target[p].data["e.value"];   
+																																					                    mot_data["Consensus"] = target[p].data.consensus;
+																																										                mot_array = mot_data;
+																																												                all_mots.push(mot_array);
+																																														                items["Motifs"] = all_mots; 
+																																																	                  }
 
-	            // gene
-                    if(target[p].data.type =="gene" ) {
-	                gene_data["Name"] = target[p].data.label;
-	                gene_data["Short Name"] = target[p].data["short.name"];	   
-	                gene_data["Long Name"] = target[p].data["long.name"];
-	                gene_data["COG"] = target[p].data.COG;
-	                gene_data["TIGR"] = target[p].data.TIGRRoles;
-	                gene_array = gene_data;
-	                all_genes.push(gene_array);
-	                items["Genes"] = all_genes; 
-	            }
-
-                    // regulator
-                    if(target[p].data.type =="regulator" ) {
-	                reg_data["Name"] = target[p].data.label;
-	                reg_data["Short Name"] = target[p].data["short.name"];	   
-	                reg_data["Long Name"] = target[p].data["long.name"];
-	                reg_data["COG"] = target[p].data.COG;
-	                reg_data["TIGR"] = target[p].data.TIGRRoles;
-	                reg_array = reg_data;
-	                all_regs.push(reg_array);
-	                items["Regulators"] = all_regs; 
-	            }
-
-	            // motif   
-                    if(target[p].data.type== "motif") { 
-	                mot_data["Name"] = target[p].data.canonicalName;
-	                mot_data["E Value"] = target[p].data["e.value"];	   
-	                mot_data["Consensus"] = target[p].data.consensus;
-	                mot_array = mot_data;
-	                all_mots.push(mot_array);
-	                items["Motifs"] = all_mots; 
-	            }
-
-	            // edge   
+																																																			              // edge   
                     if(event.group == "edges") { 
-	                // not sure if this will be added/needed; placeholder
-	            }
+					                     // not sure if this will be added/needed; placeholder
+							                 }
 
-	            //AND-GATE
+									             //AND-GATE
                     if(target[p].data["logic.gate"]) {
-	                and_data["Name"] = target[p].data.canonicalName;
-	                and_data["E Value"] = target[p].data["e.value"];	   
-	                and_data["Consensus"] = target[p].data.consensus;
-	                and_array = and_data;
-	                all_ands.push(and_array);
-	                items["AND-GATE"] = all_ands; 
-	            }
+						   \">Summary view of network </caption><colgroup id=\"cols\" span=\"9\"></colgroup>";
+        var row_start = "<tr>";
+          var row_end = "</tr>";
+        var rows = "";
+        var headers = "";
 
-                }
+        for(var a in items) {
+            //console.debug("type = " + a);
+            a_chunk = "<tr><th>" + a + "</th></tr>";
+            table_text += a_chunk;
+            rows = "";
+            for (var s in items[a]) {
+                rows += "<tr>";
+                  headers = "";
+                  for (var k in items[a][s]) {
+                      h_chunk = "<th>" + k + "</th>"; 
+                      headers += h_chunk; 
+            _text += row_start + headers + row_end;
+              table_text += rows;
+          }
+          table_text += "</table>";
+        print(table_text);
 
-            } // for (var p in target)           
-	    
-	    if (len > 1) {
-	        var table_text = "<table><caption id=\"network-caption\">Summary view of network </caption><colgroup id=\"cols\" span=\"9\"></colgroup>";
-	        var row_start = "<tr>";
-	        var row_end = "</tr>";
-	        var rows = "";
-	        var headers = "";
-
-	        for(var a in items) {
-	            //console.debug("type = " + a);
-	            a_chunk = "<tr><th>" + a + "</th></tr>";
-	            table_text += a_chunk;
-	            rows = "";
-	            for (var s in items[a]) {
-	                rows += "<tr>";
-	                headers = "";
-	                for (var k in items[a][s]) {
-	                    h_chunk = "<th>" + k + "</th>"; 
-	                    headers += h_chunk; 
-	                    if (items[a][s][k] == "" ) {
-	                        v = "NA";
-	                    } else {
-	                        v = items[a][s][k];
-	                    }
-	                        r_chunk = "<td>" + v + "</td>";	         
-                                rows +=  r_chunk;
-	                }
-	                rows += "</tr>";
-	            }
-	            table_text += row_start + headers + row_end;
-	            table_text += rows;
-	        }
-	        table_text += "</table>";
-	        print(table_text);
-
-	    }
+    }
 
         } // END handle_select
 
@@ -455,227 +401,62 @@
             var target = event.target;
             clear();
 
-	    // bicluster   
-            if(target.data.type == "bicluster") { 
-	        svglink=target.data["url"];
-                svglink=svglink.replace("htmls" , "svgs").replace("html", "svgz");
-		print( "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + " | " +
-		       "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank href=" + target.data["url"] + ">" + target.data.canonicalName + " page" + "</a>");
-                print("<iframe width=530 height=500 scrolling=no src=" + svglink + ">"  + "</iframe>"  );
-                print("<iframe width=0 height=0 src=" + target.data["url"] + ">"  + "</iframe>"  );
-	    }
-    
-	    // gene 
-            if(target.data.type == "gene" ) {
-                print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
+    // bicluster   b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
                 print("<hr>");
                 print("<ul>");
                 print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.label + ">" + target.data.label + "</a>" +  " , " + "</b>" + target.data["long.name"]+"</li>");
-                print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target.data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                print("<hr>");
-                print("</ul>" + "<ul>");
-
-                if (target.data.TIGRRoles) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target.data.TIGRRoles + "</li>" + "<p>");
-                } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
+                print("<li type=\"sqcle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
                 }
 
                 if (target.data.COG) {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.COG + ">" + target.data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
                 } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.GO) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target.data.GO + ">" + target.data.GO + "</a>" +  "</li>" + "<p>");
-                } else {
+                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>"  else {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
                 }
-							
+
                 print("</ul>" + "<ul>");
-                         	  
+    
                 if (target.data["pathway.2"] =="NA") {
                     print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
                 } else {
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target.data["pathway.0"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target.data["pathway.1"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
+                    print("<li type=\"dow_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
                 }
             }   
     
-   	    // regulator 
+			           // regulator 
             if(target.data.type =="regulator" ) {
                 print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
                 print("<hr>");
                 print("<ul>");
-                print("<li type=\"square\">" +"<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.label + ">" + target.data.label + "</a>" +  " , " + "</b>" + target.data["long.name"] + "</li>");
-                print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target.data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                print("<hr>");
-                print("</ul>" + "<ul>");
+                print("<li type=\"square\">" +"<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbel>");
 
                 if (target.data.TIGRRoles) {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target.data.TIGRRoles + "</li>" + "<p>");
                 } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.COG) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.COG + ">" + target.data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
+                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Rolprint("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target.data.GO + ">" + target.data.GO + "</a>" +  "</li>" + "<p>");
                 } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.GO) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target.data.GO + ">" + target.data.GO + "</a>" +  "</li>" + "<p>");
-                } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
-                }
-							
-                print("</ul>" + "<ul>");
-                if (target.data["pathway.2"] =="NA") {
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
-                } else {
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target.data["pathway.0"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target.data["pathway.1"] + "</li>" + "<p>");
+                    print("<li type=\"circle\">" +.data["pathway.1"] + "</li>" + "<p>");
                     print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
-                }
-							
-		print("</ul>" + "<ul>");
-		print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target.data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
-							
-            }
- 
-	    // motif   
-            if(target.data.type== "motif") { 
-                print("<b class=\"ex\">" + "Type : " + "</b>"+ target.data.type + "<p>");
-                print("<ul>");
-                print( "<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "</li>" + "<p>");
-                print( "<li>" + "<b class=\"ex\">" + "Consensus : " + "</b>"  + target.data.consensus + "</li><li>" +
-                       "<b class=\"ex\">" + "E value : " + "</b>" + target.data["e.value"] + "</li><li>" + 
-                       "<b class=\"ex\">" + "# of Sites : " + "</b>" + target.data["n.sites"] + "<p>" + "</li><hr>" +
-                       "<a target=_blank href=" + target.data.imgURL + ">" + "<img align=left src=" + target.data.imgURL + ">" + "</a>");
-                print("</li></ul>");
-            }
-                           
-	    // edge   
-            if(event.group == "edges") { 
-                print("<ul>");
-		print( "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "<p>");
-
-		if (target.data.interaction=="motif"){
-                    print("<ul>" + "<b class=\"ex\">" + "E value : " + "</b>" + target.data["e.value"] + "</li><li>" + 
-                          "<b class=\"ex\">" + "# of Sites : " + "</b>" + target.data.nsites + "</li><li>" +
-                          "<b class=\"ex\">" + "Llr : " + "</b>" + target.data.llr +  "</li><li>" +
+       " + "Consensus : " + "</b>"  + target.data.consensus + "</li><li>" +
+                       "<b class=\"ex\">" + "E v" + target.data.llr +  "</li><li>" +
                           "<b class=\"ex\">" + "Width : " + "</b>" + target.data.width + "<li></ul>" + "<p>" );
                 } else {
-                    print("<ul>");
-                    print("<hr>");
-
-                    if (target.data.interaction =="down-regulates"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"green\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.interaction =="up-regulates"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"red\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.interaction =="combines"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"orange\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.weight){
-                        print("<ul>");
+                               print("<ul>");
                         print( "<b class=\"ex\">" + "Inferelator Weight : " + "</b>" + target.data.weight + "<p>");
-                    }
-	        }
-            }
-            
-	    //AND-GATE
-            //if(target.data["Matching.Attribute"]) {
-            if(target.data["logic.gate"]) {
-                print("<b class=\"ex\">" + "Type : " + "</b>"+ "Logic gate" + "<p>");
-                print("<ul>");
-                print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "</li></ul>" + "<p>");
-            }
-
-        } // END HANDLE_CLICK   
-
-        function clear() {
-            document.getElementById("note").innerHTML = "";
-
-        }
-    
-        function print(msg) {
-            document.getElementById("note").innerHTML += "<p>" + msg + "</p>";
-        }
-    
-    }); // END VIS.READY
-
-
-    // VIS_2 CODE
-    var flag2 = "false";
-    var lookup2 = new Array();
-    // callback when Cytoscape Web has finished drawing
-    vis_2.ready(function() {
+   
     
         $select_toggle = 1;
         $init = 1;
         //filter_expand_network2(flag2);
 
         // add a listener for when nodes and edges are clicked
-        $node_info2 = vis_2.addListener("select", "nodes", function(event) {
-	    if($select_toggle == 0) {
-	        return;		 
-	    }
-	    console.debug("this is dialog creation for vis 2");			  						  
-            $dialog = $("#note2").wijdialog({
-                autoOpen: true,
-                title: 'Selection: Nodes',
-                width: 600,
-                open: handle_select(event)
-            });
-
-        });
-
-        $node_info2 = vis_2.addListener("click", "edges", function(event) {
-
-            $dialog = $("#note2").wijdialog({
-                autoOpen: true,
-                title: 'Selection: Edges',
-                open: handle_click(event)
-            });
-        });
-
-        // CONTROL OF THE DIALOG BOXES FOR LOOKING AT INDIVIDUAL NODES/EDGES
-        // http://stackoverflow.com/questions/4518889/jquery-ui-dialog-open-multiple-dialog-boxes-using-the-same-class-on-the-button-an
+        $node_info2 = -boxes-using-the-same-class-on-the-button-an
         jQuery(function($) {
             $($node_info2).each(function() {
                 $.data(this, 'dialog', 
                     $(this).next("#note2").dialog({
-                        autoOpen: false,
-                        width: 600
-                    })
-                );
-            }).click(function() {
-                $.data(this, 'dialog').dialog('open');
-                return false;
-            });
-        });
-    
-
-        // START OF RIGHT CONTEXT MENU CODE - SELECT FIRST NEIGHBORS
-        vis_2.addContextMenuItem("Select first neighbors", "nodes", 
-            function (evt) {
-                $select_toggle = 0;
-                // Get the right-clicked node:
-                var rootNode = evt.target;
-        
-                // Get the first neighbors of that node:
-                var fNeighbors = vis.firstNeighbors([rootNode]);
-                var neighborNodes = fNeighbors.neighbors;
-        
-                // Select the root node and its neighbors:
+    eighbors:
                 vis_2.select([rootNode]).select(neighborNodes);
 
                 $select_toggle = 1;
@@ -689,21 +470,9 @@
                 var logic_1 = rootNode.data["logic.combines.1"]
                 var logic_2 = rootNode.data["logic.combines.2"]
 
-	        vis_2.filter("nodes", function(node) {
+			               vis_2.filter("nodes", function(node) {
                     // return the AND-GATE neighbors
-                    if (node.data.label == rootNode.data["logic.combines.1"]) {
-                        lookup2[node.data.id] = "true";
-                    }
-                    if (node.data.label == rootNode.data["logic.combines.2"]) {
-                        lookup2[node.data.id] = "true";
-                    }
-                    return lookup2[node.data.id] == "true";
-	        });
-
-            }
-        );
-
-        // START OF FILTER CODE FOR **HIDING** FIRST NEIGHBORS FOR AND-GATE
+                    if (node.ART OF FILTER CODE FOR **HIDING** FIRST NEIGHBORS FOR AND-GATE
         vis_2.addContextMenuItem("AND-GATES: Hide first neighbors", "nodes",
             function (evt) {
                 var rootNode = evt.target;
@@ -718,59 +487,24 @@
                        lookup2[node.data.id] = "false";
                     }
 
-                    return lookup2[node.data.id] == "true";
-
-                });
-            }
-        );
-
-	$('#filter2 :checkbox').click(function() {
-	    var $this = $(this);
-	    if ($this.is(':checked')) {
-                var fl = "true";
-		filter_expand_network2(fl);
-	    } else {
-                var fl = "false";
-		filter_expand_network2(fl);
-	    }
-
-        });
+                    return lookup        });
 
 
-	function filter_expand_network2(flag2) {
-	    vis_2.filter("nodes", function(node) {
-		if (flag2 == "true") {
-		    // return the whole network
-		    lookup2[node.data.id] = "true";
-		    return lookup2[node.data.id] == "true";
-		} else {
+			       function filter_expand_network2(flag2) {
+			           vis_2.filter("nodes", function(node) {
+			       if (flag2 == "true") {
+			           // return the whole network
+			           lookup2[node.data.id] = "true";
+			           return lookup2[node.data.id] == "true";
+			       } else {
                     // only return the core network
-		    if ($init == 1) {
-       			if (node.data.neighborhood == "flagella.neighbor") {
-		            lookup2[node.data.id] = "false";
+			           if ($init == 1) {
+			       if (node.data.neighborhood == "flagella.neighbor") {
+			                   lookup2[node.data.id] = "false";
                         } else {
-		            lookup2[node.data.id] = "true";
-		        }
-		    } else if (node.data.neighborhood == "flagella.neighbor") {
-		        lookup2[node.data.id] = "false";
-                    } else {
-		        lookup2[node.data.id] = "true";
-		    }
-                    return lookup2[node.data.id] == "true";
-		}
-	    });
-            $init = 0;
-	}
-
-
-        // EVENT HANDLER
-        function handle_select(event) {
-
-            var target = event.target;
-            var table_start;
-            var table_end;
-            var items = {};
-            clear();
+			                   lookup2[node.data.id] = "true";
+			               }
+			           } else if (node.data.neighborhood == lear();
 
             len = target.length;
 
@@ -782,119 +516,62 @@
             for (var p in target) {
                 // RENDER DIFFERENT INFO AND FORMAT FOR SINGLE ITEM VIEW
                 if (len == 1) {
-    	            // bicluster   
+			                   // bicluster   
                     if(target[p].data.type == "bicluster") { 
 
-	                svglink=target[p].data["url"];
+			                       svglink=target[p].data["url"];
                         svglink=svglink.replace("htmls" , "svgs").replace("html", "svgz");
-		        print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + " | " +
-		               "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank href=" + target[p].data["url"] + ">" + target[p].data.canonicalName + " page" + "</a>");
-                        print("<iframe width=530 height=500 scrolling=no src=" + svglink + ">"  + "</iframe>"  );
-                        //print("<iframe width=0 height=0 src=" + target[p].data["url"] + ">"  + "</iframe>"  );
-	            }
+			               print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + " | " +
+			                      "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank hrerget[p].data["url"] + ">"  + "</iframe>"  );
+            }
     
-	            // gene 
+            // gene 
                     if(target[p].data.type == "gene" ) {
                         print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target[p].data.type + "<p>");
                         print("<hr>");
                         print("<ul>");
-                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.label + ">" + target[p].data.label + "</a>" +  " , " + "</b>" + target[p].data["long.name"]+"</li>");
-                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target[p].data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                        print("<hr>");
-                        print("</ul>" + "<ul>");
-
-                        if (target[p].data.TIGRRoles) {
+                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.label + ">" + target[p].data            if (target[p].data.TIGRRoles) {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target[p].data.TIGRRoles + "</li>" + "<p>");
                         } else {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
                         }
 
                         if (target[p].data.COG) {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.COG + ">" + target[p].data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
-                        } else {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
-                        }
+                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.COG + ">" + target[p].dat               }
 
                         if (target[p].data.GO) {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target[p].data.GO + ">" + target[p].data.GO + "</a>" +  "</li>" + "<p>");
                         } else {
                             print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
                         }
-							
+
                         print("</ul>" + "<ul>");
-                         	  
+      
                         if (target[p].data["pathway.2"] =="NA") {
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
                         } else {
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target[p].data["pathway.0"] + "</li>" + "<p>");
                             print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target[p].data["pathway.1"] + "</li>" + "<p>");
-                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target[p].data.pathway + ">" + target[p].data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
-                        }
-                    }   
-    
-   	            // regulator 
-                    if(target[p].data.type == "regulator" ) {
-                        print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target[p].data.type + "<p>");
-                        print("<hr>");
-                        print("<ul>");
-                        print("<li type=\"square\">" +"<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.label + ">" + target[p].data.label + "</a>" +  " , " + "</b>" + target[p].data["long.name"] + "</li>");
-                        print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target[p].data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                        print("<hr>");
-                        print("</ul>" + "<ul>");
-
-                        if (target[p].data.TIGRRoles) {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target[p].data.TIGRRoles + "</li>" + "<p>");
-                        } else {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
-                        }
-
+                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target[p].data.pathway + ">" + target[p].data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + ref=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.label + ">" + target[p].data.label + "</a>" +  " , " + "</b>" + target[p].data["lo
                         if (target[p].data.COG) {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target[p].data.COG + ">" + target[p].data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
-                        } else {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
+                            print("<ls=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
+                        }
+].data.pathway + ">" + target[p].data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
                         }
 
-                        if (target[p].data.GO) {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target[p].data.GO + ">" + target[p].data.GO + "</a>" +  "</li>" + "<p>");
-                        } else {
-                            print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
-                        }
-							
-                        print("</ul>" + "<ul>");
-                        if (target[p].data["pathway.2"] =="NA") {
-                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
-                        } else {
-                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target[p].data["pathway.0"] + "</li>" + "<p>");
-                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target[p].data["pathway.1"] + "</li>" + "<p>");
-                            print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target[p].data.pathway + ">" + target[p].data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
-                        }
-							
-		        print("</ul>" + "<ul>");
-		        print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target[p].data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
-							
+          print("</ul>" + "<ul>");
+          print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target[p].data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
+
                     }
  
-	            // motif   
+                // motif   
                     if(target[p].data.type == "motif") { 
-                        print("<b class=\"ex\">" + "Type : " + "</b>"+ target[p].data.type + "<p>");
-                        print("<ul>");
-                        print( "<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "</li>" + "<p>");
-                        print( "<li>" + "<b class=\"ex\">" + "Consensus : " + "</b>"  + target[p].data.consensus + "</li><li>" +
-                               "<b class=\"ex\">" + "E value : " + "</b>" + target[p].data["e.value"] + "</li><li>" + 
+                        print("<b class=\"ex\">" + "Type : " + "</b>"+ targett[p].data["e.value"] + "</li><li>" + 
                                "<b class=\"ex\">" + "# of Sites : " + "</b>" + target[p].data["n.sites"] + "<p>" + "</li><hr>" +
                                "<a target=_blank href=" + target[p].data.imgURL + ">" + "<img align=left src=" + target[p].data.imgURL + ">" + "</a>");
                         print("</li></ul>");
                     }
-                           
-	            // edge   
-                    if(event.group == "edges") { 
-                        print("<ul>");
-		        print( "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "<p>");
-
-		        if (target[p].data.interaction=="motif"){
-                            print("<ul>" + "<b class=\"ex\">" + "E value : " + "</b>" + target[p].data["e.value"] + "</li><li>" + 
-                                  "<b class=\"ex\">" + "# of Sites : " + "</b>" + target[p].data.nsites + "</li><li>" +
-                                  "<b class=\"ex\">" + "Llr : " + "</b>" + target[p].data.llr +  "</li><li>" +
+          +  "</li><li>" +
                                   "<b class=\"ex\">" + "Width : " + "</b>" + target[p].data.width + "<li></ul>" + "<p>" );
                         } else {
                             print("<ul>");
@@ -904,598 +581,207 @@
                                 print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"green\">"+ target[p].data.interaction + "</font>" + "<p>");
                             }
 
-                            if (target[p].data.interaction =="up-regulates"){
-                                print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"red\">"+ target[p].data.interaction + "</font>" + "<p>");
-                            }
-
-                            if (target[p].data.interaction =="combines"){
-                                print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"orange\">"+ target[p].data.interaction + "</font>" + "<p>");
+  "</font>" + "<p>");
                             }
 
                             if (target[p].data.weight){
                                 print("<ul>");
                                 print( "<b class=\"ex\">" + "Inferelator Weight : " + "</b>" + target[p].data.weight + "<p>");
                             }
-	                }
+                      }
                     }
             
-	            //AND-GATE
+                  //AND-GATE
                     if(target[p].data["logic.gate"]) {
                         print("<b class=\"ex\">" + "Type : " + "</b>"+ "Logic gate" + "<p>");
                         print("<ul>");
-                        print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "</li></ul>" + "<p>");
-                    }
+                        print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target[p].data.canonicalName + "</li></ul>" + "<pdata = {};                    
+																                   var gene_data = {};
+																                   var reg_data = {};
+																                   var mot_data = {};
+																                   var and_data = {};
+
+																                   var bi_array = [];
+																                   var gene_array = [];
+																                   var reg_array = [];
+																                   var mot_array = [];
+																                   var and_array = [];
 
 
-                } else { // multiselection part of if/else
-                    //print ("Going to display some table here composed of the following items ");
-                    //print("NAME = " + target[p].data.canonicalName + "; TYPE = " + target[p].data.type);
-	            var bi_data = {};                    
-	            var gene_data = {};
-	            var reg_data = {};
-	            var mot_data = {};
-	            var and_data = {};
-
-	            var bi_array = [];
-	            var gene_array = [];
-	            var reg_array = [];
-	            var mot_array = [];
-	            var and_array = [];
-	  
-
-	            // bicluster   
+																                   // bicluster   
                     if(target[p].data.type== "bicluster") { 
-	                bi_data["Name"] = target[p].data.canonicalName;
-	                bi_data["Short Name"] = target[p].data["short.name"];
-	                bi_data["Long Name"] = target[p].data["long.name"];
-	                bi_array = bi_data;
-	                all_bicl.push(bi_array);
-	                items["Biclusters"] = all_bicl; //bi_array.push(bi_data);
-	            }
-
-	            // gene
-                    if(target[p].data.type =="gene" ) {
-	                gene_data["Name"] = target[p].data.label;
-	                gene_data["Short Name"] = target[p].data["short.name"];	   
-	                gene_data["Long Name"] = target[p].data["long.name"];
-	                gene_data["COG"] = target[p].data.COG;
-	                gene_data["TIGR"] = target[p].data.TIGRRoles;
-	                gene_array = gene_data;
-	                all_genes.push(gene_array);
-	                items["Genes"] = all_genes; 
-	            }
+																                       bi_data["Name"] = target[p].data.canonicalName;
+																                       gene_data["Long Name"] = target[p].data["long.name"];
+																                       gene_data["COG"] = target[p].data.COG;
+																                       gene_data["TIGR"] = target[p].data.TIGRRoles;
+																                       gene_array = gene_data;
+																                       all_genes.push(gene_array);
+																                       items["Genes"] = all_genes; 
+																                   }
 
                     // regulator
                     if(target[p].data.type =="regulator" ) {
-	                reg_data["Name"] = target[p].data.label;
-	                reg_data["Short Name"] = target[p].data["short.name"];	   
-	                reg_data["Long Name"] = target[p].data["long.name"];
-	                reg_data["COG"] = target[p].data.COG;
-	                reg_data["TIGR"] = target[p].data.TIGRRoles;
-	                reg_array = reg_data;
-	                all_regs.push(reg_array);
-	                items["Regulators"] = all_regs; 
-	            }
+																                       reg_data["Name"] = target[p].data.label;
+																                       reg_data["Short Name"] = target[p].data["short.name"]nicalName;
+																       mot_data["E Value"] = target[p].data["e.value"];   
+																                       mot_data["Consensus"] = target[p].data.consensus;
+																                       mot_array = mot_data;
+																                       all_mots.push(mot_array);
+																                       items["Motifs"] = all_mots; 
+																                   }
 
-	            // motif   
-                    if(target[p].data.type== "motif") { 
-	                mot_data["Name"] = target[p].data.canonicalName;
-	                mot_data["E Value"] = target[p].data["e.value"];	   
-	                mot_data["Consensus"] = target[p].data.consensus;
-	                mot_array = mot_data;
-	                all_mots.push(mot_array);
-	                items["Motifs"] = all_mots; 
-	            }
-
-	            // edge   
+																                   // edge   
                     if(event.group == "edges") { 
-	                // not sure if this will be added/needed; placeholder
-	            }
+																                       // not sure if this will be added/needed; placeholder
+																                   }
 
-	            //AND-GATE
+																                   //AND-GATE
                     if(target[p].data["logic.gate"]) {
-	                and_data["Name"] = target[p].data.canonicalName;
-	                and_data["E Value"] = target[p].data["e.value"];	   
-	                and_data["Consensus"] = target[p].data.consensus;
-	                and_array = and_data;
-	                all_ands.push(and_array);
-	                items["AND-GATE"] = all_ands; 
-	            }
+																                      work-caption\">Summary view of network </caption><colgroup id=\"cols\" span=\"9\"></colgroup>";
+																               var row_start = "<tr>";
+																               var row_end = "</tr>";
+																               var rows = "";
+																               var headers = "";
 
-                }
-
-            } // for (var p in target)           
-	    
-	    if (len > 1) {
-	        var table_text = "<table><caption id=\"network-caption\">Summary view of network </caption><colgroup id=\"cols\" span=\"9\"></colgroup>";
-	        var row_start = "<tr>";
-	        var row_end = "</tr>";
-	        var rows = "";
-	        var headers = "";
-
-	        for(var a in items) {
-	            //console.debug("type = " + a);
-	            a_chunk = "<tr><th>" + a + "</th></tr>";
-	            table_text += a_chunk;
-	            rows = "";
-	            for (var s in items[a]) {
-	                rows += "<tr>";
-	                headers = "";
-	                for (var k in items[a][s]) {
-	                    h_chunk = "<th>" + k + "</th>"; 
-	                    headers += h_chunk; 
-	                    if (items[a][s][k] == "" ) {
-	                        v = "NA";
-	                    } else {
-	                        v = items[a][s][k];
-	                    }
-	                        r_chunk = "<td>" + v + "</td>";	         
-                                rows +=  r_chunk;
-	                }
-	                rows += "</tr>";
-	            }
-	            table_text += row_start + headers + row_end;
-	            table_text += rows;
-	        }
-	        table_text += "</table>";
-	        print(table_text);
-
-	    }
-
-        } // handle_select
-
-
-        function handle_click(event) {
-            var target = event.target;
-            clear();
-
-	    // bicluster   
-            if(target.data.type == "bicluster") { 
-	        svglink=target.data["url"];
-                svglink=svglink.replace("htmls" , "svgs").replace("html", "svgz");
-		print( "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + " | " +
-		       "<b class=\"ex\">" + "Links : " + "</b>" + "<a target=_blank href=" + target.data["url"] + ">" + target.data.canonicalName + " page" + "</a>");
-                print("<iframe width=530 height=500 scrolling=no src=" + svglink + ">"  + "</iframe>"  );
-                print("<iframe width=0 height=0 src=" + target.data["url"] + ">"  + "</iframe>"  );
-	    }
-    
-	    // gene 
-            if(target.data.type == "gene" ) {
-                print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
+																               for(var a in items) {
+																                   //console.debug("type = " + a);
+																                   a_chunk = "<tr><th>" + a + "</th></tr>";
+																                   table_text += a_chunk;
+       table_text += row_start + hea print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
                 print("<hr>");
                 print("<ul>");
-                print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.label + ">" + target.data.label + "</a>" +  " , " + "</b>" + target.data["long.name"]+"</li>");
-                print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target.data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                print("<hr>");
-                print("</ul>" + "<ul>");
-
-                if (target.data.TIGRRoles) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target.data.TIGRRoles + "</li>" + "<p>");
-                } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
+                print("<li type=\"square\">" + "<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-biype=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
                 }
 
                 if (target.data.COG) {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.COG + ">" + target.data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
                 } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.GO) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target.data.GO + ">" + target.data.GO + "</a>" +  "</li>" + "<p>");
-                } else {
+                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG c        } else {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
                 }
-							
+
                 print("</ul>" + "<ul>");
-                         	  
+				        
                 if (target.data["pathway.2"] =="NA") {
                     print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
                 } else {
                     print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target.data["pathway.0"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target.data["pathway.1"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
-                }
-            }   
-    
-   	    // regulator 
-            if(target.data.type =="regulator" ) {
-                print("<b class=\"ex\">" + "Node Type : " + "</b>"+ target.data.type + "<p>");
-                print("<hr>");
-                print("<ul>");
-                print("<li type=\"square\">" +"<b class=\"ex\">" + "Name : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.label + ">" + target.data.label + "</a>" +  " , " + "</b>" + target.data["long.name"] + "</li>");
-                print("<li type=\"square\">" + "<b class=\"ex\">" + "Homologs : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/fetchLocus.cgi?locus=" + target.data.locusId + "&disp=3" + ">" + "MicrobesOnline" + "</a>" + "</li>" + "<p>");
-                print("<hr>");
-                print("</ul>" + "<ul>");
+                    print("<li type=\"disc\">" + "<b class=\"ex\"gg-bin/show_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>")l>" + "<ul>");
 
                 if (target.data.TIGRRoles) {
                     print("<li type=\"circle\">" + "<b class=\"ex\">" + "TIGR Roles : " + "</b>"+ target.data.TIGRRoles + "</li>" + "<p>");
                 } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.COG) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "COG : " + "</b>" + "<a target=_blank href=" + "http://microbesonline.org/cgi-bin/keywordSearch.cgi?taxId=882&keyword=" + target.data.COG + ">" + target.data.COG + "</a>" + " at Microbes Online" +  "</li>" + "<p>");
-                } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "COG : " + "</b>"+ "No COG categories asigned" + "</li>" + "</font>" + "<p>");
-                }
-
-                if (target.data.GO) {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term_details?term=" + target.data.GO + ">" + target.data.GO + "</a>" +  "</li>" + "<p>");
-                } else {
-                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "GO : " + "</b>"+ "No GO Terms asigned" + "</li>" + "</font>" + "<p>");
-                }
-							
-                print("</ul>" + "<ul>");
-                if (target.data["pathway.2"] =="NA") {
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "KEGG Main Pathway : " + "</b>" + "No KEGG pathway assigned" + "</li>" + "</font>" + "<p>");
-                } else {
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Main Pathway : " + "</b>"+ target.data["pathway.0"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 1: " + "</b>"+ target.data["pathway.1"] + "</li>" + "<p>");
-                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genome.jp/kegg-bin/show_pathway?" + target.data.pathway + ">" + target.data["pathway.2"] + "</a>" + "<div class=tooltip>" + "</li>" + "<p>");
-                }
-							
-		print("</ul>" + "<ul>");
-		print("<li type=\"square\">" + "<b class=\"ex\">" + "Regulation : " + "</b>" + "<a target=_blank href=" + "http://regtransbase.lbl.gov/cgi-bin/regtransbase?page=geneinfo;locusid=" + target.data.locusId + ">" + "RegTransBase" + "</a>" + "</li>" + "<p>");
-							
-            }
- 
-	    // motif   
-            if(target.data.type== "motif") { 
-                print("<b class=\"ex\">" + "Type : " + "</b>"+ target.data.type + "<p>");
-                print("<ul>");
-                print( "<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "</li>" + "<p>");
-                print( "<li>" + "<b class=\"ex\">" + "Consensus : " + "</b>"  + target.data.consensus + "</li><li>" +
+                    print("<li type=\"circle\">" + "<b class=\"ex\">" + "<font color=\"gray\">" + "TIGR Roles : " + "</b>"+ "No TIGR Roles         print("<li type=\"circle\">" + "<b class=\"ex\">" + "GO Term(s) : " + "</b>" + "<a target=_blank href=" + "http://amigo.geneontology.org/cgi-bin/amigo/term"+ target.data["pathway.1"] + "</li>" + "<p>");
+                    print("<li type=\"disc\">" + "<b class=\"ex\">" + "KEGG Sub Pathway 2: " + "</b>" + "<a id=" + "pathway" + " " + "target=_blank href=" + "http://www.genomes=\"ex\">" + "Consensus : " + "</b>"  + target.data.consensus + "</li><li>" +
                        "<b class=\"ex\">" + "E value : " + "</b>" + target.data["e.value"] + "</li><li>" + 
-                       "<b class=\"ex\">" + "# of Sites : " + "</b>" + target.data["n.sites"] + "<p>" + "</li><hr>" +
-                       "<a target=_blank href=" + target.data.imgURL + ">" + "<img align=left src=" + target.data.imgURL + ">" + "</a>");
-                print("</li></ul>");
-            }
-                           
-	    // edge   
-            if(event.group == "edges") { 
-                print("<ul>");
-		print( "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "<p>");
-
-		if (target.data.interaction=="motif"){
-                    print("<ul>" + "<b class=\"ex\">" + "E value : " + "</b>" + target.data["e.value"] + "</li><li>" + 
-                          "<b class=\"ex\">" + "# of Sites : " + "</b>" + target.data.nsites + "</li><li>" +
-                          "<b class=\"ex\">" + "Llr : " + "</b>" + target.data.llr +  "</li><li>" +
+                       "<b class=\"ex\">" + "" + "</b>" + target.data.llr +  "</li><li>" +
                           "<b class=\"ex\">" + "Width : " + "</b>" + target.data.width + "<li></ul>" + "<p>" );
                 } else {
                     print("<ul>");
                     print("<hr>");
 
-                    if (target.data.interaction =="down-regulates"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"green\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.interaction =="up-regulates"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"red\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.interaction =="combines"){
-                        print("<b class=\"ex\">"  + "Interaction : " + "</b>" + "<font color=\"orange\">"+ target.data.interaction + "</font>" + "<p>");
-                    }
-
-                    if (target.data.weight){
-                        print("<ul>");
+                             print("<ul>");
                         print( "<b class=\"ex\">" + "Inferelator Weight : " + "</b>" + target.data.weight + "<p>");
                     }
-	        }
-            }
-            
-	    //AND-GATE
-            //if(target.data["Matching.Attribute"]) {
-            if(target.data["logic.gate"]) {
-                print("<b class=\"ex\">" + "Type : " + "</b>"+ "Logic gate" + "<p>");
-                print("<ul>");
-                print("<li>" + "<b class=\"ex\">" + "Name : " + "</b>" + target.data.canonicalName + "</li></ul>" + "<p>");
-            }
-
-        }   
-
-
-        function clear() {
-            document.getElementById("note2").innerHTML = "";
-
-        }
-    
-        function print(msg) {
-            document.getElementById("note2").innerHTML += "<p>" + msg + "</p>";
-        }
-    
-
-    });
-
-
-    $.ajax({
-       // url: "http://baliga.systemsbiology.net/dvh/cytoscape/dvh_mutant_mapping_all.xgmml",
-	//url: "/images/dvh_portal_files/flagella_inf_motif_union.xgmml",
-        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/dvh_mutant_mapping_meth.xgmml",
-        success: function(data){
+		            }
+    s: function(data){
             if (typeof data !== "string") {
                 if (window.ActiveXObject) { // IE
+                    data = data.xml;
+                }
+          if (window.ActiveXObject) { // IE
                     data = data.xml;
                 }
                 else {
                     data = (new XMLSerializer()).serializeToString(data);
                 }
             }
-            vis.draw({
-                network: data,
-                layout:  'Preset'
-            });
-        },
-	cache: true,
-        error: function(){
-            show_msg({
-                type: "error",
-                target:"#cytoscapeweb",
-                message: "The file you specified could not be loaded. url=" + options.url,
-                heading: "File not found",
-            });
-        }
-    });
-
-
-    $.ajax({
-        //url: "/images/dvh_portal_files/aminoacid_metabolism.xgmml",
-        //url: "/images/dvh_portal_files/biofilm-all.xgmml",
-        url: "{{ STATIC_PREFIX }}/images/dvh_portal_files/biofilm-2.xgmml",
-        success: function(data){
-            if (typeof data !== "string") {
-                if (window.ActiveXObject) { // IE
-                    data = data.xml;
-                }
-                else {
-                    data = (new XMLSerializer()).serializeToString(data);
-                }
-            }
-            vis_2.draw({
-                network: data,
-                layout:  'Preset'
-            });
-        },
-	cache: true,
-        error: function(){
-            show_msg({
-                type: "error",
-                target:"#cytoscapeweb2",
-                message: "The file you specified could not be loaded. url=" + options.url,
-                heading: "File not found",
-            });
-        }
-    });
-
-
-</script>
-
-<div id="main" class="sub-page">
-    <h1>Network Analysis View</h1>
-    <p>Flagellar Assembly</p>
-    <div id="gene-tabs">
-      <ul class="tabs">
-	<li><a href="#gene-1">D. Vulgaris</a></li>
-	<li><a href="#gene-2">H. Salinarum</a></li>
-      </ul>
-      
-      <!-- BEGING TABS -->
-      <div id="gene-1" class="pane">
-<!--
-	<div class="expand_top">
-	  <div class="expand_all">Expand All</div>
-	</div>
+            vis="expand_all">Expand All</div>
+			    </div>
 -->
-	<div id="summary">
-	  <section class="summary">
+  <div id="summary">
+      <section class="summary">
 	    <span class="title">Summary:</span>
-	    <span class="descr-info">Some definition/summary info here.  We can grab from KEGG</span>
-	  </section>
-	  <br />
-	  <section class="related-networks">
-	    <span class="title">Related Networks:</span>
-	    <table id="related"> 
-	      <caption></caption>
-	      <colgroup id="cols" span="4"></colgroup>
-	      <tr>
-		<th>Name</th>
-		<th># of Biclusters</th>
-		<th># of Regulators</th>
-		<th>p-value</th>
-	      </tr>
-	      <tr>
-		<td>Bacterial Chemotaxis</td>
-		<td>3</td>
-		<td>6</td>
-		<td>0.221</td>
-	      </tr>
-	    </table>
-	  </section>
-	  <br />
-	  <section class="stat-table">
-	    <span class="title">Enrichment table of stats:</span>
-	    <div id="network-summary">
-	      <table id="enrich">
-		<caption>Functional enrichment of Flagellar Assembly pathway in D. vulgaris regulatory network</caption>
-		<colgroup id="cols" span="5"></colgroup>	      
-		<tr>
-		  <th>Bicluster</th>
-		  <th>p-value</th>
-		  <th>pathway 2</th>
-		  <th>pathway 1</th>
-		  <th>pathway 0</th>
-		</tr>
-		<tr>
-		  <td>bicluster_0286</td>
-		  <td>6.498911e-15</td>
-		  <td>Flagellar assembly</td>
-		  <td>Cell Motility</td>
-		  <td>Cellular Processes</td>
-		</tr> 
-		<tr>
-		  <td>bicluster_0184</td>
-		  <td>1.353184e-27</td>
-		  <td>Flagellar assembly</td>
-		  <td>Cell Motility</td>
-		  <td>Cellular Processes</td>
-		</tr> 
-		<tr>
-		  <td>bicluster_0125</td>
-		  <td>1.078040e-20</td>
-		  <td>Flagellar assembly</td>
-		  <td>Cell Motility</td>
-		  <td>Cellular Processes</td>
-		</tr>
-		<tr>
-		  <td>bicluster_0022</td>
-		  <td>6.186446e-13</td>
-		  <td>Flagellar assembly</td>
-		  <td>Cell Motility</td>
-		  <td>Cellular Processes</td>
-		</tr> 
-	      </table>
+	        <span class="descr-info">Some definition/summary info here.  Wster</th>
+    <th>p-value</th>
+      <th>pathway 2</th>
+        <th>pathway 1</th>
+	  <th>pathway 0</th>
+	  </tr>
+  <tr>
+      <td>bicluster_0286</td>
+        <ts">
+																       <li><a href="#tab-5">Overview Network</a></li>
+																       <li><a href="#tab-6">Bicluster 0286</a></li>
+																       <li><a href="#tab-7">Bicluster 0184</a></li>
+																       <li><a href="#tab-8">Bicluster 0125</a></li>
+																       <li><a href="#tab-9">Bicluster 0022</a></li>
+																             </ul>
+        <div id="tab-5" class="pane">
+	  <div id="cytoscapeweb">
+
 	    </div>
-	  </section>
+	  <div id="note">
+	    </div>
+	  <div id="note">
+	    </div>
+	  <div id="note">
+	    </div>
+	  <div id="note">
+	    </div>
+	  <div id="note">
+	    </div>
+	  <div id="note">
+	    </div>
+	  <br />
+	  <form id="filter">
+	      <span class="title">Filters:</span>
+	        <div id="filter-section">
+		    <div id="filter-1">
+		          <label><input type="checkbox" name="expand_netet_residual" />
+			        <!--<button id="filter_residual">Filter</button>
+				        <button id="reset_residual">Reset</button>-->
+				    <hr> 
+				        <label for="weight">edge weight:</label>
+					    <input type="text" id="weight" />
+					        <div id="slider-weight">
+						      </div>
+						    v id="cytoscapeweb2">
+
 	</div>
-	<br/>
-	<div id="network">
-	  <span id="network-list" class="network-title expand_heading"><span class="title">Network:</span></span>
-	  <div id="network-list">
-	    <div id="network-tabs">
-	      <ul id="test" class="tabs">
-		<li><a href="#tab-5">Overview Network</a></li>
-		<li><a href="#tab-6">Bicluster 0286</a></li>
-		<li><a href="#tab-7">Bicluster 0184</a></li>
-		<li><a href="#tab-8">Bicluster 0125</a></li>
-		<li><a href="#tab-9">Bicluster 0022</a></li>
-	      </ul>
-	      <div id="tab-5" class="pane">
-		<div id="cytoscapeweb">
-
-		</div>
-		<div id="note">
-		</div>
-		<div id="note">
-		</div>
-		<div id="note">
-		</div>
-		<div id="note">
-		</div>
-		<div id="note">
-		</div>
-		<div id="note">
-		</div>
-		<br />
-		<form id="filter">
-		  <span class="title">Filters:</span>
-		  <div id="filter-section">
-		  <div id="filter-1">
-		    <label><input type="checkbox" name="expand_network">Expand Network</label>
+<div id="note2">
+  </div>
+<div id="note2">
+  </div>
+<div id="note2">
+  </div>
+<div id="note2">
+  </div>
+<div id="note2">
+  </div>
+<div id="note2">
+  </div>
+<br />
+<form id="filter2">
+    <span class="title">Filters:</span>
+      <div id="filter-section2">
+	  <div id="filter-3">
+	        <label><input type="checkbox" name="expand_network2">Expand Network</label>
 		  </div>
-		  <div id="filter-2">
-		    <label for="residual">bicluster residual:</label>
-		    <input type="text" id="residual" />
-		    <div id="slider-residual">
-		    </div>
-		    <br /> 
-		    <!--<input type="submit" value="Filter" button id="filter_residual" />-->
-		    <input type="button" value="Reset" button id="reset_residual" />
-		    <!--<button id="filter_residual">Filter</button>
-		    <button id="reset_residual">Reset</button>-->
-		    <hr> 
-		    <label for="weight">edge weight:</label>
-		    <input type="text" id="weight" />
-		    <div id="slider-weight">
-		    </div>
-		    <br /> 
-		    <!--<input type="submit" value="Filter" button id="filter_weight" />-->
-		    <input type="button" value="Reset" button id="reset_weight" /> 
-		    <hr> 
-		    <div id="buttonpanel" class="buttonpanel"> 
-		      <label >Hide </label>
-		      <br /> 
-		      <input type="button" value= "Bicluster" buttonset id="hide_bicluster" />
-		      <input type="button" value= "AND-Gate" buttonset id="hide_andgate" />
-		      <input type="button" value= "Regulator" buttonset id="hide_regulator" />
-		      <input type="button" value= "Genes" buttonset id="hide_genes" />
-		      <input type="button" value= "Reset" buttonset id="reset_all" />
-		    </div>
-		  </div>
-		  </div>
-		</form>
-	      </div>
-	      <div id="tab-6" class="pane">
-		<div id="cytoscapeweb2">
-
-		</div>
-		<div id="note2">
-		</div>
-		<div id="note2">
-		</div>
-		<div id="note2">
-		</div>
-		<div id="note2">
-		</div>
-		<div id="note2">
-		</div>
-		<div id="note2">
-		</div>
-		<br />
-		<form id="filter2">
-		  <span class="title">Filters:</span>
-		  <div id="filter-section2">
-		  <div id="filter-3">
-		    <label><input type="checkbox" name="expand_network2">Expand Network</label>
-		  </div>
-		  <div id="filter-4">
-		    <label for="residual2">bicluster residual:</label>
-		    <input type="text" id="residual2" />
-		    <div id="slider-residual2">
-		    </div>
-		    <br /> 
-		    <!--<input type="submit" value="Filter" button id="filter_residual" />-->
-		    <input type="button" value="Reset" button id="reset_residual2" />
-		    <!--<button id="filter_residual">Filter</button>
-		    <button id="reset_residual">Reset</button>-->
-		    <hr> 
-		    <label for="weight2">edge weight:</label>
-		    <input type="text" id="weight2" />
-		    <div id="slider-weight2">
-		    </div>
-		    <br /> 
-		    <!--<input type="submit" value="Filter" button id="filter_weight" />-->
-		    <input type="button" value="Reset" button id="reset_weight2" /> 
-		    <hr> 
-		    <div id="buttonpanel2" class="buttonpanel"> 
-		      <label >Hide </label>
-		      <br /> 
-		      <input type="button" value= "Bicluster" buttonset id="hide_bicluster2" />
-		      <input type="button" value= "AND-Gate" buttonset id="hide_andgate2" />
-		      <input type="button" value= "Regulator" buttonset id="hide_regulator2" />
-		      <input type="button" value= "Genes" buttonset id="hide_genes2" />
-		      <input type="button" value= "Reset" buttonset id="reset_all2" />
-		    </div>
-		  </div>
-		  </div>
-		</form>
-
-<!--stuff for tab 6-->
-	      </div>
-	      <div id="tab-7" class="pane">
-		stuff for bicluster 0184
-	      </div>
-	      <div id="tab-8" class="pane">
-		stuff for bicluster 0125
-	      </div>
-	      <div id="tab-9" class="pane">
-		stuff for bicluster 0022
-	      </div>
-	    </div>
-	  </div>
-	</div><!-- #network -->
-
-      </div><!-- END GENE -->
+	    <div id="filter-4">
+	          <label for="residual2">bicluster residual:</label>
+		      <input type="text" id="residual2" />
+		          <d
+			         <!--<input type="submit" value="Filter" button id="filter_weight" />-->
+				     <input type="button" value="Reset" button id="reset_weight2" /> 
+				         <hr> 
+					     <div id="buttonpanel2" class="buttonpanel"> 
+					             <label >Hide </label>
+						           <br /> 
+							         <input type="button" value= "Bicluster" buttonset id="hide_bicluster2" />
+								       <input type="button" value= "AND-Gate" buttonset id="hide_andgate2" />
+								             <input type="button" value= "Regulator" buttonset id="hide_regulator2" />
+									           <input type="button" value= "Gdiv><!-- END GENE -->
 
       <div id="gene-2" class="pane">      
 	testing

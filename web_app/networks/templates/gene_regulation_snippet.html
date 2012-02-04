@@ -1,6 +1,19 @@
+{% load filters %}
 <h3> Regulation information for {{ gene }} </h3>
 <p>
 <div class="tab-contents">
+  <script type="text/javascript">
+    $(document).ready(function() {
+        {{ influence_biclusters|influences_to_gene_description_map }};
+        $('.reggene').live('mouseover', function(event) {
+            var geneName = $(this).html();
+            $(this).qtip({
+                prerender: true,
+                content: descriptionMap[geneName]
+            }, event);
+        });
+    });
+  </script>
 <div id="main">
 {% if influence_biclusters|length > 0 %}
 <b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
@@ -22,11 +35,7 @@
     </tr>
     {% for bicluster_id, influence in influence_biclusters %}
     <tr>
-      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
-      <td>{{ influence.gene.description }}</td>
-      <td>{% if influence.type == 'tf' %} - {% else %} {{ influence.type }} {% endif %}</td>
-      <td>{% if influence.type == 'tf' %} - {% endif %}</td>
-      <td>{% if influence.type == 'tf' %} - {% endif %}</td>
+      <td>{{ influence|format_influence }}</td>
       <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
      <!-- <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
       <td><a href="regulon_family">Fis</a></td>
