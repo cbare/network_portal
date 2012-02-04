@@ -6,11 +6,13 @@
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/coreweb/styles/ncbi_templates.css" />
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/projects/sviewer/css/style.css" />
 {% endblock %}
-{% block cssspecial %}<link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />{% endblock %}
+{% block cssspecial %}<link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css" />
+<link href="{{ STATIC_PREFIX }}/javascripts/jquery.qtip.min.css" rel="stylesheet" type="text/css" />{% endblock %}
 {% block jsspecial %}<script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.qtip.min.js"></script>
     <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/protovis.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
