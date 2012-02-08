@@ -38,6 +38,14 @@ sudo /etc/init.d/postgresql restart
     * see scripts/insert_genes.py
 
 
+# to dump the database to a gzip file do this:
+pg_dump -U postgres network_portal | gzip > network_portal.dump.2011.10.24.gz
+
+# to import a new database, in the psql console
+drop database network_portal
+create database network_portal
+gunzip < network_portal.dump.2011.10.24.gz | sudo -u postgres psql --dbname network_portal
+
 
 Note: Watch out for this error on Ubuntu/Debian:
 

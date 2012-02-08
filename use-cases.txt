@@ -8,19 +8,29 @@ Use cases for Network Portal
 3) view network showing - gene membership, shared regulation, motifs
 4) drill down into individual genes, motifs, regulators, biclusters
 
+==Given a set of genes, what functions do they have?
+
 ==Given a regular, what does it regulate?
 1) enter a regulator into search box
 2) get back matching genes, biclusters, functions & species
 3) click on regulator - get it's regulated genes (for each network?)
 4) just show regulated biclusters?
 
+==Given a regulator, what functions does it regulate?
+
 ==Given a function, what genes / regulons perform that function?
 1) search for a function
 2) 
 
+==find all possible motifs for a regulator?
 
 Questions
 =========
 How do we want to narrow by species?
 Do we want to compute functional enrichment for a set of biclusters? Or just one bicluster at a time?
 Is it a goal to assign functions to unannotated genes or correct annotated functions?
+
+Can we build promoter architectures from regular (non-ensemble) cMonkey? How should we explore by motif?
+
+
+
