@@ -13,8 +13,9 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
-from web_app.networks.helpers import nice_string
+from web_app.networks.helpers import nice_string, get_influence_biclusters
 from pprint import pprint
+from django.utils import simplejson
 import json
 import networkx as nx
 import re
@@ -194,6 +195,11 @@ def genes(request, species=None, species_id=None):
         #     raise Http404("No species specified.")
 
 def gene(request, gene=None, network_id=None):
+    if request.GET.has_key('view'):
+        view = request.GET['view']
+    else:
+        view = ""
+
     if gene:
         try:
             gene_id = int(gene)
@@ -215,20 +221,8 @@ def gene(request, gene=None, network_id=None):
     else:
         network = gene.species.network_set.all()[:1].get()
         network_id = network.id
+    member_biclusters, influence_biclusters = get_influence_biclusters(gene)
 
-    # get all biclusters that the gene is a member of
-    member_bicluster = gene.bicluster_set.all()
-    
-    # list of IDs for biclusters that this gene belongs to
-    bicluster_ids = [ b.id for b in gene.bicluster_set.all() ]
-
-    # get regulatory influences for this gene
-    influence_biclusters = []
-    for bicluster in member_bicluster:
-        for influence in bicluster.influences.all():
-            influence_biclusters.append( (bicluster.id, influence) )
-    influence_biclusters = sorted(influence_biclusters, key=lambda bi: (bi[0], bi[1].name) )
-    
     # get neighbor genes
     neighbor_genes = gene.neighbor_genes(network_id)
 
@@ -243,7 +237,9 @@ def gene(request, gene=None, network_id=None):
     
     # if the gene is a transcription factor, how many biclusters does it regulate?
     count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
-    
+    regulated_biclusters = Bicluster.objects.filter(influences__name__contains=gene.name)
+    print "# REGULATED BICLUSTERS: ", count_regulated_biclusters, " OR: ", len(regulated_biclusters)
+
     if request.GET.has_key('format'):
         format = request.GET['format']
         if format == 'html':
@@ -345,5 +341,60 @@ def function(request, name):
     return render_to_response('function.html', locals())
 
 def motif(request, motif_id=None):
+    """This renders the motif popup dialog"""
     motif = Motif.objects.get(id=motif_id)
     return render_to_response('motif_snippet.html', locals())
+
+def pssm(request):
+    """Returns a JSON representation of the specified motif's PSSM"""
+    motif_id = request.GET['motif_id']
+    motif = Motif.objects.get(id=motif_id)
+    alphabet = ['A','C','T','G']
+    pssm_list = []
+    for positions in motif.pssm():
+        position_list = []
+        for pos, val in positions.items():
+            position_list.append(val)
+        pssm_list.append(position_list)
+
+    data = {'alphabet':alphabet, 'values':pssm_list }
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
+def circvis(request):
+    gene = request.GET['gene']
+    data = make_circvis_data(gene)
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
+def make_circvis_data(gene):
+    """helper function to build a CircVis object"""
+    gene1 = Gene.objects.filter(name=gene)[0]
+    species = gene1.species
+    chromosomes = [{'name': ch.name, 'length': ch.length} for ch in species.chromosome_set.all()]
+    network = []
+    used_genes = [gene1]
+    gene_biclusters = Bicluster.objects.filter(genes__name=gene)
+    for bicluster in gene_biclusters:
+        for gene2 in bicluster.genes.all():
+            if gene2 != gene1:
+                used_genes.append(gene2)
+            network.append({
+                    'linkValue': 4.123,
+                    'node1': {
+                        'chr': gene1.chromosome.name,
+                        'options': 'color=dorange,thickness=4.078,z=0.2452',
+                        'start': gene1.start,
+                        'end': gene1.end
+                        },
+                    'node2': {
+                        'chr': gene2.chromosome.name,
+                        'options': 'color=dorange,thickness=4.078,z=0.2452',
+                        'start': gene2.start,
+                        'end': gene2.end
+                        }
+                    })
+
+    genes = [{'name': g.name,
+              'chr': g.chromosome.name,
+              'start': g.start,
+              'end': g.end} for g in used_genes]
+    return {'chromosomes': chromosomes, 'genes': genes, 'network': network}

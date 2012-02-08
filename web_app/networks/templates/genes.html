@@ -1,4 +1,5 @@
 {% extends "base2.html" %}
+{% block title %}Network Portal - Genes for {{ species.name }}{% endblock %}
 {% block content %}
 
 <div id="main">
@@ -11,7 +12,7 @@
   {% endif %}
   </p>
 
-  <table id="genes-table">
+  <table class="genes-table">
     <thead>
       <tr>
         <th>Name</th>

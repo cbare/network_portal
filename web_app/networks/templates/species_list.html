@@ -1,4 +1,5 @@
 {% extends "base2.html" %}
+{% block title %}Network Portal - Available Species{% endblock %}
 {% block content %}
 <div id="main">
   <h5>Species</h5>
@@ -23,8 +24,10 @@
 	<td><a href="/genes/{{ sp.short_name }}">{{ sp.gene_set.count }}</a></td>
 	<td><a href="/genes/{{ sp.short_name }}?filter=tf">{{ sp.transcription_factors|length }}</a></td>
 	{% for st in network %}
-	{% if st.species_id == sp.id %}
-	<td><a href="/species/{{ sp.short_name }}">{{st.version_id }}</a> {% endif %}{% endfor %}</td>
+	{% if st.species_id == sp.id %} 
+	<td><a href="/species/{{ sp.short_name }}">{{st.version_id }}</a>
+	  {% endif %}
+	  {% endfor %} </td>
 	
       </tr>
       {% endfor %}

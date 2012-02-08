@@ -1,6 +1,7 @@
 <dataConfig>
   <dataSource driver="org.postgresql.Driver" url="jdbc:postgresql:network_portal" user="dj_ango" password="django" />
   <document>
+<!--
     <entity name="species"
 	    transformer="TemplateTransformer"
 	    query="select * from networks_species">
@@ -18,6 +19,7 @@
 	<field column="description" name="species_network_desc" />	      
       </entity>
     </entity>
+-->
     <entity name="gene"
 	    transformer="TemplateTransformer"
 	    query="select * from networks_gene">
@@ -72,6 +74,7 @@
       </entity>
     </entity>
 -->
+<!--
     <entity name="bicluster"
 	    transformer="TemplateTransformer"
 	    query="select * from networks_bicluster">
@@ -123,5 +126,6 @@
 	<field column="type" name="influence_type" />
       </entity>
     </entity>
+-->
   </document>
 </dataConfig>

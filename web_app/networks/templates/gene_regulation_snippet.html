@@ -1,9 +1,23 @@
- <h3> Regulation information for {{ gene }} </h3>
+{% load filters %}
+<h3> Regulation information for {{ gene }} </h3>
 <p>
-<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
 <div class="tab-contents">
+  <script type="text/javascript">
+    $(document).ready(function() {
+        {{ influence_biclusters|influences_to_gene_description_map }};
+        $('.reggene').live('mouseover', function(event) {
+            var geneName = $(this).html();
+            $(this).qtip({
+                prerender: true,
+                content: descriptionMap[geneName]
+            }, event);
+        });
+    });
+  </script>
 <div id="main">
-  <table id="gene-regulation">
+{% if influence_biclusters|length > 0 %}
+<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
+  <table class="gene-regulation">
    <caption> Regulators for {{ gene }}
     <tr>
       <th class="help">Regulator</th>
@@ -15,7 +29,7 @@
     </tr>
     {% for bicluster_id, influence in influence_biclusters %}
     <tr>
-      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+      <td>{{ influence|format_influence }}</td>
       <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
       <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
       <td><a href="regulon_family">Fis</a></td>
@@ -24,5 +38,30 @@
     </tr>
     {% endfor %}
   </table>
+{% else %}
+<div class="error_message">No regulators were found for {{ gene }}.</div>
+{% endif %}
+{% if regulated_biclusters|length > 0 %}
+<a name="regulates"></a>
+<b> {{ gene }}</b> possibly regulates <b>{{ regulated_biclusters|length }}</b> regulons.
+  <table class="gene-regulation">
+   <caption> Regulated by {{ gene }}
+    <tr>
+      <th>Regulon</th>
+      <th>genes</th>
+      <th>residual</th>
+    </tr>
+    {% for bicluster in regulated_biclusters %}
+    <tr>
+      <td><a href="/bicluster/{{bicluster.id}}">{{bicluster.id}}</a></td>
+      <td>{{bicluster.genes.count}}</td>
+      <td>{{bicluster.residual}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+{% else %}
+<div class="error_message">{{ gene }} does not regulate anything.</div>
+{% endif %}
+
 </div>
 </div>

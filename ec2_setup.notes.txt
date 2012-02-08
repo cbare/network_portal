@@ -49,6 +49,11 @@ Jetty
 sudo apt-get -y install jetty
 sudo apt-get -y install libjetty-extra
 
+##### NOTE #####
+Sunburnt is not used anymore, instead Network Portal search
+is creating its own queries, sending them to Solr and uses
+simplejson to get the results
+######################################################
 Sunburnt, python client for Solr
 --------------------------------
 sudo pip install sunburnt
@@ -56,6 +61,7 @@ sudo apt-get -y install libxml2 libxml2-dev
 sudo apt-get -y install libxslt1.1 libxslt1-dev
 sudo pip install httplib2
 sudo pip install lxml
+############################################
 
 
 Setup postgres & populate DB
@@ -184,10 +190,4 @@ sudo ln -s ../mods-available/proxy_http.load .
 sudo ln -s ../mods-available/proxy.load .
 
 Make sure proxy stuff is in /etc/apache2/httpd.conf
-
-
-
-
-
-
 

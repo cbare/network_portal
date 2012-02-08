@@ -1,4 +1,17 @@
 {% extends "base2.html" %}
+{% block title %}Network Portal - Bicluster {{ bicluster.id }}{% endblock %}
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+{% block cssspecial %}
+  <link href="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.css" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block jsspecial %}
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
+  <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+  <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+{% endblock %}
 {% block content %}
 <div id="bicluster-top">
   <div class="post-top">
@@ -10,7 +23,7 @@
 	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
 	<li><a class="function" href="#tab-function">Functions</a>|</li>
 	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
-	<li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li>
+	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
 	<li><a class="help" href="#tab-help">Help</a></li>
       </ul>
 
@@ -58,12 +71,16 @@
 	  <table>
 	    <tr>
 	      <th>Regulators</th>
-	      <th>Process</th>
+	      <th>Type</th>
 	    </tr>
 	    {% for influence in influences %}
 	    <tr>
 	      <td><a href="pssm_1">{{ influence.name }}</a></td>
-	      <td><a href="pssm_1">{{ influence.type }}</a></td>
+	      {% if influence.type == "tf" %}
+	      <td><a href="pssm_1">TF</a></td>
+	      {% else %}
+	      <td><a href="pssm_1">Logic Gate</a></td>
+	      {% endif %}
 	    </tr>
 	    {% endfor %}
 	  </table>
@@ -84,10 +101,12 @@
       <div id="tab-gene">
 	{% include 'bicl_gene_snippet.html' %}
       </div>
+      <!--
       <div id="tab-add-cart">
 	add cart tab <br />
 	...TO BE DONE...
       </div>
+      -->
       <div id="tab-help">
 	HELP tab
       </div>

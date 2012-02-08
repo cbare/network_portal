@@ -1,197 +1,107 @@
 {% extends "base2.html" %}
-{% block content %}
 {% load static %}
+{% load filters %}
 {% get_static_prefix as STATIC_PREFIX %}
-<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">
+{% block title %}Network Portal - Search{% endblock %}
+{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
+{% block jsspecial %}
+<script src="{{ STATIC_PREFIX }}/javascripts/search_helpers.js"></script>
+{% endblock %}
+{% block content %}
 <script type="text/javascript">
-$(function() {
-    function log(message) {
-             $("<div />").text(message).prependTo("#log");
-             $("#log").scrollTop(0);
-    }
-
+$(document).ready(function() {
     $("#query").autocomplete({
-        source: function( request, response ) {
-                //console.debug("term: " + request.term);
-                $.ajax({
-                        url:      "http://{{ request.META.SERVER_NAME }}:8983/solr/suggest/?wt=json&json.wrf=?",
-                        dataType: "jsonp",
-                        data: { q: request.term
-                        },
-                        success: function( data ) {
-                                 //console.debug("data: " + data.toSource());
-                                 response( $.each(data.spellcheck['suggestions'][1]['suggestion'], function(key, value) {
-                                              //console.debug("key 1: " + key);
-                                              //console.debug("val 1: " + value);
-				}));
-                        }
-                });         
-
-        },
-        minLength: 1,
-        select: function (event, ui) {
-		console.debug("log event, ui: " + ui.item.label);
-                $("#query").val(ui.item.label);
-		log (ui.item.label ?
-                       "Selected: " + ui.item.label :
-                       "Nothing selected, input was " + this.value);
-        }
+      source: function(request, response) {
+        $.ajax({
+          url:      "http://networks.systemsbiology.net:8983/solr/suggest/?wt=json&json.wrf=?",
+          crossDomain: true,
+          dataType: "jsonp",
+          async: false,
+          data: { q: request.term },
+          success: function(data) {
+              response(data.spellcheck.suggestions[1].suggestion);
+          }
+        });
+      },
+      minLength: 1,
+      select: function (event, ui) { }
     });
 
-    $(document).ready(function() {
-      $(".example-search").click(function(event) {
+    $(".example-search").click(function(event) {
         $("#query").val($(event.target).text());
-      });
     });
+    // Selections in result table
+    var geneMap = {};
+    {% for species_id, genes in species_genes.items %}
+    geneMap[{{species_id}}] = {};
+    {% for gene in genes %}geneMap[{{species_id}}][{{gene.id}}] = {biclusters: [{{ gene.bicluster_ids|join:"," }}]};
+    {% endfor %}
+    {% endfor %}
+
+    searchhelpers.bindResultTableEvents(geneMap);
 });
 </script>
 
 <div id="main" class="sub-page">
- <!-- <div class="ui-widget">
-    <h2>Search</h2>
-    <form action="/search/" method="get">
-      <ul id="search">
-	<input type="text" id="query" name="q">
-	<input type="submit" value="Search">
-      </ul>
-      <textarea rows="1" cols="60" name="q" id="query"></textarea>
-      <textarea rows="4" cols="60" name="q" id="search_box">{% if q %}{{ q }}{% endif %}</textarea>
-      </form>
-    <p>Example: <span id="example1">DVU1309 DVU1310 DVU1320 DVU1324 DVU1325</span></p>	
-  </div>-->
-
-
   <h5>Search</h5>
- <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
-      <input type="text" id="query" name="q" value="{{ q }}">
-      <input type="submit" value="Search">
+      <input type="text" id="query" name="q" value="{{ q }}"></input>
+      <input type="submit" value="Search"></input>
+      <input type="reset" value="Reset"></input>
     </ul>
   </form>
   <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
-
-    <span id="search_help">(Click to add)</span></p>
+  <span id="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
-    <span id="search_help">(Click to add)</span></p>
-
-  
+  <span id="search_help">(Click to add)</span></p>
   {% if error_message %}
-  <div id="error_message">
+  <div class="error_message">
     <h4>Search Error</h4>
     <p>{{ error_message }}</p>
   </div>
   {% endif %}
- <!-- <div id="search-results">-->
-
-    {% if q %}
-   <!-- <h3>Search Results</h3>-->
-<!--    <p><b>Genes</b> / <b>Networks</b> / <b>Functions</b> / <b>Motifs</b> / <b>Species</b></p>-->
-
-    {% if results %}
-      {% if count == 1 %}
-        <p> testing {{ results|length }}</p>
-      {% else %}
-    <p><font color=#FF4040>Found {{ gene_count }} gene results for "{{ q }}".</font></p>
-      {% endif %}
-
-<!-- The following displays a unique list of functions found among
-     the queried set of Genes
--->
-<!-- Uncomment if user wants to see Genes/Functions/Regulons separted into respective chunks
-    <ul>
-      {% for term in unique %}
-      <li id="gene-function">{{ term }} </li>
-      {% endfor %}
-    </ul>
--->
-<!--    Uncomment if user wants to see Gene: Functions -->
-    
-<table id="gene-results">
-      <caption> Search results</caption>
+  {% if q %}
+  {% if results %}
+    <h5>Search Result Summary</h5>
+   <span id="search_help">(Click on numbers to see results for specific organism)</span>
+  <font color=#FF4040>{{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}".</font>
+  {% for species_id, genes in species_genes.items %}
+  <a name="species_{{species_id}}"></a>
+  <table class="gene-results">
+    <caption> Search results for '{{ species_names|lookup:species_id }}' <span id="search_help">(Selecting genes will enable link to their network)</span>
+</caption>
+    <tbody>
       <tr>
+        <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>
 	<th>Genes</th>
 	<th>Description</th>
-	<th>GO</th>
-	<th>KEGG</th>
-	<th>COG</th>
-	<th>Regulons</th>
+	<th>Regulated&nbsp;by</th>
+	<th>Regulates</th>
+	<th>In Regulons</th>
       </tr>
-      {% for result in genes %}
+      {% for gene in genes %}
       <tr>
-        <td><a href="/gene/{{ result.gene_name }}">{{ result.gene_name }}</a></td>
-        <td>{{ result.gene_description }}</td>
-	{% if ret %}
-	{% for gname, func in ret %}
-	{% if gname == result.gene_name %}
-	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'go' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://amigo.geneontology.org/cgi-bin/amigo/term_details?term={{term_id}}">{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
-	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'kegg' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://www.genome.jp/kegg-bin/show_pathway?map{{ term_id }}">path:{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
-	<td>
-	  {% for type, name, term_id in func %}
-	  {% if type == 'cog' %}
-	  <li id="gene-function">{{ name }} <br />(<a href="http://www.ncbi.nlm.nih.gov/COG/grace/wiew.cgi?{{ term_id }}">{{ term_id }}</a>),</li>
-	  {% endif %}
-	  {% endfor %}
-	</td>
-	{% endif %} <!--if gname -->
-	{% endfor %} <!-- for gname -->
-	{% else %}
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	<td>
-	  <li id="gene-function">Unknown</li>
-	</td>
-	{% endif %} <!-- if ret -->
-	<td>
-
-	{% if biclusters %}
-	  {% for bi_result in biclusters %}
-	    {% for k in bi_result.bi_gene_name %}
-	      {% if result.gene_name == k %}
-	        <li id="gene-regulon"><a href="/bicluster/{{ bi_result.bicluster_id }}">regulon {{ bi_result.bicluster_id }}</a>,</li>
-	      {% endif %}
-	    {% endfor %}
-	  {% endfor %}
-	{% endif %} <!-- if biclusters -->
-	</td>
+        <td><input type="checkbox" id="sel_gene_{{species_id}}_{{gene.id}}"></input></td>
+        <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
+        <td>{{ gene.description }}</td>
+	<td><a href="/gene/{{ gene.name }}?view=regulation">{{ gene.influence_biclusters|length }} influences</a></td>
+        {% if gene.regulated_biclusters|length == 0 %}
+        <td>-</td>
+        {% else %}
+	<td><a href="/gene/{{ gene.name }}?view=regulation#regulates">regulates {{ gene.regulated_biclusters|length }}</a></td>
+        {% endif %}
+	<td>{{ gene.bicluster_ids|bicluster_id_links}}</td>
       </tr>
       {% endfor %} <!-- for result in genes -->
-    </table>
-
-      {% if biclusters %}
-        {% for bi_result in biclusters %}
-          {% for gene in bi_result.bi_gene_name %}
-            {% if result.gene_name == gene %}
-            <!-- <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} regulons</a></p>-->
-            {% else %}
-            <!--<p>{{ q }} is not a member of a regulon </p>-->
-	    {% endif %}
-          {% endfor %}
-        {% endfor %}
-      {% else %}
-      <p>No regulon results for query &ldquo;{{ q }}&rdquo;</p>
-      {% endif %} <!-- if biclusters -->
-
-      {% else %}
-      <p><b>No results found!</b></p>
-      {% endif %} <!-- for results -->
-      {% endif %} <!-- if q -->
-      
+    </tbody>
+  </table>
+  <p><div id="display-network_{{ species_id }}"></div></p>
+  {% endfor %}
+  {% else %}
+  <p><b>No results found !</b></p>
+  {% endif %} <!-- for results -->
+  {% endif %} <!-- if q -->
 </div><!-- End #main -->
 {% endblock %}

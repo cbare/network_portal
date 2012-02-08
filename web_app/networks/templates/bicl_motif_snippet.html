@@ -1,12 +1,7 @@
 <h3> Motif information </h3>
-<p>
+<div id="main">
 {% if motifs %}
 There are {{ motifs|length }} motifs predicted
-{% else %}
-No motif found
-{% endif %}
-</p>
-<div id="main">
 <table id="motif">
   <caption> Motif Table </caption>
   <thead>
@@ -18,7 +13,6 @@ No motif found
     </tr>
   </thead>
   <tbody>
-  {% if motifs %}
     {% for m in motifs %}
   <tr>
     <td>{{m.id}}</td>
@@ -30,14 +24,11 @@ No motif found
     </td>
   </tr>
     {% endfor %}
-  {% else %}
-  <tr>
-    <td>No motifs found.</td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  {% endif %}
   </tbody>
 </table>
+{% else %}
+<div class="error_message">
+  No motifs were found.
+</div>
+{% endif %}
 </div>

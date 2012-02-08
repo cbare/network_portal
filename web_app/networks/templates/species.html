@@ -1,14 +1,15 @@
 {% extends "base2.html" %}
+{% block title %}Network Portal - Species {{ species.name }}{% endblock %}
 {% block content %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
 
 <div id="main" class="sub-page">
   <h5>{{ species.name }}</h5>
-<br>
-<div id="organism_info">
-        {% include organism_info %}
-      </div>
+  <br />
+  <div id="organism_info">
+    {% include organism_info %}
+  </div>
 
   <h3>Genome:</h3>
   <table>
@@ -32,8 +33,8 @@
     </tbody>
   </table>
   
-  <p>Genes: <a href="/genes/{{ species.short_name }}">{{ gene_count }}</a><br>
-     Transcription Factors: <a href="/genes/{{ species.short_name }}?filter=tf">{{ transcription_factors|length }}</a></p>
+  <p>Genes: <a href="/genes/{{ species.short_name }}">{{ gene_count }}</a><br/>
+  Transcription Factors: <a href="/genes/{{ species.short_name }}?filter=tf">{{ transcription_factors|length }}</a></p>
   <!-- <ul>
     {% for tf in transcription_factors %}
     <li><a href="/search/?q=regulator%3A{{ tf.name }}">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
@@ -45,7 +46,7 @@
   <ul>
     {% for network in species.network_set.all %}
     <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
-    {% endfor %}</ul>
+  {% endfor %}</ul>
   {% else %}
   <p>No networks for this species, yet.</p>
   {% endif %}

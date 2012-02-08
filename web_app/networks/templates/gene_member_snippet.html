@@ -1,12 +1,19 @@
-{% load filters %}
+<script>
+$(document).ready(function() { 
+    $("#regulon-members-table") 
+    .tablesorter({widthFixed: true, widgets: ['zebra']}) 
+    .tablesorterPager({container: $("#tablepager")}); 
+});
+</script>
 <h3> Regulon neighborhood information for {{ gene }} </h3>
 <p>
+<div id="main">
+{% if neighbor_genes|length > 0 %}
+{% load filters %}
 <b>{{ gene }}</b> has total of </b>{{ neighbor_genes|length }}</a></b> gene neighbors in regulons
 <b>{{ gene.bicluster_set.all|bicluster_links }}</b>
 </p>
-<div id="main">
-{% if neighbor_genes|length > 0 %}
-<table id="regulon-members-table">
+<table id="regulon-members-table" class="tablesorter">
   <caption> Gene neighbors</caption>
   <thead>
     <tr>
@@ -25,6 +32,26 @@
   {% endfor %}
   </tbody>
 </table>
-<br />
-{% endif %}
+	<div id="tablepager" class="pager-block">
+			<img src="{{ STATIC_PREFIX }}images/sort_first.gif" class="first"/>
+			<img src="{{ STATIC_PREFIX }}images/sort_prev.gif" class="prev"/>
+			<input type="text" class="pagedisplay"/>
+		<img src="{{ STATIC_PREFIX }}images/sort_next.gif" class="next"/>
+			<img src="{{ STATIC_PREFIX }}images/sort_last.gif" class="last"/>
+			<select class="pagesize">
+				<option selected="selected"  value="10">10</option>
+				<option value="20">20</option>
+				<option value="30">30</option>
+				<option  value="40">40</option>
+			</select>
+	</div>
+	{% else %}
+	<div class="error_message">
+	  No regulon neighbours were found for {{ gene }}.
+	</div>
+	{% endif %}
 </div>
+
+	
+
+
