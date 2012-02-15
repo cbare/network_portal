@@ -40,7 +40,7 @@ a:hover {
 
 /* headers */
 h1, h2, h3 {
-    font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
+    font-family: 'Lucida Grande', 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
     font-weight: Bold;
     padding: 10px;
     color: #444;
@@ -53,9 +53,9 @@ h2 {
     color: #88AC0B;
 }
 h3 {
-    font-size: 1.6em;
+    font-size: 1.4em;
     font-weight: normal;
-    padding: 16px 10px 4px 10px;
+    padding: 0px 10px 4px 10px;
 }
 
 /* Paragraph */
@@ -279,13 +279,14 @@ input.button {
 }
 #header p#slogan a {
     position: absolute;
-    margin: 0; padding: 0;
+    margin: 5px;
+    padding: 0;
     font: bold 15px 'Trebuchet MS', 'Helvetica Neue', Arial, Sans-serif;
     color: #322815;
     letter-spacing: -0.5px;
 	
     /* change the values of top and left to adjust the position of the slogan*/
-    top: 25px; right: 30px;
+    top: 25px; right: 20px;
 }
 
 /* top-menu */
@@ -458,8 +459,13 @@ input.button {
     padding-top: 10px;
     margin: 0; /*0 45px 0 0;*/
     display: inline;
+    color: #6B6B6B;
 }
-
+#tab-main #sidebar strong{
+    color:#739A23;
+    text-decoration:underline;
+    font-weight:bold;
+}
 #sidebar {
     float: right;
     width: 285px;
@@ -1222,6 +1228,12 @@ textarea#query {
 
 .post-top a.help {
     background: url("../images/question.gif") no-repeat scroll 0 2px #FAF7F5;
+    color: #977C57;
+    margin: 0 10px 0 5px;
+    padding: 7px 5px 7px 30px;
+}
+.post-top a.comments {
+    background: url("../images/comments.gif") no-repeat scroll 0 2px #FAF7F5;
     color: #977C57;
     margin: 0 10px 0 5px;
     padding: 7px 5px 7px 30px;
