@@ -1,3 +1,4 @@
+{% load filters %}
 <h3> Regulators for Regulon {{ bicluster.id }}</h3>
 <p>
  There are <b>{{ inf_count }}</b> regulatory influences for <b>Regulon {{ bicluster.id }}</b> 
@@ -15,7 +16,7 @@
   <tbody>
     {% for influence in influences %}
     <tr>
-      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
+      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence|format_influence }}</a>{% else %}{{ influence|format_influence }}{% endif %}</td>
       <td>{{ influence.type }}</td>
       <td>{{ influence.biclusters_set.all }}</td>
     </tr>
