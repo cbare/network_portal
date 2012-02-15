@@ -1,5 +1,5 @@
 {% load filters %}
-<h3> Regulation information for {{ gene }} </h3>
+<h3> Regulation information for {{ gene }} <span id="search_help">(Mouseover regulator name to see its description)</span></h3>
 <p>
 <div class="tab-contents">
   <script type="text/javascript">
@@ -16,33 +16,34 @@
   </script>
 <div id="main">
 {% if influence_biclusters|length > 0 %}
-<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.
-  <table class="gene-regulation">
-   <caption> Regulators for {{ gene }}
+<!--<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.-->
+  <table class="gene-regulation" style="float: left;">
+   <caption> Regulators for {{ gene }} ({{ influence_biclusters|length }})</caption>
     <tr>
-      <th class="help">Regulator 1</th>
-      <th>Description</th>
+      <th class="help">Regulator</th>
+      <th>Regulon</th>
       <th>Operator</th>
-      <th>Regulator 2</th>
+      <!--<th>Regulator 2</th>
       <th>Description</th>
-      <!--<th>Mode</th>
+      <th>Mode</th>
       <th>Family</th>
       <th>Process</th>
-      <th>Inferelator Weight</th>-->
+      <th>Inferelator Weight</th>
       <th>Regulon</th>
       <th>Residual</th>
-      <th>Genes</th>
+      <th>Genes</th>-->
     </tr>
     {% for bicluster_id, influence in influence_biclusters %}
     <tr>
       <td>{{ influence|format_influence }}</td>
       <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
+      <td>{{ influence.type }}</td>
      <!-- <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
       <td><a href="regulon_family">Fis</a></td>
       <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-      <td><a href="regulon_weight">-0.23</a></td>-->
+      <td><a href="regulon_weight">-0.23</a></td>
       <td>{% for bicluster in bicluster %} {{ bicluster.resid }}{% endfor %}</td>
-      <td>{{ bicluster.gene_count }}</td>
+      <td>{{ bicluster.gene_count }}</td>-->
     </tr>
     {% endfor %}
   </table>
@@ -51,9 +52,9 @@
 {% endif %}
 {% if regulated_biclusters|length > 0 %}
 <a name="regulates"></a>
-<b> {{ gene }}</b> possibly regulates <b>{{ regulated_biclusters|length }}</b> regulons.
-  <table class="gene-regulation">
-   <caption> Regulated by {{ gene }}
+<!--<b> {{ gene }}</b> possibly regulates <b>{{ regulated_biclusters|length }}</b> regulons.-->
+  <table class="gene-regulation" style="float: right;">
+   <caption> Regulated by {{ gene }} ({{ regulated_biclusters|length }})</caption>
     <tr>
       <th>Regulon</th>
       <th>Residual</th>
@@ -68,7 +69,7 @@
     {% endfor %}
    </table>
 {% else %}
-<div class="error_message">{{ gene }} does not regulate anything.</div>
+<div class="error_message" style="float: right;">{{ gene }} does not regulate any gene.</div>
 {% endif %}
 
 </div>
