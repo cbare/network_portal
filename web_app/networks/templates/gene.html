@@ -1,4 +1,5 @@
 {% extends "base2.html" %}{% load static %}{% get_static_prefix as STATIC_PREFIX %}
+{% load filters %}
 {% block title %}Network Portal - Gene {{ gene.name }}{% endblock %}
 {% block cssreset %}
 <link rel="stylesheet" type="text/css" href="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/resources/css/ext-all.css" />
@@ -79,8 +80,8 @@
             </tr>
            {% for bicluster_id, influence in influence_biclusters %}
               <tr>
-                <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence.name }}</a>{% else %}{{ influence.name }}{% endif %}</td>
-                <td><a href="regulon">{{ bicluster_id }}</a></td>
+                <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence|format_influence }}</a>{% else %}{{ influence|format_influence }}{% endif %}</td>
+                <td><a href="/bicluster/{{bicluster_id}}">{{ bicluster_id }}</a></td>
                 <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
                 <td><a href="regulon_family">Fis</a></td>
                 <td><a href="regulon_process">Pyruvate Oxidation</a></td>

@@ -1,5 +1,6 @@
 {% extends "base2.html" %}
 {% block title %}Network Portal - Bicluster {{ bicluster.id }}{% endblock %}
+{% load filters %}
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
 {% block cssspecial %}
@@ -75,7 +76,7 @@
 	    </tr>
 	    {% for influence in influences %}
 	    <tr>
-	      <td><a href="pssm_1">{{ influence.name }}</a></td>
+	      <td><a href="pssm_1">{{ influence|format_influence }}</a></td>
 	      {% if influence.type == "tf" %}
 	      <td><a href="pssm_1">TF</a></td>
 	      {% else %}

@@ -237,7 +237,7 @@ def gene(request, gene=None, network_id=None):
     
     # if the gene is a transcription factor, how many biclusters does it regulate?
     count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
-    regulated_biclusters = Bicluster.objects.filter(influences__name__contains=gene.name)
+    regulated_biclusters = Bicluster.objects.distinct().filter(influences__name__contains=gene.name)
     print "# REGULATED BICLUSTERS: ", count_regulated_biclusters, " OR: ", len(regulated_biclusters)
 
     if request.GET.has_key('format'):
