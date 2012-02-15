@@ -1,0 +1,28 @@
+  <div id ="main">
+    <h3> Gene Page Help</h3>
+<p>    <h5>Network Tab</h5>
+<img src="{{ STATIC_PREFIX }}images/help_images/gene-network.png" align="right"><br> If the gene is associated with a regulon(s), its connection to given regulons along with other members of that regulon are shown as network by using CytoscapeWeb. In this view, each green colored circular nodes represent regulon member genes, purple colored diamonds represent regulon motifs and red triangles represent regulators. Each node is connected to regulon (Bicluster) via edges. This representation provides quick overview of all genes, regulators and motifs for regulons. It also allows one to see shared genes/motifs/regulators among diferent regulons. <br><br>
+Network representation is interactive. You can zoom in/out and move nodes/edges around. Clicking on a node will open up a window to give more details. For genes, Locus tag, organism, genomic coordinates, NCBI gene ID, whether it is transcription factor or not and any associated functional information will be shown. For regulators, number of regulons are shown in addition to gene details. For motifs, e-value, consensus sequence and sequence logo will be shown. For regulons, expression profile plot, motif information, functional associations and motif locations for each member of the regulon will be shown.<br>
+You can pin information boxes by using button in the box title and open up additional ones on the same screen for comparative analysis.<br>
+    <p> <h5>Regulation Tab</h5>   
+ <img src="{{ STATIC_PREFIX }}images/help_images/gene-regulation.png" align="right"> <br> Regulation tab for each gene includes regulatory influences such as environmental factors or transcription factors or their combinations identified by regulatory network inference algorithms. If the gene is a member of a regulon, regulators influencing that regulon are also considered to regulate the gene. Regulators table list total number of regulatory influences, regulators, regulons and type of the influence. You can see description of the regulator inside the tooltip when you mouseover. In certain cases the regulatory influence is predicted to be the result of the combination of two influences. These are indicated as combiner in the column labeled "Operator". Fo rtranscription factors, an additional table next to regulator table will be show. This table show regulons that are influenced by the transcription factor. </br>
+<p>  <h5>Motifs Tab</h5>   
+<img src="{{ STATIC_PREFIX }}images/help_images/gene-motifs.png" align="center"> Motifs Tab:<br>
+Interactive cytoscapeweb view of the network</p>
+<p>  <h5>Functions Tab</h5>  
+ <img src="{{ STATIC_PREFIX }}images/help_images/gene-functions.png" align="center"> Functions Tab:<br>
+Interactive cytoscapeweb view of the network</p>
+<p>   <h5>Regulon Members Tab</h5> 
+ <img src="{{ STATIC_PREFIX }}images/help_images/gene-regulon-members.png" align="center"> Regulon Members Tab:<br>
+Interactive cytoscapeweb view of the network</p>
+<p>    <h5>Help Tab</h5> 
+<img src="{{ STATIC_PREFIX }}images/help_images/gene-help.png" align="center"> Help Tab:<br>
+Interactive cytoscapeweb view of the network</p>
+<p>     <h5>Comments Tab</h5>
+<img src="{{ STATIC_PREFIX }}images/help_images/gene-comments.png" align="center"> Comments Tab:<br>
+Interactive cytoscapeweb view of the network</p>
+<h5>CircVis</h5>
+<img src="{{ STATIC_PREFIX }}images/help_images/circvis-help.png" align="center">
+
+
+  </div>
