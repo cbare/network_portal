@@ -3,21 +3,22 @@ var nwhelpers;
 if (!nwhelpers) {
     nwhelpers = {};
 }
-(function() {
-    nwhelpers.load_popup = function(url, motifURL) {
+(function () {
+    "use strict";
+    nwhelpers.load_popup = function (url, motifURL) {
         $.ajax({
             url: url,
-            success: function(html){
+            success: function (html) {
                 $("#pop_up").html(html);
             },
-            error: function(){
+            error: function () {
                 $("#pop_up").html("<p>Error!!</p>");
             }
         });
-        if (motifURL != null) {
+        if (motifURL !== null) {
             $.ajax({
                 url: motifURL,
-                success: function(pssm){
+                success: function (pssm) {
                     var options = {
                         width: 300,
                         height: 150,
@@ -25,15 +26,15 @@ if (!nwhelpers) {
                     };
                     isblogo.makeLogo("canvas", pssm, options);
                 },
-                error: function(){
+                error: function () {
                     $("#pop_up").html("<p>Error!!</p>");
                 }
             });
         }
     };
 
-    nwhelpers.show_msg = function(options) {
-        if (typeof(options) == "string") {
+    nwhelpers.show_msg = function (options) {
+        if (typeof (options) === "string") {
             options = {message: options};
         }
         var options = $.extend({
@@ -81,14 +82,14 @@ if (!nwhelpers) {
         edges: {
             width: {
                 defaultValue: 1,
-                continuousMapper: { attrName: "weight", minAttrValue:0.0, maxAttrValue:1.0, minValue: 1, maxValue: 12 }
+                continuousMapper: { attrName: "weight", minAttrValue: 0.0, maxAttrValue: 1.0, minValue: 1, maxValue: 12 }
                 //passthroughMapper: { attrName: "weight" }
             },
             color: "#0B94B1"
         }
     };
 
-    nwhelpers.initCytoscapeWeb = function(swfPath, flashInstallerPath) {
+    nwhelpers.initCytoscapeWeb = function (swfPath, flashInstallerPath) {
         // id of Cytoscape Web container div
         var div_id = "cytoscapeweb";
         // initialization options
@@ -104,30 +105,28 @@ if (!nwhelpers) {
         var vis = new org.cytoscapeweb.Visualization(div_id, options);
         // update gaggle data on selection events for the purpose of
         // broadcasting out lists of selected genes
-        vis.addListener("select", "nodes", function(evt) {
+        vis.addListener("select", "nodes", function (evt) {
             var selectedNodes = vis.selected("nodes");
         });
         return vis;
     };
 
-    nwhelpers.addCytoscapeClickListener = function(vis, load_content) {
-        node_click_listener = vis.addListener("click", "nodes", function(event) {
-            var data = event.target.data;
-            var url;
-            var motifURL = null;
-            if (data.type == 'gene') {
+    nwhelpers.addCytoscapeClickListener = function (vis, load_content) {
+        var node_click_listener = vis.addListener("click", "nodes", function (event) {
+            var data = event.target.data, url, motifURL = null;
+            if (data.type === 'gene') {
                 url = "/gene/" + data.id + "?format=html";
-            } else if (data.type=='regulator') {
+            } else if (data.type === 'regulator') {
                 if (data.name.indexOf("~~") < 0) {
-                    url = "/gene/" + data.name + "?format=html"
+                    url = "/gene/" + data.name + "?format=html";
                 } else {
-                    url = "/regulator/" + data.name + "?format=html"
+                    url = "/regulator/" + data.name + "?format=html";
                 }
-            } else if (data.type=='bicluster') {
+            } else if (data.type === 'bicluster') {
                 var pattern = /bicluster:(\d+)/;
                 var id = pattern.exec(data.id)[1];
                 url = "/bicluster/" + id + "?format=html";
-            } else if (data.type=='motif') {
+            } else if (data.type === 'motif') {
                 var pattern = /motif:(\d+)/;
                 var id = pattern.exec(data.id)[1];
                 url = "/motif/" + id + "?format=html";
@@ -145,61 +144,61 @@ if (!nwhelpers) {
         return vis;
     };
 
-    nwhelpers.initAndLoadCytoscapeWeb = function(dataURL, swfPath, flashInstallerPath, load_popup_content) {
+    nwhelpers.initAndLoadCytoscapeWeb = function (dataURL, swfPath, flashInstallerPath, load_popup_content) {
         var vis = nwhelpers.initCytoscapeWeb(swfPath, flashInstallerPath);
         nwhelpers.addCytoscapeClickListener(vis, load_popup_content);
 
         // load data
         $.ajax({
             url: dataURL,
-            success: function(data){
-                if (typeof data !== "string") { 
+            success: function (data) {
+                if (typeof data !== "string") {
                     if (window.ActiveXObject) { // IE 
-                        data = data.xml; 
+                        data = data.xml;
+                    } else {
+                        data = (new XMLSerializer()).serializeToString(data);
                     }
-                    else { 
-                        data = (new XMLSerializer()).serializeToString(data); 
-                    } 
                 }
-                vis.draw({network:data, visualStyle:nwhelpers.VISUAL_STYLE, layout:{name:'ForceDirected'}});
+                vis.draw({network: data, visualStyle: nwhelpers.VISUAL_STYLE, layout: {name: 'ForceDirected'}});
             },
-            error: function(){
+            error: function () {
                 nwhelpers.show_msg({
                     type: "error",
-                    target:"#cytoscapeweb",
+                    target: "#cytoscapeweb",
                     message: "The file you specified could not be loaded. url=" + options.url,
-                    heading: "File not found",
+                    heading: "File not found"
                 });
             }
         });
         return vis;
-    }
+    };
 
-    nwhelpers.initBiclusterNetworkTab = function(biclusterId,
-                                                 swfPath, flashInstallerPath,
-                                                 load_popup_content) {
+    nwhelpers.initBiclusterNetworkTab = function (biclusterId,
+                                                  swfPath, flashInstallerPath,
+                                                  load_popup_content) {
         var vis = nwhelpers.initAndLoadCytoscapeWeb("/network/graphml?biclusters=" + biclusterId,
                                                     swfPath, flashInstallerPath, load_popup_content);
         return vis;
     };
 
-    nwhelpers.initNetworkTab = function(bicluster_count, geneName,
-                                        swfPath, flashInstallerPath,
-                                        load_popup_content) {
-        if (bicluster_count == 0) {
-            $("#" + div_id).html("<p>No biclusters found for this gene.</p>")
+    nwhelpers.initNetworkTab = function (bicluster_count, geneName,
+                                         swfPath, flashInstallerPath,
+                                         load_popup_content) {
+        if (bicluster_count === 0) {
+            $("#" + div_id).html("<p>No biclusters found for this gene.</p>");
             return;
         }
         return nwhelpers.initAndLoadCytoscapeWeb("/network/graphml?gene=" + geneName,
                                                  swfPath, flashInstallerPath, load_popup_content);
     };
 
-    nwhelpers.initCanvas = function(django_pssm) {
-        for (var motif_id in django_pssm)  {
+    nwhelpers.initCanvas = function (django_pssm) {
+        var motif_id;
+        for (motif_id in django_pssm)  {
             var pssm = { alphabet: ['A', 'C', 'T', 'G'],
                          values: django_pssm[motif_id]
                        };
-            canvas_id = 'canvas_' + motif_id;
+            var canvas_id = 'canvas_' + motif_id;
             var canvasOptions = {
                 width: 300, //400,
                 height: 150, //300,
@@ -209,8 +208,9 @@ if (!nwhelpers) {
         }
     };
 
-    nwhelpers.initCanvas2 = function(pssmMap, prefix, motifIds) {        
-        for (var i = 0; i < motifIds.length; i++)  {
+    nwhelpers.initCanvas2 = function (pssmMap, prefix, motifIds) {
+        var i;
+        for (i = 0; i < motifIds.length; i += 1) {
             var motifId = motifIds[i];
             var pssm = { alphabet: ['A', 'C', 'T', 'G'],
                          values: pssmMap[motifId]
