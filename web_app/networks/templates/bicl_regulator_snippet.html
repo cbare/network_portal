@@ -5,12 +5,11 @@
 </p>
 <div id = "main">
 <table id="regulators-table">
-  <caption>Regulator Table</caption>
+  <caption>Regulator Table ({{ inf_count }})</caption>
   <thead>
     <tr>
       <th>Regulator Name</th>
       <th>Regulator Type</th>
-      <th>Description</th>
     </tr>
   </thead>
   <tbody>
@@ -18,7 +17,6 @@
     <tr>
       <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence|format_influence }}</a>{% else %}{{ influence|format_influence }}{% endif %}</td>
       <td>{{ influence.type }}</td>
-      <td>{{ influence.biclusters_set.all }}</td>
     </tr>
     {% endfor %}
   </tbody>
