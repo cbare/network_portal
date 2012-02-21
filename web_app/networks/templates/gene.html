@@ -170,24 +170,29 @@
             {% endif %}
           </table>
           <h3>Motifs</h3>
-	  {% if motif %}
+	 <!-- {% if motif %}-->
           <table>
             <tr>
 	      <th class="help">Logo</th>
 	    </tr>
             <tr>
 	      <td>
-	        <a href="#tab-motif">
-	          <img src="{{ motif }}" />
-	        </a>
+	        {% for m in motifs %}
+		<tr>
+		  <div id="canvas_{{m.id}}">
+		  </div>
+	      </td>
+	    </tr>
+	    {% endfor %}
+	    
 	      </td>
 	    </tr>
           </table>
-	   {% else %}
+	  <!-- {% else %}-->
              <div class="error_message">
 	       <p>No motif information has been found!</p>
 	     </div>
-	   {% endif %}
+	   <!--{% endif %}-->
 
 	</div>{# #sidebar #}
       </div>
