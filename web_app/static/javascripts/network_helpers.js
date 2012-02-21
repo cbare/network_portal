@@ -194,7 +194,6 @@ if (!nwhelpers) {
                                                  swfPath, flashInstallerPath, load_popup_content);
     };
 
-
     nwhelpers.initCanvas = function(django_pssm) {
         for (var motif_id in django_pssm)  {
             var pssm = { alphabet: ['A', 'C', 'T', 'G'],
@@ -209,4 +208,21 @@ if (!nwhelpers) {
             isblogo.makeLogo(canvas_id, pssm, canvasOptions);
         }
     };
+
+    nwhelpers.initCanvas2 = function(pssmMap, prefix, motifIds) {        
+        for (var i = 0; i < motifIds.length; i++)  {
+            var motifId = motifIds[i];
+            var pssm = { alphabet: ['A', 'C', 'T', 'G'],
+                         values: pssmMap[motifId]
+                       };
+            var canvas_id = prefix + motifId;
+            var canvasOptions = {
+                width: 220, //400,
+                height: 120, //300,
+                glyphStyle: '20pt Helvetica'
+            };
+            isblogo.makeLogo(canvas_id, pssm, canvasOptions);
+        }
+    };
+
 }());

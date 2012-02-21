@@ -42,6 +42,7 @@
       </ul>
       <div id="tab-main">
         <script type="text/javascript">
+          var django_pssms = {{bicluster_pssms}};
           $(document).ready(function() {
               {% if view == "regulation" %}
               $('#top-tabs').tabs("select", 2);
@@ -58,13 +59,18 @@
                       console.debug('could not read data');
                   }
               });
+              nwhelpers.initCanvas(django_pssms);
+              nwhelpers.initCanvas2(django_pssms, 'previewcanvas_', {{preview_motifs}});
+
+              $('[[id^=previewcanvas]').click(function() {
+                  $('#top-tabs').tabs('select', 3);
+              });
           });
         </script>
 	<div id="main">
 	  <h3>{{ gene.name }}</h3>
 	  <p>
-	    <!-- <img id="circvis" src="{{ STATIC_PREFIX }}images/circular.png" /> -->
-            <div id="circvis">CircVis</div>
+      <div id="circvis">CircVis</div>
 	  </p>
 
 <!--          <h3>Regulation</h3>
@@ -170,23 +176,16 @@
             {% endif %}
           </table>
           <h3>Motifs</h3>
-	 <!-- {% if motif %}-->
+	  {% if bicluster_pssms %}
+
           <table>
-            <tr>
-	      <th class="help">Logo</th>
-	    </tr>
+            {% for motif_id in preview_motifs %}
             <tr>
 	      <td>
-	        {% for m in motifs %}
-		<tr>
-		  <div id="canvas_{{m.id}}">
-		  </div>
-	      </td>
-	    </tr>
-	    {% endfor %}
-	    
-	      </td>
-	    </tr>
+                <span id="previewcanvas_{{motif_id}}"></span>
+	            </td>
+	          </tr>
+            {% endfor %}
           </table>
 	  <!-- {% else %}-->
              <div class="error_message">
