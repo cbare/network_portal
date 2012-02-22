@@ -2,6 +2,8 @@ from django.db import models
 from django.db import connection
 from helpers import synonym
 import re
+import numpy as np
+import StringIO
 
 
 class Species(models.Model):
@@ -56,8 +58,122 @@ class Condition(models.Model):
     network = models.ForeignKey(Network)
     name = models.CharField(max_length=255)
     
+    def expression(self):
+        """
+        Retrieve the expression vector for this condition.
+        """
+        try:
+            cursor = connection.cursor()
+            cursor.execute("""
+                select e.gene_id, e.value
+                from expression e
+                where e.condition_id=%s
+                order by e.gene_id;
+                """,
+                (self.id,))
+            return cursor.fetchall();
+        finally:
+            cursor.close()
+    
     def __unicode__(self):
         return self.name
+
+def expression_matrix(conditions):
+    """
+    Retrieve an expression matrix from the database, for a given list of
+    conditions. Input is a list of condition objects. Returns a DataMatrix
+    object with three members:
+    - conditions: a list of condition objects
+    - genes: a list of gene objects
+    - data: a numpy array of 2 dimensions containing gene expression
+            data under the given conditions.
+    """
+    try:
+        cursor = connection.cursor()
+        
+        # create and populate temp table
+        cursor.execute("create temporary table temp_genes ( gene_id integer );")
+        cursor.execute("""
+            insert into temp_genes
+            select distinct(gene_id)
+            from expression
+            where condition_id in (%s)
+            order by gene_id;""" % (",".join([str(c.id) for c in conditions]),) )
+        cursor.execute("""select gene_id from temp_genes;""")
+        gene_ids = [ row[0] for row in cursor ]
+
+        # create a numpy 2D array
+        # print "%d, %d" % (len(gene_ids), len(conditions),)
+        m = np.empty([len(gene_ids), len(conditions)])
+
+        # left join with temp_genes so that we get all the genes, even if
+        # expression data is sparse - different genes have data for different
+        # conditions. Result may contain nulls.
+        column_num = 0
+        for condition in conditions:
+            cursor.execute("""
+                select e.value
+                from temp_genes tg left join expression e on tg.gene_id=e.gene_id
+                where e.condition_id = %s
+                order by tg.gene_id;
+                """ % (condition.id,))
+            row_num = 0
+            for row in cursor:
+                m[row_num,column_num] = row[0]
+                row_num += 1
+            column_num += 1
+            row_num = 0
+        
+        class DataMatrix:
+            pass
+        
+        result = DataMatrix()
+        result.genes = list(Gene.objects.filter(id__in=gene_ids))
+        result.conditions = conditions
+        result.data = m
+
+        return result
+    finally:
+        if cursor:
+            cursor.execute("drop table temp_genes;")
+            cursor.execute("commit;")
+        cursor.close()
+
+def expression_matrix_to_tsv_stream(matrix, ostr, coords=False):
+    """
+    Stream an expression matrix out to ostr, in a tab-separated-values format
+    with conditions as columns and genes as rows. The matrix is a DataMatrix
+    object as returned by the function expression_matrix.
+    """
+    ostr.write("GENE")
+    for condition in matrix.conditions:
+        ostr.write("\t")
+        ostr.write(condition.name)
+    ostr.write("\n")
+    l = np.size(matrix.data, axis=0)
+    w = np.size(matrix.data, axis=1)
+    gene_names = [ gene.name for gene in matrix.genes]
+    for i in range(l):
+        if coords:
+            gene = matrix.genes[i]
+            ostr.write("%s%s:%d-%d" % (gene.chromosome.name, gene.strand, gene.start, gene.end,))
+        else:
+            ostr.write(gene_names[i])
+        for j in range(w):
+            ostr.write("\t")
+            ostr.write(str(matrix.data[i,j]))
+        ostr.write("\n")
+
+def expression_matrix_to_tsv(matrix):
+    """
+    Output an expression matrix to a string in tab-separated format. The matrix
+    is a DataMatrix object as returned by the function expression_matrix.
+    """
+    import StringIO
+    ostr = StringIO.StringIO()
+    expression_matrix_to_tsv_stream(matrix, ostr)
+    return ostr.getvalue()
+
 
 class Gene(models.Model):
     species = models.ForeignKey(Species)

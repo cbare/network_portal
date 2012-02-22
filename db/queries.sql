@@ -276,3 +276,28 @@ where f.name ilike '%motil%'
 and f.namespace='kegg subcategory'
 and bf.p_b < 0.05
 and b.network_id=1;
+
+
+# how many conditions are there for a species?
+select count(distinct(condition_id)) from expression where gene_id in (select id from networks_gene where species_id=1);
+
+# get conditions as a table
+
+# extract expression matrix
+# 1) get full list of genes (data may conceivable be sparse - some genes missing for a given condition - although shouldn't be currently)
+create temporary table temp_genes ( gene_id integer );
+insert into temp_genes select distinct(gene_id) from expression where condition_id in (1,2,3,4,5) order by gene_id;
+# 2) select several columns in the matrix
+select tg.gene_id, e.value
+from temp_genes tg left join expression e on tg.gene_id=e.gene_id
+where e.condition_id in (1,2,3,4,5)
+oeder by tg.gene_id;
+# 3) select a column
+select tg.gene_id, e.value
+from temp_genes tg left join expression e on tg.gene_id=e.gene_id
+where e.condition_id = 1
+order by tg.gene_id;
+# 4) ditch the temporary table
+drop table temp_genes;
+
+
