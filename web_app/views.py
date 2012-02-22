@@ -92,6 +92,9 @@ def logout_page(request):
 def help(request):
     return render_to_response('help.html', locals())
 
+def seqviewer(request):
+    return render_to_response('seqviewer.html', locals())
+
 def sviewer_cgi(request):
     """Proxy for the NCBI data CGIs"""
     def allowed_header(header):

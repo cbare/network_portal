@@ -1,6 +1,7 @@
 <h3> Functional Enrichment for {{ gene }}</h3>
-{% if gene.functions.count %}
 <p>
+<div class="tab-contents">
+{% if gene.functions.count %}
 <b>{{ gene }}</b> is enriched for <b>{{ gene.functions.count }}</b> functions.
 <div id ="main">
 <table id="gene-function-table">
@@ -24,3 +25,4 @@
 {% else %}
 <p>no annotated functions...</p>
 {% endif %}
+</div>

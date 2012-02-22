@@ -36,7 +36,7 @@
           <li class="{% active request "^/networks" %}"><a href="/networks/">Networks</a></li>
            <li class="{% active request "^/help" %}"><a href="/help/">Help</a></li>
 
-         <!-- <li class="{% active request "^/analysis/gene" %}"><a href="/analysis/gene">Analysis Example</a></li>-->
+        <!-- <li class="{% active request "^/analysis/gene" %}"><a href="/analysis/gene">Example</a></li>-->
         </ul>
       </div>{# end nav #}
       <div id="content">
@@ -44,11 +44,12 @@
       </div>{# content #}
       <div id="footer">
         {% block footer %}
-        <p>
+	<p>        
 	  &copy; <a href="http://baliga.systemsbiology.net/" title="Baliga Lab">Baliga Lab</a>
           | <a href="http://systemsbiology.org" title="ISB">Institute for Systems Biology</a>
-        | <a href="/">Home</a></p>
-        {% endblock %}
+        | <a href="/">Home</a> 
+	</p>
+	{% endblock %}
       </div>{# end footer #}
     </div>{# end wrap #}
   </body>

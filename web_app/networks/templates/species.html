@@ -10,8 +10,18 @@
   <div id="organism_info">
     {% include organism_info %}
   </div>
+   
+  <h5>Networks</h5>
+  {% if species.network_set.count > 0 %}
+  <ul>
+    {% for network in species.network_set.all %}
+    <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
+  {% endfor %}</ul>
+  {% else %}
+  <p>No networks for this species, yet.</p>
+  {% endif %}
 
-  <h3>Genome:</h3>
+  <h5>Genome</h5>
   <table>
     <thead>
       <tr>
@@ -40,27 +50,21 @@
     <li><a href="/search/?q=regulator%3A{{ tf.name }}">{{ tf.name }}{% if tf.common_name %} ({{ tf.common_name }}){% endif %}</a></li>
     {% endfor %}
   </ul> -->
+ 
   
-  <h3>Networks</h3>
-  {% if species.network_set.count > 0 %}
-  <ul>
-    {% for network in species.network_set.all %}
-    <li><a href="/network/{{ network.id }}">{{ network.name }}</a></li>
-  {% endfor %}</ul>
-  {% else %}
-  <p>No networks for this species, yet.</p>
-  {% endif %}
-  
-  <h3>Functions</h3>
+  <h5>Functions</h5>
   <p>Explore gene functional annotation from any of these systems: <a href="">KEGG pathways</a>, <a href="">GO Gene Ontology</a>, <a href="">TIGRFams</a> or <a href="">COGs</a>.</p>
 
-  <h3>Links</h3>
-  <p>NCBI taxonomy id: <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}">{{ species.ncbi_taxonomy_id }}</a></p>
-  
-  <p><a href="http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId={{ species.ncbi_taxonomy_id }}"><img src="/static/images/microbesOnline150.gif"><br>genome</a></p>
-  
+  <h5>Links</h5>
+  <ul>
+    <li>
+  <p><a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ species.ncbi_taxonomy_id }}"><img src="{{ STATIC_PREFIX }}images/ncbi.gif"> NCBI ({{ species.ncbi_taxonomy_id }})</a></p></li>
+    <li>
+    <p><a href="http://www.microbesonline.org/cgi-bin/genomeInfo.cgi?tId={{ species.ncbi_taxonomy_id }}"><img src="/static/images/microbesOnline150.gif"> MicobesOnline</a></p></li>
+    <li>
   {% if species.ucsc_id %}
-  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser"><br>View {{ species.name }} in UCSC Genome Browser</a>.</p>
+  <p><a href="http://microbes.ucsc.edu/cgi-bin/hgGateway?db={{ species.ucsc_id }}"><img src="/static/images/pae-browser-sample_small.png" alt="UCSC Genome Browser"> UCSC Genome Browser</a>.</p></li>
+    </ul>
   {% endif %}
 
 </div><!-- End #main -->

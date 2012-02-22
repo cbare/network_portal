@@ -234,11 +234,25 @@ def gene(request, gene=None, network_id=None):
         system['functions'] = [ "(<a href=\"%s\">%s</a>) %s" % (function.link_to_term(), function.native_id, function.name,) \
                                 for function in functions ]
         systems.append(system)
-    
+
     # if the gene is a transcription factor, how many biclusters does it regulate?
     count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
     regulated_biclusters = Bicluster.objects.distinct().filter(influences__name__contains=gene.name)
-    print "# REGULATED BICLUSTERS: ", count_regulated_biclusters, " OR: ", len(regulated_biclusters)
+
+    bicluster_pssms = {}
+    preview_motifs = []
+    all_motifs = []
+    for mbicl in member_biclusters:
+        motifs = mbicl.motif_set.all()
+        all_motifs.extend(motifs)
+        pssms = __make_pssms(motifs)
+        preview_added = False
+        for motif_id, pssm in pssms.items():
+            bicluster_pssms[motif_id] = pssm
+            if not preview_added:
+                preview_motifs.append(motif_id)
+                preview_added = True
+    motifs = all_motifs  # used in template
 
     if request.GET.has_key('format'):
         format = request.GET['format']
@@ -275,26 +289,13 @@ def bicluster(request, bicluster_id=None):
     print img_url
 
     # create motif object to hand to wei-ju's logo viewer
-    alphabet = ['A','C','T','G']
-    pssm_logo_dict = {}
-    for m in motifs:
-        motif = Motif.objects.get(id=m.id)
-        pssm_list = []
-        for positions in motif.pssm():
-            position_list = []
-            for pos, val in positions.items():
-                position_list.append(val)
-            pssm_list.append(position_list)
-
-        pssm_logo = {'alphabet':alphabet, 'values':pssm_list }
-        pssm_logo_dict[m.id] = pssm_list
-        ret_pssm = json.JSONEncoder().encode(pssm_logo)
+    pssm_logo_dict = __make_pssms(motifs)
 
     if request.GET.has_key('format'):
         format = request.GET['format']
         if format == 'html':
             return render_to_response('bicluster_snippet.html', locals())
-
+       
     # get the functions for a bicluster, filtering on a bonferroni p value cutoff of 0.05
     bicluster_functions = bicluster.bicluster_function_set.all()
     ret_bicl_functions = {}
@@ -309,7 +310,24 @@ def bicluster(request, bicluster_id=None):
     variables = locals()
     variables.update({'functional_systems':functional_systems})
     
-    return render_to_response('bicluster.html', variables )
+    return render_to_response('bicluster.html', variables)
+
+def __make_pssms(motifs):
+    """reusable function to generate a dictionary of motif id -> PSSMs"""
+    pssm_logo_dict = {}
+    alphabet = ['A','C','T','G']
+    for m in motifs:
+        motif = Motif.objects.get(id=m.id)
+        pssm_list = []
+        for positions in motif.pssm():
+            position_list = []
+            for pos, val in positions.items():
+                position_list.append(val)
+            pssm_list.append(position_list)
+
+        pssm_logo = {'alphabet':alphabet, 'values':pssm_list }
+        pssm_logo_dict[m.id] = pssm_list
+    return pssm_logo_dict
 
 def regulated_by(request, network_id, regulator):
     gene = Gene.objects.get(name=regulator)

@@ -1,18 +1,108 @@
 {% extends "base2.html" %}
 {% block title %}Network Portal - Help {% endblock %}
-{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">{% endblock %}
-{% block content %}
-{% load static %}
-{% get_static_prefix as STATIC_PREFIX %}
+{% block cssspecial %}<link rel="stylesheet" href="{{ STATIC_PREFIX }}stylesheets/redmond/jquery-ui-1.8.16.custom.css">
+<link href="{{ STATIC_PREFIX }}/javascripts/jquery.qtip.min.css" rel="stylesheet" type="text/css" />{% endblock %}
+{% block jsspecial %}<script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/AC_OETags.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}cytoscapeweb/js/cytoscapeweb.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/wwu_logo/isblogo.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/network_helpers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/jquery.qtip.min.js"></script>
+    <script type="text/javascript" src="http://cdn.wijmo.com/jquery.wijmo-open.1.5.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/protovis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>
+    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/ext-all.js"></script>
+    <script type="text/javascript">window.sv_base_url = "/sviewer/"</script>
+    <script type="text/javascript">
+      $(document).ready(function()
+      {
+      // We'll target all AREA elements with alt tags (Don't target the map element!!!)
+      $('area[alt]').qtip(
+      {
+      content: {
+      attr: 'alt' // Use the ALT attribute of the area map for the content
+      },
+      });
+      });
+    </script>
 
-<div id="main" class="sub-page">
-  <h5>Help</h5>
-  How to use Network Portal?
-  <h5>Searching</h5>
-  How to use Search function?
-  <h5> Regulon View</h5>
-  How to use Regulon view
-  <h5> Gene View </h5>
+    <!-- These are required for loading NCBI sequence viewer in gene page -->
+    <!--<script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/>-->
+    {% endblock %}
+    {% block content %}
 
-</div><!-- End #main -->
-{% endblock %}
+    {% load static %}
+    {% get_static_prefix as STATIC_PREFIX %}
+
+    <div id="main">
+      <h5>Navigation</h5>
+      <span class="search-help"> Mouse over to see details of specific navigation items</span>
+      <img id="Image-Maps_9201202132102136" src="{{ STATIC_PREFIX }}images/gene-page-map.png" usemap="#Image-Maps_9201202132102136" border="0" width="724" height="620" alt="" />
+      <map id="_Image-Maps_9201202132102136" name="Image-Maps_9201202132102136">
+	<area shape="rect" coords="20,84,89,111" href="#" alt="<font color=red>HOME:</font><br> Takes you to the main Portal Page" title="home"    />
+
+	<area shape="rect" coords="98,83,167,110" href="#" alt="<font color=red>SEARCH:</font><br> Main search page" title="search"    />
+	
+<area shape="rect" coords="178,85,255,112" href="#" alt="<font color=red>SPECIES:</font><br> List all the species currently available at the network portal with quick links to network information" title="species"    />
+
+	<area shape="rect" coords="266,85,344,112" href="#" alt="<font color=red>FUNCTION:</font><br> Lists functional categories and relevant information from KEGG, GO, COG and TIGRFam." title="function"    />
+	
+	<area shape="rect" coords="358,84,433,111" href="#" alt="<font color=red>NETWORKS:</font><br> List of currently available networks" title="networks"    />
+	
+	<area shape="rect" coords="448,83,517,110" href="#" alt="<font color=red>HELP:</font><br> This help page" title="help"    />
+
+	<area shape="rect" coords="17,122,87,149" href="#" alt="<font color=red>GENE NAME:</font><br>Locus tag for a given gene. Clicking will take you to the main summary page for that gene." title="gene-name"    />
+
+	<area shape="rect" coords="89,122,159,149" href="#" alt="<font color=red>GENE NETWORK:</font><br>This view shows interactive <strong>Cytoscapeweb</strong> network for the gene if it belongs to any regulon.<br> Associated regulons, motifs and regulators are also included in the network." title="gene-network"    />
+
+	<area shape="rect" coords="161,122,249,149" href="#" alt="<font color=red>GENE REGULATION:</font><br> This tab shows table view of regulatory influences on the gene. <br> If the gene is a regulator by itself, regulons that are regulated by it are also shown in another table." title="gene-regulation"    />
+
+	<area shape="rect" coords="248,122,321,149" href="#" alt="<font color=red>GENE MOTIFS:</font><br> Motif tab will show motif logo and prediction statistics if any motif sequence is identified upstream of the gene." title="gene-motif"    />
+
+	<area shape="rect" coords="323,122,396,149" href="#" alt="<font color=red>GENE FUNCTIONS:</font><br> You can find gene functional annotations from KEGG, COG, GO and TIGRFam here." title="gene-functions"    />
+
+	<area shape="rect" coords="396,122,518,149" href="#" alt="<font color=red>GENE REGULON MEMBERS:</font><br> If gene is associated with a regulon(s), all other genes in these regulons are also listed in a table view." title="gene-regulon-members"    />
+
+	<area shape="rect" coords="519,122,583,149" href="#" alt="<font color=red>GENE HELP:</font><br> Shows gene page specific help content" title="gene-help"    />
+
+	<area shape="rect" coords="583,122,663,149" href="#" alt="<font color=red>GENE COMMENTS:</font><br> You can share your comments/questions/updates for a particular gene here by using network portal authentication or facebook connect. " title="gene-comments"    />
+
+	<area shape="rect" coords="473,158,695,217" href="#" alt="<font color=red>GENE INFO:</font><br> This section of the main gene page gives short information about the gene such as organism, locus tag, gene name, aliases" title="gene-info"    />
+
+	<area shape="rect" coords="141,210,224,247" href="#" alt="<font color=red>CIRCVIS PLASMID:</font><br> Plasmid section of the genome. <br>Each section of the circular visualisation that are divided by the black lines represent each chromosome/plasmid for the organism that this gene belongs to." title="circvis-plasmid"    />
+
+	<area shape="rect" coords="181,432,264,469" href="#" alt="<font color=red>CIRCVIS CHROMOSOME:</font><br> Chromosome section of the genome. <br>Each section of the circular visualisation that are divided by the black lines represent each chromosome/plasmid for the organism that this gene belongs to." title="circvis-chromosome"    />
+
+	<area shape="rect" coords="142,296,225,333" href="#" alt="<font color=red>CIRCVIS INTERACTIONS:</font><br> Red lines show connection of this gene to all other members of the regulons it belongs to. Mouseover the particular link to see details for the source and the target genes" title="circvis-interactions"    />
+
+	<area shape="rect" coords="277,338,333,375" href="#" alt="<font color=red>CIRCVIS SOURCE GENE:</font><br> This is the source gene that is presented in this page (in this particular example DVU0946). <br> Mouseover to see more details." title="circvis-source-gene"    />
+
+	<area shape="rect" coords="108,373,164,410" href="#" alt="<font color=red>CIRCVIS TARGET GENE:</font><br> All blue dots except the source gene represent target genes that share the same regulon as source gene. <br> Mouseover to see more details" title="circvis-target-gene"    />
+	<area shape="rect" coords="311,211,367,268" href="#" alt="<font color=red>CIRCVIS LEGEND:</font><br> Legend for the Circular visualization" title="circvis-legend"    />
+
+	<area shape="rect" coords="477,305,692,423" href="#" alt="<font color=red>GENE REGULATION:</font><br> This table gives quick statistics about the regulatory information for this gene including regulon numbers, # of regulators and number of conditions that are included in each regulon.<p> Clicking on the regulons and regulators will take you to GENE REGULATION tab to give more details." title="gene-regulation-table"    />
+
+	<area shape="rect" coords="477,426,692,491" href="#" alt="<font color=red>GENE MOTIFS:</font><br> This table shows logos for predicted motifs and linked to GENE MOTIFS tab content for details." title="gene-motif-table"    />
+
+	<area shape="rect" coords="47,496,454,595" href="#" alt="<font color=red>GENE FUNCTIONAL ANNOTATIONS:</font><br> This is the summary view for gene functional annotations and linked to GENE FUNCTIONS tab for details" title="gene-functional-annotations"    />
+	<area shape="rect" coords="10,10,314,72" href="#" alt="portal-logo" title="portal-logo"    />
+	<area shape="rect" coords="571,28,691,77" href="#" alt="isb-logo" title="isb-logo"    />
+	<area shape="rect" coords="571,0,648,28" href="#" alt="about" title="about"    />
+	<area shape="rect" coords="652,0,714,28" href="#" alt="contact" title="contact"    />
+	<area shape="rect" coords="722,618,724,620" href="http://www.image-maps.com/index.php?aff=mapped_users_9201202132102136" alt="Image Map" title="Image Map" />
+      </map>
+      
+      
+
+
+      How to use Network Portal?
+      <h5>Searching</h5>
+      How to use Search function?
+      <h5> Regulon View</h5>
+      How to use Regulon view
+      <h5> Gene View </h5>
+      
+    </div><!-- End #main -->
+    {% endblock %}
