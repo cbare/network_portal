@@ -70,7 +70,7 @@ $(document).ready(function() {
    {% for species_id, genes in species_genes.items %}
   <a name="species_{{species_id}}"></a>
   <table class="gene-results">
-    <caption> Search results for '{{ species_names|lookup:species_id }}'</caption>
+    <caption> Search results for '{{ species_names|lookup:species_id }}' ({{genes|length}})</caption>
     <tbody>
       <tr>
         <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>
