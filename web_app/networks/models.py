@@ -378,6 +378,21 @@ class PSSM():
     def __len__(self):
         return len(self.positions)
     
+    def as_string(self):
+        """
+        Serialize the PSSM out to a string to stick in a URL and send to RegPredict
+        """
+        ostr = StringIO.StringIO()
+        ostr.write("POSITION A C G T ")
+        i = 1
+        for p in self.positions:
+            ostr.write(str(i))
+            ostr.write(" ")
+            ostr.write(" ".join([ str(p[base]) for base in ('a', 'c', 'g', 't')]))
+            ostr.write(" ")
+            i += 1
+        return ostr.getvalue()
+    
     def consensus(self):
         letters = []
         for p in self.positions:

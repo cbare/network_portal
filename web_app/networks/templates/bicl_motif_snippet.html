@@ -3,7 +3,7 @@
 <div class="tab-contents">
 <div id="main">
 {% if motifs %}
-There are {{ motifs|length }} motifs predicted
+<p>There are {{ motifs|length }} motifs predicted. {% if species.short_name == 'dvu' %}Click on the <a href="http://regpredict.lbl.gov/">RegPredict</a> links to explore the motif in <a href="http://regpredict.lbl.gov/">RegPredict</a>.{% endif %}</p>
 <table id="motif">
   <caption> Motif Table </caption>
   <thead>
@@ -12,6 +12,7 @@ There are {{ motifs|length }} motifs predicted
       <th>e-value</th>
       <th>Consensus</th>
       <th>Alignment</th>
+      {% if species.short_name == 'dvu' %}<th>RegPredict</th>{% endif %}
     </tr>
   </thead>
   <tbody>
@@ -24,6 +25,7 @@ There are {{ motifs|length }} motifs predicted
       <div id="canvas_{{m.id}}">
       </div>
     </td>
+    {% if species.short_name == 'dvu' %}<td><a href="http://regpredict.lbl.gov/regpredict/com.lbl.regusw.App/App.html?taxonomyId={{species.ncbi_taxonomy_id}}&pssm={{m.pssm.as_string}}">RegPredict</a></td>{% endif %}
   </tr>
     {% endfor %}
   </tbody>

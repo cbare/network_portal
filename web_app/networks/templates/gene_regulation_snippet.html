@@ -18,7 +18,7 @@
 {% if influence_biclusters|length > 0 %}
 <!--<b> {{ gene }}</b> is possibly regulated by <b>{{ influence_biclusters|length }}</b> influences.-->
   <table class="gene-regulation" style="float: left;">
-   <caption> Regulators for {{ gene }} ({{ influence_biclusters|length }})</caption>
+   <caption> Regulators for {{ gene.display_name }} ({{ influence_biclusters|length }})</caption>
     <tr>
       <th class="help">Regulator</th>
       <th>Regulon</th>

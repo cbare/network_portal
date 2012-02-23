@@ -222,6 +222,9 @@ def gene(request, gene=None, network_id=None):
         network_id = network.id
     member_biclusters, influence_biclusters = get_influence_biclusters(gene)
 
+    # set species for use in template
+    species = gene.species
+
     # get neighbor genes
     neighbor_genes = gene.neighbor_genes(network_id)
 
@@ -269,7 +272,11 @@ def bicluster(request, bicluster_id=None):
     conditions = bicluster.conditions.all()
     inf_count = len(influences)
     
-    species_sh_name =  bicluster.network.species.short_name
+    # set species for use in template
+    species = bicluster.network.species
+    
+    # TODO FIXME this should be in the database on a per-network basis
+    species_sh_name =  species.short_name
     if (species_sh_name == "dvu"):
         img_url_prefix = "http://baliga.systemsbiology.net/cmonkey/enigma/cmonkey_4.8.2_dvu_3491x739_11_Mar_02_17:37:51/svgs/"
     elif (species_sh_name == "mmp"):
