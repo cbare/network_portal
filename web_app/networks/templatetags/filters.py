@@ -43,11 +43,13 @@ def format_influence(influence):
 def influences_to_gene_description_map(influence_biclusters):
     gene_description_map = {}
     for bicluster_id, influence in influence_biclusters:
+        # print "bicluster_id=%d, influence=%s" % (bicluster_id, str(influence),)
         if influence.type == 'tf':
             gene_description_map[influence.gene.name] = influence.gene.description
         else:
             parts = influence.get_parts()
             for part in parts:
+                # print "part=%s" % (str(part),)
                 gene_description_map[part.name] = part.gene.description.strip()
     result = 'var descriptionMap = {}\n';
     for key, description in gene_description_map.items():

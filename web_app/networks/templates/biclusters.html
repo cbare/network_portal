@@ -1,8 +1,8 @@
 {% extends "base2.html" %}
 {% block title %}Network Portal - Biclusters regulated by {{ regulator }}{% endblock %}
 {% block content %}
-
-<p>regulator = {{ regulator }}</p>
+<div id="main">
+<p>The are {{ biclusters|length }} biclusters regulated by <b><a href="/gene/{{gene.name}}">{{ gene.display_name }}</a></b> in the network <a href="/network/{{network.id}}">{{network.name}}</a>.</p>
 
 <table>
   <thead>
@@ -24,5 +24,5 @@
 </table>
 
 <p><a href="/network?biclusters={{ bicluster_ids|join:"," }}">view network for these {{ bicluster_ids|length }} biclusters</a></p>
-
+</div>
 {% endblock %}

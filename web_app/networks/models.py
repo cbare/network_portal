@@ -1,5 +1,6 @@
 from django.db import models
 from django.db import connection
+from django.contrib.auth.models import User
 from helpers import synonym
 import re
 import numpy as np
@@ -197,6 +198,9 @@ class Gene(models.Model):
             return "%s%s:%d-%d" % (self.chromosome.name, self.strand, self.start, self.end,)
         else:
             return None
+            
+    def synonyms(self):
+        return [synonym.name for synonym in Synonym.objects.filter(target_id=self.id, target_type='gene')]
 
     def functions_by_type(self):
         """
@@ -281,6 +285,15 @@ class Gene(models.Model):
     class Meta:
         ordering = ['name']
 
+def find_gene_by_name(name):
+    try:
+        return Gene.objects.get(name=name)
+    except Exception as e:
+        matches = Synonym.objects.filter(name=name, target_type='gene')
+        if len(matches) > 0:
+            return Gene.objects.get(id=matches[0].target_id)
+        else:
+            raise e
 
 class Influence(models.Model):
     """
@@ -306,8 +319,8 @@ class Influence(models.Model):
 
     def get_parts(self):
         parts = []
-        for part in self.get_part_names():
-            parts.append(Influence.objects.get(name=part))
+        for part_name in self.get_part_names():
+            parts.append(Influence.objects.get(name=part_name))
         return parts
     
     def __unicode__(self):

@@ -204,9 +204,8 @@ def gene(request, gene=None, network_id=None):
         try:
             gene_id = int(gene)
             gene = Gene.objects.get(id=gene_id)
-
         except ValueError:
-            gene = Gene.objects.get(name=gene)
+            gene = find_gene_by_name(gene)
     elif request.GET.has_key('id'):
         gene_id = request.GET['id']
         gene = Gene.objects.get(id=gene_id)

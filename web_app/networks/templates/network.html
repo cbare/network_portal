@@ -40,7 +40,7 @@
     <tbody>
       {% for tf in network.species.transcription_factors %}
       <tr>
-        <td><a href="/network/{{ network.id}}/regulated_by/{{ tf.name }}">{{ tf.name }}</a></td>
+        <td><a href="/network/{{ network.id}}/regulated_by/{{ tf.name }}">{{ tf.display_name }}</a></td>
       </tr>
       {% endfor %}
     </tbody>

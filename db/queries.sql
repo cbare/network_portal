@@ -301,3 +301,44 @@ order by tg.gene_id;
 drop table temp_genes;
 
 
+# find mismarked influences - genes that are mismarked as EF's 'cause the gene
+# name is not the standard gene name
+update networks_influence
+set gene_id = s.target_id, type='tf'
+from networks_synonym s
+where networks_influence.name = s.name
+and s.target_type='gene';
+
+# find influences who's name is a synonym (rather than a canonical name)
+select *
+from networks_influence i join networks_synonym s on i.name = s.name;
+
+# get all influence for network id 3
+select distinct(i.name)
+from networks_influence i
+  join networks_bicluster_influences bi on i.id=bi.influence_id
+  join networks_bicluster b on bi.bicluster_id=b.id
+where b.network_id=3;
+
+select distinct(n.name) from
+(select distinct(i.name)
+from networks_influence i
+  join networks_bicluster_influences bi on i.id=bi.influence_id
+  join networks_bicluster b on bi.bicluster_id=b.id
+where b.network_id=3
+and i.type!='combiner'
+union
+select substring(i.name from '.*~~(.*)~~.*') as name
+from networks_influence i
+  join networks_bicluster_influences bi on i.id=bi.influence_id
+  join networks_bicluster b on bi.bicluster_id=b.id
+where b.network_id=3
+and i.type='combiner'
+union
+select substring(i.name from '(.*)~~.*~~.*') as name
+from networks_influence i
+  join networks_bicluster_influences bi on i.id=bi.influence_id
+  join networks_bicluster b on bi.bicluster_id=b.id
+where b.network_id=3
+and i.type='combiner') as n
+order by n.name;
