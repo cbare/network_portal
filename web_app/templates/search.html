@@ -46,7 +46,7 @@ $(document).ready(function() {
 <div id="main" class="sub-page">
 
   <h5>Search</h5>
-  <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
+  <span class="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
     <ul id="search">
       <input type="text" id="query" name="q" value="{{ q }}"></input>
@@ -55,9 +55,9 @@ $(document).ready(function() {
     </ul>
   </form>
   <p><b>Example 1: </b><span class="example-search">DVU0848 DVU0694 DVU0693 DVU0778 DVU0846</span>
-  <span id="search_help">(Click to add)</span></p>
+  <span class="search_help">(Click to add)</span></p>
   <p><b>Example 2: </b><span class="example-search">thioredoxin, oxidative</span>
-  <span id="search_help">(Click to add)</span></p>
+  <span class="search_help">(Click to add)</span></p>
   {% if error_message %}
   <div class="error_message">
     <h4>Search Error</h4>
@@ -67,7 +67,7 @@ $(document).ready(function() {
   {% if q %}
   {% if results %}
     <h5>Search Result Summary</h5>
-   <span id="search_help">(Click on numbers to see results for specific organism)</span>
+   <span class="search_help">(Click on numbers to see results for specific organism)</span>
    <font color=#FF4040> {{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}"</font>.
    {% for species_id, genes in species_genes.items %}
   <a name="species_{{species_id}}"></a>
@@ -99,7 +99,7 @@ $(document).ready(function() {
       {% endfor %} <!-- for result in genes -->
     </tbody>
   </table>
-   <span id="search_help">* Selecting genes will enable link to their network</span>
+  <span class="search_help">* Selecting genes will enable link to their network</span>
   <p><div id="display-network_{{ species_id }}"></div></p>
   {% endfor %}
   {% else %}

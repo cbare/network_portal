@@ -1087,10 +1087,11 @@ textarea#query {
     width: 600px;
 }
 
-#search_help {
+.search_help {
     font-size: 80%;
     padding-left: 10px;
 }
+
 #gene_description {
     font-size: 100%;
     padding-left: 10px;
