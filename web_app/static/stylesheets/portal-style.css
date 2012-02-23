@@ -418,11 +418,12 @@ input.button {
 }
 
 #main h3 {
-    font: bold 1.7em 'Trebuchet MS', 'Helvetica Neue', 'Arial', 'Sans-serif';
+    font: bold 1.7em 'Lucida Grande', 'Trebuchet MS', 'Helvetica Neue', 'Arial', 'Sans-serif';
     color: #51432F;
-    margin-left: 5px;
     letter-spacing: -2px;
     border-bottom: 1px solid #988060;
+    margin: 0px 2px 0px 5px;
+    padding: 5px 0 5px 7px;
 }
 
 #main ul li {
@@ -755,7 +756,7 @@ ol.commentlist {
 /* kmf additions for ui tabs */
 #gene-tabs {
     width: auto;
-    height: auto;
+    height:auto;
 }
 
 #note, #pop_up {
@@ -1090,6 +1091,11 @@ textarea#query {
     font-size: 80%;
     padding-left: 10px;
 }
+#gene_description {
+    font-size: 100%;
+    padding-left: 10px;
+    color: #51432F;
+}
 
 #search_box {
     width: 60em;
@@ -1241,6 +1247,11 @@ textarea#query {
 
 .ui-tabs .ui-tabs-nav li {
     display: inline;
+}
+/*.ui-tabs .ui-tabs-nav .ui-tabs-selected {*/
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+border: solid 2px #977C57;
+/*border-left: solid 3px #8B5A00;*/
 }
 
 #top-tabs {
