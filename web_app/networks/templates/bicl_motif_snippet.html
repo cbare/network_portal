@@ -1,17 +1,17 @@
-<h3> Motif information </h3>
-<p>
+<h3> Motif information </h3><span id="search_help">(de novo identified motifs for regulons)</span>
+</p>
 <div class="tab-contents">
 <div id="main">
 {% if motifs %}
-There are {{ motifs|length }} motifs predicted
+There are {{ motifs|length }} motifs predicted.
 <table id="motif">
-  <caption> Motif Table </caption>
+  <caption> Motif Table ({{ motifs|length }})</caption>
   <thead>
     <tr>
       <th>Motif Id</th>
       <th>e-value</th>
       <th>Consensus</th>
-      <th>Alignment</th>
+      <th>Motif Logo</th>
     </tr>
   </thead>
   <tbody>
