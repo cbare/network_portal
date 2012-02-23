@@ -23,7 +23,7 @@ $(document).ready(function() {
   <tbody>
     {% for influence in influences %}
     <tr>
-      <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence|format_influence }}</a>{% else %}{{ influence|format_influence }}{% endif %}</td>
+      <td>{{ influence|format_influence }}</td>
       <td>{{ influence.type }}</td>
     </tr>
     {% endfor %}
