@@ -20,18 +20,19 @@
   <div class="post-top">
     <div id="top-tabs">
       <ul>
-	<li><a class="name" href="#tab-main">Regulon {{ bicluster.id }}</a>|</li>
-	<li><a class="network" href="#tab-network">Network</a>|</li>
-	<li><a class="regulator" href="#tab-regulator">Regulators</a>|</li>
-	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
-	<li><a class="function" href="#tab-function">Functions</a>|</li>
-	<li><a class="genes" href="#tab-gene">Genes</a>|</li>
-	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
+	<li><a class="name" href="#tab-main">Regulon {{ bicluster.id }}</a></li>
+	<li><a class="network" href="#tab-network">Network</a></li>
+	<li><a class="regulator" href="#tab-regulator">Regulators</a></li>
+	<li><a class="motif" href="#tab-motif">Motifs</a></li>
+	<li><a class="function" href="#tab-function">Functions</a></li>
+	<li><a class="genes" href="#tab-gene">Genes</a></li>
+	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a></li> #}
 	<li><a class="help" href="#tab-help">Help</a></li>
       </ul>
 
       <div id="tab-main">
 	<div id="main">
+	  <h3>Regulon {{ bicluster.id }} Profile</h3>
 	  <object data="{{ img_url }}" type="image/svg+xml"></object>
 	</div>
 	<div id="sidebar">
@@ -51,9 +52,9 @@
 	      <th>Conditions</th>
 	    </tr>
 	    <tr>
-	      <td><a href="bicluster_residual">{{ bicluster.residual }}</a></td>
-	      <td><a href="bicluster_genes">{{ gene_count }}</a></td>
-	      <td><a href="bicluster_conditions">{{ conditions.count }}</a></td>
+	      <td>{{ bicluster.residual }}</td>
+	      <td>{{ gene_count }}</td>
+	      <td>{{ conditions.count }}</td>
 	    </tr>
 	  </table>
 	  <table>
@@ -63,11 +64,11 @@
 	    </tr>
 	    <tr>
 	      {% if motifs  %}
-	      <td><a href="pssm_1">{{motifs.0.e_value}}</a></td>
-	      <td><a href="pssm_2">{{motifs.1.e_value}}</td></a>
+	      <td>{{motifs.0.e_value}}</td>
+	      <td>{{motifs.1.e_value}}</td>
 	      {% else %}
-	      <td><a href="pssm_1">NA</a></td>
-	      <td><a href="pssm_2">NA</td></a>
+	      <td>NA</td>
+	      <td>NA</td>
 	      {% endif %}
 	    </tr>
 	  </table>
@@ -79,12 +80,8 @@
 	    {% for influence in influences %}
 	    <tr>
 	      <td><a href="pssm_1">{{ influence|format_influence }}</a></td>
-	      {% if influence.type == "tf" %}
-	      <td><a href="pssm_1">TF</a></td>
-	      {% else %}
-	      <td><a href="pssm_1">Logic Gate</a></td>
-	      {% endif %}
-	    </tr>
+	      <td>{{ influence.type }}</td>
+	      </tr>
 	    {% endfor %}
 	  </table>
 	</div><!-- #sidebar -->
