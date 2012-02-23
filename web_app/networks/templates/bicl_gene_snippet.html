@@ -7,8 +7,16 @@
   {% endif %}
 </p>
 <div id = "main">
-<table class="genes-table">
-  <caption>Gene Member Table </caption>
+<script>
+$(document).ready(function() {
+    $("#bicluster-members-table")
+    .tablesorter({widthFixed: false, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
+<table id="bicluster-members-table" class="tablesorter">
+  <caption>Gene Member Table ({{ gene_count }})</caption>
   <thead>
     <tr>
       <th>Name</th>
