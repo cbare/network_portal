@@ -15,6 +15,13 @@ $(document).ready(function() {
 });
 </script>
 
+<div class="gaggle-data hidden">
+ <p>name=<span class="gaggle-name">Genes in Regulon</span><br />
+    species=<span class="gaggle-species">{{species.name}}</span><br />
+    (optional)size=<span class="gaggle-size">{{genes|length}}</span><br />
+    CSS selector=<span class="gaggle-namelist-tag">gaggle-gene-names</span></p>
+</div>
+
 <table id="bicluster-members-table" class="tablesorter">
   <caption>Gene Member Table ({{ gene_count }})</caption>
   <thead>
@@ -34,7 +41,7 @@ $(document).ready(function() {
   <tbody>
     {% for gene in genes %}
     <tr>
-      <td><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></td>
+      <td><a href="/gene/{{ gene.name }}"><span class="gaggle-gene-names">{{ gene.name }}</span></a></td>
       <td>{{ gene.common_name|default_if_none:"" }}</td>
       <td>{{ gene.type }}</td>
       <td><a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene.geneid }}">{{ gene.geneid }}</a></td>
