@@ -11,7 +11,7 @@ $(document).ready(function() {
 <b>Regulon {{ bicluster.id }}</b> is enriched for following functions.
 </p> 
 
-<div id = "main">
+<div class="main">
 
 <p class="table-top"><a class="link-desc">Jump to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
 
@@ -64,21 +64,14 @@ $(document).ready(function() {
     </tr>
   </thead>
   <tbody>
-    {% for s in bicluster_functions %}
-    {% if s.function.type == "go" %}
-    {% if s.p_bh < 0.05 %}
-    {% if s.gene_count > 2 %}
+    {% for s in bicluster_functions %}{% if s.function.type == "go" %}{% if s.p_bh < 0.05 %}{% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
       <td>{{ s.gene_count }}/{{ gene_count }}</td>
-    </tr>
-    {% endif %}
-    {% endif %}
-    {% endif %}
-    {% endfor %}
+    </tr>{% endif %}{% endif %}{% endif %}{% endfor %}
   </tbody>
 </table>
 
@@ -105,21 +98,14 @@ $(document).ready(function() {
     </tr>
   </thead>
   <tbody>
-    {% for s in bicluster_functions %}
-    {% if s.function.type == "tigr" %}
-    {% if s.p_bh < 0.05 %}
-    {% if s.gene_count > 2 %}
+    {% for s in bicluster_functions %}{% if s.function.type == "tigr" %}{% if s.p_bh < 0.05 %}{% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
       <td>{{ s.gene_count }}/{{ gene_count }}</td>
-    </tr>
-    {% endif %}
-    {% endif %}
-    {% endif %}
-    {% endfor %}
+    </tr>{% endif %}{% endif %}{% endif %}{% endfor %}
   </tbody>
 </table>
 
@@ -146,34 +132,15 @@ $(document).ready(function() {
     </tr>
   </thead>
   <tbody>
-    {% for s in bicluster_functions %}
-    {% if s.function.type == "cog" %}
-    {% if s.p_bh < 0.05 %}
-    {% if s.gene_count > 2 %}
+    {% for s in bicluster_functions %}{% if s.function.type == "cog" %}{% if s.p_bh < 0.05 %}{% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{s.function.id}}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
       <td>{{ s.gene_count }}/{{ gene_count }}</td>
-    </tr>
-    {% endif %}
-    {% endif %}
-    {% endif %}
-    {% endfor %}
+    </tr>{% endif %}{% endif %}{% endif %}{% endfor %}
   </tbody>
 </table>
-
-
-<!--    
-{% for func, count in ret_bicl_functions.items %}
-    <tr>
-      <td>{{ s.func }}</td>
-      <td>{{ s.count }}</td>
-      <td>{{ s.function.id }} </td>
-    </tr>
-{% endfor %}
-   </tbody>
-</table> -->
 <br />
 </div>
