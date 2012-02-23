@@ -4,12 +4,20 @@
  There are <b>{{ inf_count }}</b> regulatory influences for <b>Regulon {{ bicluster.id }}</b> 
 </p>
 <div id = "main">
-<table id="regulators-table">
+<script>
+$(document).ready(function() {
+    $("#bicluster-regulators-table")
+    .tablesorter({widthFixed: true, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
+<table id="bicluster-regulators-table" class="tablesorter">
   <caption>Regulator Table ({{ inf_count }})</caption>
   <thead>
     <tr>
       <th>Regulator Name</th>
-      <th>Regulator Type</th>
+      <th>Type</th>
     </tr>
   </thead>
   <tbody>
