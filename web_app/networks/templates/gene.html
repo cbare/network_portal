@@ -19,9 +19,9 @@
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick-min/vq.circvis.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}javascripts/visquick_helpers.js"></script>
-    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js"></script>
+<!--    <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/adapter/ext/ext-base.js"></script>
     <script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/core/extjs/ext-3.4.0/ext-all.js"></script>
-    <script type="text/javascript">window.sv_base_url = "/sviewer/"</script>
+    <script type="text/javascript">window.sv_base_url = "/sviewer/"</script>-->
 <!-- These are required for loading NCBI sequence viewer in gene page -->
 <!--<script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/>-->
     {% endblock %}
@@ -30,14 +30,14 @@
   <div class="post-top">
     <div id="top-tabs">
       <ul id="gene-tab-links">
-	<li><a class="name" href="#tab-main">{{ gene.name }}</a>|</li>
-	<li><a class="network" href="#tab-network">Network</a>|</li>
-	<li><a class="regulator" href="#tab-regulator">Regulation</a>|</li>
-	<li><a class="motif" href="#tab-motif">Motifs</a>|</li>
-	<li><a class="function" href="#tab-function">Functions</a>|</li>
-	<li><a class="genes" href="#tab-gene">Regulon Members</a>|</li>
-	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a>|</li> #}
-	<li><a class="help" href="#tab-help">Help</a>|</li>
+	<li><a class="name" href="#tab-main">{{ gene.name }}</a></li>
+	<li><a class="network" href="#tab-network">Network</a></li>
+	<li><a class="regulator" href="#tab-regulator">Regulation</a></li>
+	<li><a class="motif" href="#tab-motif">Motifs</a></li>
+	<li><a class="function" href="#tab-function">Functions</a></li>
+	<li><a class="genes" href="#tab-gene">Regulon Members</a></li>
+	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a></li> #}
+	<li><a class="help" href="#tab-help">Help</a></li>
 	<li><a class="comments" href="#tab-comments">Comments</a></li>
       </ul>
       <div id="tab-main">
@@ -69,9 +69,12 @@
         </script>
 	<div id="main">
 	  <h3>{{ gene.display_name }}</h3>
+	  <p><span id="gene_description">{{ gene.description }}</span></p>
 	  <p>
       <div id="circvis">CircVis</div>
 	  </p>
+
+
 
 <!--          <h3>Regulation</h3>
 	  {% if influence_biclusters %}
@@ -104,7 +107,7 @@
 	  {% endif %}
 -->		
 
-          <h3>Functional Annotations</h3>
+          <h3>Functional Annotations ({{ gene.functions.count }})</h3>
 	  {% if gene.functions.count %}
 	  <table id="gene-function-table">
 	     <thead>
@@ -117,7 +120,7 @@
 	      {% for function in gene.functions.all %}
 	      <tr>
 		<td><a href="/function/{{ function.id }}">{{ function.name }}</a></td>
-		<td>{{ function.type }}, {{ function.namespace}}</td>
+		<td>{{ function.type }}/ {{ function.namespace}}</td>
 	     {% endfor %}
 	      </tr>
 	    </tbody>
@@ -167,7 +170,7 @@
             {% for bicluster in member_biclusters %}
             <tr>
               <td><a href="/bicluster/{{ bicluster.id }}">{{ bicluster.id }}</a></td>
-              <td><a href="#">{{ bicluster.influences.count }}</a></td>
+              <td><a href="?view=regulation">{{ bicluster.influences.count }}</a></td>
               <td>{{ bicluster.conditions.count }}</td>
             </tr>
             {% endfor %}
@@ -175,22 +178,23 @@
             <tr><td colspan="3">Not assigned to any regulons</td></tr>
             {% endif %}
           </table>
-          <h3>Motifs</h3>
-	        {% if bicluster_pssms %}
-          <table>
+          <h3>Motifs</h3><span id="search_help">Motifs for regulons are shown</span>
+	  {% if bicluster_pssms %}
+
+          <table id="gene-motif-table" class="tablesorter">
             {% for motif_id in preview_motifs %}
             <tr>
-	            <td>
+	      <td>
                 <span id="previewcanvas_{{motif_id}}"></span>
 	            </td>
 	          </tr>
             {% endfor %}
           </table>
-	   {% else %}
+	  <!-- {% else %}-->
              <div class="error_message">
 	       <p>No motif information has been found!</p>
 	     </div>
-	   {% endif %}
+	   <!--{% endif %}-->
 
 	</div>{# #sidebar #}
       </div>

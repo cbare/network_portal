@@ -8,6 +8,7 @@
 <script src="{{ STATIC_PREFIX }}/javascripts/search_helpers.js"></script>
 {% endblock %}
 {% block content %}
+
 <script type="text/javascript">
 $(document).ready(function() {
     $("#query").autocomplete({
@@ -43,6 +44,7 @@ $(document).ready(function() {
 </script>
 
 <div id="main" class="sub-page">
+
   <h5>Search</h5>
   <span id="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">
@@ -69,8 +71,9 @@ $(document).ready(function() {
    <font color=#FF4040> {{ species_genes|search_result_map:species_names }}</font> You searched for <font color=#FF4040>"{{ q }}"</font>.
    {% for species_id, genes in species_genes.items %}
   <a name="species_{{species_id}}"></a>
-  <table class="gene-results">
-    <caption> Search results for '{{ species_names|lookup:species_id }}'</caption>
+
+  <table id="search-results-table" class="tablesorter">
+    <caption> Search results for '{{ species_names|lookup:species_id }}' ({{genes|length}})</caption>
     <tbody>
       <tr>
         <th><input type="checkbox" id="sel_all_genes_{{species_id}}"></input></th>

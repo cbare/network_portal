@@ -1,17 +1,17 @@
-<h3> Motif information </h3>
-<p>
+<h3> Motif information </h3><span id="search_help">(de novo identified motifs for regulons)</span>
+</p>
 <div class="tab-contents">
 <div id="main">
 {% if motifs %}
 <p>There are {{ motifs|length }} motifs predicted. {% if species.short_name == 'dvu' %}Click on the <a href="http://regpredict.lbl.gov/">RegPredict</a> links to explore the motif in <a href="http://regpredict.lbl.gov/">RegPredict</a>.{% endif %}</p>
 <table id="motif">
-  <caption> Motif Table </caption>
+  <caption> Motif Table ({{ motifs|length }})</caption>
   <thead>
     <tr>
       <th>Motif Id</th>
       <th>e-value</th>
       <th>Consensus</th>
-      <th>Alignment</th>
+      <th>Motif Logo</th>
       {% if species.short_name == 'dvu' %}<th>RegPredict</th>{% endif %}
     </tr>
   </thead>

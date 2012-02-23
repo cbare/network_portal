@@ -1,3 +1,11 @@
+<script>
+$(document).ready(function() {
+    $("#bicluster-functions-table")
+    .tablesorter({widthFixed: true, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
 <h3> Functional Enrichment</h3>
 <p>
 <b>Regulon {{ bicluster.id }}</b> is enriched for following functions.
@@ -5,11 +13,11 @@
 
 <div id = "main">
 
-<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+<p class="table-top"><a class="link-desc">Jump to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
 
 <!-- KEGG Table -->
-<table class="genes-table"><a name = "kegg"></a>
- <caption>KEGG Enrichment Table </caption>
+<table id="bicluster-functions-table" class="tablesorter"><a name = "kegg"></a>
+ <caption>KEGG Enrichment Table <span id="search_help">(Click on a column name to sort)</span></caption>
   <thead>
     <tr>
       <th>Function Name</th>
@@ -20,26 +28,37 @@
     </tr>
   </thead>
   <tbody>
+    <tr>
     {% for s in bicluster_functions %}
     {% if s.function.type == "kegg" %}
     {% if s.p_bh < 0.05 %}
-    <tr>
+    {% if s.gene_count > 2 %}
+
       <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
-      <td>{{ s.gene_count }}</td>
+      <td>{{ s.gene_count }}/{{ gene_count }}</td>
     </tr>
+    {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
-<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+<p class="table-top"><a class="link-desc">Jump to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
 
-<table class="genes-table"><a name = "go"></a>
- <caption>GO Enrichment Table </caption>
+<script>
+$(document).ready(function() {
+    $("#go-functions-table")
+    .tablesorter({widthFixed: true, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
+<table id="go-functions-table" class="tablesorter"><a name = "go"></a>
+ <caption>GO Enrichment Table <span id="search_help">(Click on a column name to sort)</span></caption>
   <thead>
     <tr>
       <th>Function Name</th>
@@ -53,22 +72,32 @@
     {% for s in bicluster_functions %}
     {% if s.function.type == "go" %}
     {% if s.p_bh < 0.05 %}
+    {% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
-      <td>{{ s.gene_count }}</td>
+      <td>{{ s.gene_count }}/{{ gene_count }}</td>
     </tr>
+    {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
-<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+<p class="table-top"><a class="link-desc">Jump to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
 
-<table class="genes-table"><a name = "tigr"></a>
+<script>
+$(document).ready(function() {
+    $("#tigr-functions-table")
+    .tablesorter({widthFixed: true, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
+<table id="tigr-functions-table" class="tablesorter"><a name = "tigr"></a>
  <caption>TIGRFam Enrichment Table </caption>
   <thead>
     <tr>
@@ -83,22 +112,33 @@
     {% for s in bicluster_functions %}
     {% if s.function.type == "tigr" %}
     {% if s.p_bh < 0.05 %}
+    {% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{ s.function.id }}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
-      <td>{{ s.gene_count }}</td>
+      <td>{{ s.gene_count }}/{{ gene_count }}</td>
     </tr>
+    {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
-<p class="table-top"><a class="link-desc">Link to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
+<p class="table-top"><a class="link-desc">Jump to</a> | <a class="table-link" href="#kegg"> KEGG </a> | <a class="table-link" href="#go"> GO </a> | <a class="table-link" href="#tigr"> TIGRFam </a> | <a class="table-link" href="#cog"> COG </a></p>
 
-<table class="genes-table"><a name = "cog"></a>
+<script>
+$(document).ready(function() {
+    $("#cog-functions-table")
+    .tablesorter({widthFixed: true, widgets: ['zebra']})
+    {#.tablesorterPager({container: $("#tablepager")})#};
+});
+</script>
+
+
+<table id="cog-functions-table" class="tablesorter"><a name = "cog"></a>
  <caption>COG Enrichment Table </caption>
   <thead>
     <tr>
@@ -113,13 +153,15 @@
     {% for s in bicluster_functions %}
     {% if s.function.type == "cog" %}
     {% if s.p_bh < 0.05 %}
+    {% if s.gene_count > 2 %}
     <tr>
       <td><a href="/function/{{s.function.id}}">{{ s.function.name }}</a></td>
       <td>{{ s.function.namespace }}</td>
       <td>{{ s.p }}</td>
       <td>{{ s.p_bh }}</td>
-      <td>{{ s.gene_count }}</td>
+      <td>{{ s.gene_count }}/{{ gene_count }}</td>
     </tr>
+    {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
