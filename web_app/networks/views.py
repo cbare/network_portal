@@ -255,6 +255,7 @@ def gene(request, gene=None, network_id=None):
                 preview_motifs.append(motif_id)
                 preview_added = True
     motifs = all_motifs  # used in template
+    preview_motifs = preview_motifs[:2]  # restrict to 2 motifs on the front tab to improve load time
 
     if request.GET.has_key('format'):
         format = request.GET['format']
