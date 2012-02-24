@@ -1,4 +1,5 @@
 from django.db import connection
+import networkx as nx
 
 # maybe this should be a static method of synomym?
 
@@ -38,3 +39,42 @@ def get_influence_biclusters(gene):
         for influence in bicluster.influences.all():
             influence_biclusters.append((bicluster.id, influence))
     return member_biclusters, sorted(influence_biclusters, key=lambda bi: (bi[0], bi[1].name))
+
+def get_nx_graph_for_biclusters(biclusters, expand=False):
+    graph = nx.Graph()
+
+    # compile sets of genes and influences from all requested biclusters
+    genes = set()
+    influences = set()
+    for b in biclusters:
+        genes.update(b.genes.all())
+        influences.update(b.influences.all())
+
+    # build networkx graph
+    for gene in genes:
+        graph.add_node(gene, {'type':'gene', 'name':gene.display_name()})
+    for influence in influences:
+        graph.add_node("inf:%d" % (influence.id,), {'type':'regulator', 'name':influence.name})
+        
+        # on request, we can add links for combiners (AND gates) to
+        # the influences they're combining. This makes a mess of larger
+        # networks, but works OK in very small networks (1-3 biclusters)
+        if expand and influence.is_combiner():
+            parts = influence.get_parts()
+            for part in parts:
+                if part not in influences:
+                    graph.add_node("inf:%d" % (part.id,), {'type':'regulator', 'name':part.name, 'expanded':True})
+                graph.add_edge("inf:%d" % (influence.id,), "inf:%d" % (part.id,), {'expanded':True})
+        
+    for bicluster in biclusters:
+        graph.add_node("bicluster:%d" %(bicluster.id,), {'type':'bicluster', 'name':str(bicluster)})
+        for gene in bicluster.genes.all():
+            graph.add_edge("bicluster:%d" %(bicluster.id,), gene)
+        for inf in bicluster.influences.all():
+            graph.add_edge("bicluster:%d" %(bicluster.id,), "inf:%d" % (inf.id,))
+            print ">>> " + str(inf)
+        for motif in bicluster.motif_set.all():
+            graph.add_node("motif:%d" % (motif.id,), {'type':'motif', 'consensus':motif.consensus(), 'e_value':motif.e_value, 'name':"motif:%d" % (motif.id,)})
+            graph.add_edge("bicluster:%d" %(bicluster.id,), "motif:%d" % (motif.id,))
+    
+    return graph

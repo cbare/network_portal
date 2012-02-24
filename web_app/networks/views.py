@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
-from web_app.networks.helpers import nice_string, get_influence_biclusters
+from web_app.networks.helpers import nice_string, get_influence_biclusters, get_nx_graph_for_biclusters
 from pprint import pprint
 from django.utils import simplejson
 import json
@@ -68,47 +68,30 @@ def network_as_graphml(request):
     
     expand = request.GET.has_key('expand') and request.GET['expand']=='true'
     
-    graph = nx.Graph()
-
-    # compile sets of genes and influences from all requested biclusters
-    genes = set()
-    influences = set()
-    for b in biclusters:
-        genes.update(b.genes.all())
-        influences.update(b.influences.all())
-
-    # build networkx graph
-    for gene in genes:
-        graph.add_node(gene, {'type':'gene', 'name':gene.display_name()})
-    for influence in influences:
-        graph.add_node("inf:%d" % (influence.id,), {'type':'regulator', 'name':influence.name})
-        
-        # on request, we can add links for combiners (AND gates) to
-        # the influences they're combining. This makes a mess of larger
-        # networks, but works OK in very small networks (1-3 biclusters)
-        if expand and influence.is_combiner():
-            parts = influence.get_parts()
-            for part in parts:
-                if part not in influences:
-                    graph.add_node("inf:%d" % (part.id,), {'type':'regulator', 'name':part.name, 'expanded':True})
-                graph.add_edge("inf:%d" % (influence.id,), "inf:%d" % (part.id,), {'expanded':True})
-        
-    for bicluster in biclusters:
-        graph.add_node("bicluster:%d" %(bicluster.id,), {'type':'bicluster', 'name':str(bicluster)})
-        for gene in bicluster.genes.all():
-            graph.add_edge("bicluster:%d" %(bicluster.id,), gene)
-        for inf in bicluster.influences.all():
-            graph.add_edge("bicluster:%d" %(bicluster.id,), "inf:%d" % (inf.id,))
-            print ">>> " + str(inf)
-        for motif in bicluster.motif_set.all():
-            graph.add_node("motif:%d" % (motif.id,), {'type':'motif', 'consensus':motif.consensus(), 'e_value':motif.e_value, 'name':"motif:%d" % (motif.id,)})
-            graph.add_edge("bicluster:%d" %(bicluster.id,), "motif:%d" % (motif.id,))
-
+    graph = get_nx_graph_for_biclusters(biclusters, expand)
+    
     # write graphml to response
     writer = nx.readwrite.graphml.GraphMLWriter(encoding='utf-8',prettyprint=True)
     writer.add_graph_element(graph)
     response = HttpResponse(content_type='application/xml')
     writer.dump(response)
+
+    return response
+
+def network_as_gml(request):
+    if request.GET.has_key('biclusters'):
+        bicluster_ids = re.split( r'[\s,;]+', request.GET['biclusters'] )
+        biclusters = Bicluster.objects.filter(id__in=bicluster_ids)
+    elif request.GET.has_key('gene'):
+        biclusters = Bicluster.objects.filter(genes__name=request.GET['gene'])
+    
+    expand = request.GET.has_key('expand') and request.GET['expand']=='true'
+    
+    graph = get_nx_graph_for_biclusters(biclusters, expand)
+    
+    # write graphml to response
+    response = HttpResponse(content_type='application/xml')
+    nx.write_gml(graph, response)
 
     return response
 
