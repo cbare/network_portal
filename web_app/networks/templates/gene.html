@@ -27,23 +27,47 @@
     {% endblock %}
 
 {% block content %}<div id="bicluster-top">
-  <div class="post-top">
+    <div class="post-top">
     <div id="top-tabs">
-      <ul id="gene-tab-links">
-	<li><a class="name" href="#tab-main">{{ gene.name }}</a></li>
-	<li><a class="network" href="#tab-network">Network</a></li>
-	<li><a class="regulator" href="#tab-regulator">Regulation</a></li>
-	<li><a class="motif" href="#tab-motif">Motifs</a></li>
-	<li><a class="function" href="#tab-function">Functions</a></li>
-	<li><a class="genes" href="#tab-gene">Regulon Members</a></li>
-	{# <li><a class="cart" href="#tab-add-cart">Add to Cart</a></li> #}
-	<li><a class="help" href="#tab-help">Help</a></li>
-	<li><a class="comments" href="#tab-comments">Comments</a></li>
-      </ul>
-      <div id="tab-main">
-        <script type="text/javascript">
-          var django_pssms = {{bicluster_pssms}};
+    <ul id="gene-tab-links">
+	  <li><a class="name" href="#tab-main">{{ gene.name }}</a></li>
+	  <li><a class="network" href="#tab-network">Network</a></li>
+	  <li><a class="regulator" href="#tab-regulator">Regulation</a></li>
+	  <li><a class="motif" href="#tab-motif">Motifs</a></li>
+	  <li><a class="function" href="#tab-function">Functions</a></li>
+	  <li><a class="genes" href="#tab-gene">Regulon Members</a></li>
+	  {# <li><a class="cart" href="#tab-add-cart">Add to Cart</a></li> #}
+	  <li><a class="help" href="#tab-help">Help</a></li>
+	  <li><a class="comments" href="#tab-comments">Comments</a></li>
+    </ul>
+    <div id="tab-main">
+    <script type="text/javascript">
+    var django_pssms = {{bicluster_pssms}};
           $(document).ready(function() {
+              var loaded = [false, false, false, false, false, false, false, false];
+              $('#top-tabs').tabs({
+                  select: function (event, ui) {
+                      if (!loaded[ui.index]) {
+                          console.debug('load tab: ' + ui.index);
+                          switch (ui.index) {
+                          case 1:
+                              var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
+                                                                  "{{ STATIC_PREFIX }}cytoscapeweb/swf/CytoscapeWeb",
+                                                                  "{{ STATIC_PREFIX }}cytoscapeweb/swf/playerProductInstall",
+                                                                  nwhelpers.load_popup);
+                              break;
+                          case 3:
+                              setTimeout(function () { nwhelpers.initCanvas(django_pssms); }, 500);
+                          default:
+                              break;
+                          }
+                          loaded[ui.index] = true;
+                      } else {
+                          console.debug('already loaded: ' + ui.index);
+                      }
+                  }
+              });
+
               {% if view == "regulation" %}
               $('#top-tabs').tabs("select", 2);
               {% endif %}
@@ -58,8 +82,7 @@
                   error: function() {
                       console.debug('could not read data');
                   }
-              });
-              nwhelpers.initCanvas(django_pssms);
+              });              
               nwhelpers.initCanvas2(django_pssms, 'previewcanvas_', {{preview_motifs}});
 
               $('[[id^=previewcanvas]').click(function() {
@@ -71,41 +94,7 @@
 	  <h3>{{ gene.display_name }}</h3>
 	  <p><span id="gene_description">{{ gene.description }}</span></p>
     <div id="circvis">CircVis</div>
-
-
-
-<!--          <h3>Regulation</h3>
-	  {% if influence_biclusters %}
-          <table class="gene-regulation">
-            <tr>
-              <th class="help">Regulator</th>
-              <th>Regulon</th>
-              <th>Mode</th>
-              <th>Family</th>
-              <th>Process</th>
-             <th>Inferelator Weight</th>
-            </tr>
-           {% for bicluster_id, influence in influence_biclusters %}
-              <tr>
-                <td>{% if influence.type == 'tf' %}<a href="/gene/{{ influence.gene.name }}">{{ influence|format_influence }}</a>{% else %}{{ influence|format_influence }}{% endif %}</td>
-                <td><a href="/bicluster/{{bicluster_id}}">{{ bicluster_id }}</a></td>
-                <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-                <td><a href="regulon_family">Fis</a></td>
-                <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-               <td><a href="regulon_weight">-0.23</a></td>
-              </tr>
-             {% endfor %}
-
-	      </table>
-
-	  {% else %}
-	    <div class="error_message">
-	      <p>No regulatory information has been found!</p>
-	    </div>
-	  {% endif %}
--->		
-
-          <h3>Functional Annotations ({{ gene.functions.count }})</h3>
+    <h3>Functional Annotations ({{ gene.functions.count }})</h3>
 	  {% if gene.functions.count %}
 	  <table id="gene-function-table">
 	     <thead>

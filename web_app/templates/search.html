@@ -8,7 +8,6 @@
 <script src="{{ STATIC_PREFIX }}/javascripts/search_helpers.js"></script>
 {% endblock %}
 {% block content %}
-
 <script type="text/javascript">
 $(document).ready(function() {
     $("#query").autocomplete({
@@ -42,9 +41,7 @@ $(document).ready(function() {
     searchhelpers.bindResultTableEvents(geneMap);
 });
 </script>
-
 <div class="sub-page">
-
   <h5>Search</h5>
   <span class="search_help">(Start typing keywords, press ESC to close suggestions)</span>
   <form action="/search/" method="get">

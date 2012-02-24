@@ -24,8 +24,7 @@ There are {{ motifs|length }} motifs predicted. {% if species.short_name == 'dvu
     <td>{{m.e_value}}</td>
     <td>{{m.consensus}}</td>
     <td>
-      <div id="canvas_{{m.id}}">
-      </div>
+      <div id="canvas_{{m.id}}"><img alt="Loader icon" src="{{STATIC_PREFIX}}images/ajax-loader.gif"></img></div>
     </td>
     {% if species.short_name == 'dvu' %}<td><a target="_blank" href="http://regpredict.lbl.gov/regpredict/com.lbl.regusw.App/App.html?taxonomyId={{species.ncbi_taxonomy_id}}&pssm={{m.pssm.as_string}}">RegPredict</a></td>{% endif %}
   </tr>

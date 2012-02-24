@@ -34,10 +34,12 @@ def search_result_map(species_genes, species_names):
 @register.filter
 def format_influence(influence):
     if influence.type == 'tf':
-        links = ['<a class="reggene" href="/gene/%s">%s</a>' % (influence.name, influence.name)]
+        result = '<a class="reggene" href="/gene/%s">%s</a>' % (influence.name, influence.name)
+    elif influence.type == 'combiner':
+        result = "<br>".join([ format_influence(part) for part in influence.get_parts()])
     else:
-        links = ['<a class="reggene" href="/gene/%s">%s</a>' % (part.name, part.name) for part in influence.get_parts()]
-    return mark_safe("<br>".join(links))
+        result = influence.name
+    return mark_safe(result)
 
 @register.filter
 def influences_to_gene_description_map(influence_biclusters):
@@ -46,13 +48,15 @@ def influences_to_gene_description_map(influence_biclusters):
         # print "bicluster_id=%d, influence=%s" % (bicluster_id, str(influence),)
         if influence.type == 'tf':
             gene_description_map[influence.gene.name] = influence.gene.description
-        else:
+        elif influence.type == 'combiner':
             parts = influence.get_parts()
+            # note that parts might not be a gene - could be environmental factor
             for part in parts:
                 # print "part=%s" % (str(part),)
-                gene_description_map[part.name] = part.gene.description.strip()
+                if part.gene:
+                    gene_description_map[part.name] = part.gene.description.strip()
     result = 'var descriptionMap = {}\n';
     for key, description in gene_description_map.items():
-        result += 'descriptionMap[\'' + key + '\'] = \'' + description + '\';\n';
+        result += 'descriptionMap[\'' + key + '\'] = "' + description + '";\n';
     #print "# descriptions: ", len(gene_description_map)
     return mark_safe(result);

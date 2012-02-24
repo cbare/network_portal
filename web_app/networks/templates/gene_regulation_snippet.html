@@ -26,27 +26,12 @@
       <th class="help">Regulator</th>
       <th>Regulon</th>
       <th>Operator</th>
-      <!--<th>Regulator 2</th>
-      <th>Description</th>
-      <th>Mode</th>
-      <th>Family</th>
-      <th>Process</th>
-      <th>Inferelator Weight</th>
-      <th>Regulon</th>
-      <th>Residual</th>
-      <th>Genes</th>-->
     </tr>
     {% for bicluster_id, influence in influence_biclusters %}
     <tr>
       <td>{{ influence|format_influence }}</td>
       <td><a href="/bicluster/{{ bicluster_id }}">{{ bicluster_id }}</a></td>
       <td>{{ influence.type }}</td>
-     <!-- <td><a href="regulon_modes"><font color="green">Repression</font></a></td>
-      <td><a href="regulon_family">Fis</a></td>
-      <td><a href="regulon_process">Pyruvate Oxidation</a></td>
-      <td><a href="regulon_weight">-0.23</a></td>
-      <td>{% for bicluster in bicluster %} {{ bicluster.resid }}{% endfor %}</td>
-      <td>{{ bicluster.gene_count }}</td>-->
     </tr>
     {% endfor %}
   </table>
