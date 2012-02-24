@@ -57,7 +57,7 @@
                                                                   nwhelpers.load_popup);
                               break;
                           case 3:
-                              nwhelpers.initCanvas(django_pssms);
+                              setTimeout(function () { nwhelpers.initCanvas(django_pssms); }, 500);
                           default:
                               break;
                           }
@@ -82,7 +82,7 @@
                   error: function() {
                       console.debug('could not read data');
                   }
-              });
+              });              
               nwhelpers.initCanvas2(django_pssms, 'previewcanvas_', {{preview_motifs}});
 
               $('[[id^=previewcanvas]').click(function() {
