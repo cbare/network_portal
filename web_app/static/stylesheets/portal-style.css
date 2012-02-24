@@ -753,6 +753,10 @@ ol.commentlist {
     content: ".";
 }
 
+.hidden {
+  display:none;
+}
+
 /* kmf additions for ui tabs */
 #gene-tabs {
     width: auto;

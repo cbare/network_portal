@@ -33,6 +33,10 @@ NetworkX
 --------
 sudo pip install networkx
 
+Numpy
+--------
+sudo pip install numpy
+
 Java
 ----
 sudo apt-get -y install openjdk-6-jdk
