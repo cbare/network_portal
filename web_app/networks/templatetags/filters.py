@@ -57,6 +57,6 @@ def influences_to_gene_description_map(influence_biclusters):
                     gene_description_map[part.name] = part.gene.description.strip()
     result = 'var descriptionMap = {}\n';
     for key, description in gene_description_map.items():
-        result += 'descriptionMap[\'' + key + '\'] = \'' + description + '\';\n';
+        result += 'descriptionMap[\'' + key + '\'] = "' + description + '";\n';
     #print "# descriptions: ", len(gene_description_map)
     return mark_safe(result);

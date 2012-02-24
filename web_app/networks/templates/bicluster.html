@@ -31,7 +31,7 @@
       </ul>
 
       <div id="tab-main">
-	<div id="main">
+	      <div class="main">
 	  <h3>Regulon {{ bicluster.id }} Profile</h3>
 	  <object data="{{ img_url }}" type="image/svg+xml"></object>
 	</div>
@@ -79,7 +79,7 @@
 	    </tr>
 	    {% for influence in influences %}
 	    <tr>
-	      <td><a href="pssm_1">{{ influence|format_influence }}</a></td>
+	      <td>{{ influence|format_influence }}</td>
 	      <td>{{ influence.type }}</td>
 	      </tr>
 	    {% endfor %}
