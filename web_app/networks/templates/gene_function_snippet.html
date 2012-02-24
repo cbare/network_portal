@@ -3,7 +3,7 @@
 <div class="tab-contents">
 {% if gene.functions.count %}
 <b>{{ gene }}</b> is enriched for <b>{{ gene.functions.count }}</b> functions in <b>{{ function.type|length }}</b> categories.
-<div id ="main">
+<div class="main">
 <table id="gene-function-table">
   <caption> Enrichment Table ({{ gene.functions.count }})</caption>
   <thead>

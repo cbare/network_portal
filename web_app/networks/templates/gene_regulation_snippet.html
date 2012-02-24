@@ -15,7 +15,7 @@
     });
   </script>
 
-<div id="main">
+<div class="main">
 {% if influence_biclusters|length > 0 %}
 <b>{{ gene }}</b> is regulated by <b>{{ influence_biclusters|length }}</b> influences and regulates <b>{{ regulated_biclusters|length }}</b> regulons.
 
@@ -73,8 +73,7 @@
    </table>
 {% else %}
 <table class="gene-regulation" style="float: right;">
-   <caption> Regulated by {{ gene }} ({{ regulated_biclusters|length }})</capti\
-on>
+   <caption> Regulated by {{ gene }} ({{ regulated_biclusters|length }})</caption>
     <tr>
       <th>Regulon</th>
       <th>Residual</th>

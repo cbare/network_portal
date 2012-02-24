@@ -7,10 +7,10 @@ $(document).ready(function() {
 </script>
 <h3> Regulon neighborhood information for {{ gene }} </h3>
 <p>
-<div id="main">
+<div class="main">
 {% if neighbor_genes|length > 0 %}
 {% load filters %}
-<b>{{ gene }}</b> has total of <b>{{ neighbor_genes|length }}</a></b> gene neighbors in regulons
+<b>{{ gene }}</b> has total of <b>{{ neighbor_genes|length }}</b> gene neighbors in regulons
 <b>{{ gene.bicluster_set.all|bicluster_links }}</b>
 
 <table id="regulon-members-table" class="tablesorter">
