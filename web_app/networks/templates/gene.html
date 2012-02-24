@@ -48,7 +48,6 @@
               $('#top-tabs').tabs({
                   select: function (event, ui) {
                       if (!loaded[ui.index]) {
-                          console.debug('load tab: ' + ui.index);
                           switch (ui.index) {
                           case 1:
                               var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
@@ -62,8 +61,6 @@
                               break;
                           }
                           loaded[ui.index] = true;
-                      } else {
-                          console.debug('already loaded: ' + ui.index);
                       }
                   }
               });
