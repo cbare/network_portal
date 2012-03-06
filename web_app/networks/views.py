@@ -200,9 +200,11 @@ def gene(request, gene=None, network_id=None):
     # TODO: need to figure out how to handle cases where there's more than one network
     if network_id:
         network_id = int(network_id)
-    else:
-        network = gene.species.network_set.all()[:1].get()
+    elif gene.species.network_set.count() > 0:
+        network = gene.species.network_set.all()[0]
         network_id = network.id
+    else:
+        network_id = None
     member_biclusters, influence_biclusters = get_influence_biclusters(gene)
 
     # set species for use in template
@@ -222,7 +224,8 @@ def gene(request, gene=None, network_id=None):
 
     # if the gene is a transcription factor, how many biclusters does it regulate?
     count_regulated_biclusters = gene.count_regulated_biclusters(network_id)
-    regulated_biclusters = Bicluster.objects.distinct().filter(influences__name__contains=gene.name)
+    #regulated_biclusters = Bicluster.objects.distinct().filter(influences__name__contains=gene.name)
+    regulated_biclusters = gene.regulated_biclusters(network_id)
 
     bicluster_pssms = {}
     preview_motifs = []

@@ -42,7 +42,7 @@
 <a name="regulates"></a>
 <!--<b> {{ gene }}</b> possibly regulates <b>{{ regulated_biclusters|length }}</b> regulons.-->
   <table class="gene-regulation" style="float: right;">
-   <caption> Regulated by {{ gene }} ({{ regulated_biclusters|length }})</caption>
+   <caption> Regulated by {{ gene }} ({{ count_regulated_biclusters }})</caption>
     <tr>
       <th>Regulon</th>
       <th>Residual</th>
@@ -58,7 +58,7 @@
    </table>
 {% else %}
 <table class="gene-regulation" style="float: right;">
-   <caption> Regulated by {{ gene }} ({{ regulated_biclusters|length }})</caption>
+   <caption> Regulated by {{ gene }} ({{ count_regulated_biclusters }})</caption>
     <tr>
       <th>Regulon</th>
       <th>Residual</th>

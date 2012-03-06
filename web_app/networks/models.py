@@ -216,9 +216,9 @@ class Gene(models.Model):
     
     def regulated_biclusters(self, network):
         """
-        Return biclusters regulated by this gene, either directly or through and-gates.
+        Return biclusters regulated by this gene, either directly or through (one level of) and-gates.
         """
-        if not self.transcription_factor:
+        if not self.transcription_factor or network==None:
             return []
         else:
             if type(network)==int:
@@ -235,11 +235,12 @@ class Gene(models.Model):
             or (ni.type='combiner' and ni.id in (
               select from_influence_id
               from networks_influence_parts nip join networks_influence ni on nip.to_influence_id=ni.id
-              where ni.gene_id=%s)));
+              where ni.gene_id=%s)))
+            order by nb.id;
             """, (network_id, self.id, self.id,))
 
     def count_regulated_biclusters(self, network):
-        if not self.transcription_factor:
+        if not self.transcription_factor or network==None:
             return 0
         if type(network)==int:
             network_id = network
@@ -267,12 +268,14 @@ class Gene(models.Model):
         """
         Return this genes neighbors, the set of genes with comembership in some bicluster with this gene.
         """
-        if type(network)==int:
+        if network==None:
+            return set()
+        elif type(network)==int:
             network_id = network
         else:
             network_id = network.id
         result = set()
-        for bicluster in self.bicluster_set.all():
+        for bicluster in self.bicluster_set.filter(network=network_id):
             result.update(bicluster.genes.all())
         return sorted(result)
     
