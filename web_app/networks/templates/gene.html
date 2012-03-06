@@ -48,7 +48,6 @@
               $('#top-tabs').tabs({
                   select: function (event, ui) {
                       if (!loaded[ui.index]) {
-                          console.debug('load tab: ' + ui.index);
                           switch (ui.index) {
                           case 1:
                               var vis =  nwhelpers.initNetworkTab({{ gene.bicluster_set.count }}, "{{ gene.name }}",
@@ -57,13 +56,11 @@
                                                                   nwhelpers.load_popup);
                               break;
                           case 3:
-                              nwhelpers.initCanvas(django_pssms);
+                              setTimeout(function () { nwhelpers.initCanvas(django_pssms); }, 500);
                           default:
                               break;
                           }
                           loaded[ui.index] = true;
-                      } else {
-                          console.debug('already loaded: ' + ui.index);
                       }
                   }
               });
@@ -82,7 +79,7 @@
                   error: function() {
                       console.debug('could not read data');
                   }
-              });
+              });              
               nwhelpers.initCanvas2(django_pssms, 'previewcanvas_', {{preview_motifs}});
 
               $('[[id^=previewcanvas]').click(function() {
