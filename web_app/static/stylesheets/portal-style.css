@@ -498,7 +498,7 @@ input.button {
 }
 
 #sidebar h4 {
-    border-bottom: 1px solid #988060;
+    /*border-bottom: 1px solid #988060;*/
     color: #51432F;
     font: bold 1.4em 'Lucida Grande', 'Trebuchet MS','Helvetica Neue',Arial,Sans-serif;
     letter-spacing: -0.5px;
