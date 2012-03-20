@@ -66,9 +66,6 @@
 ## == import inferelator output ==
 ## extract.influences(con=NULL, e.coeffs, network.id, species.id)
 ##
-## BUG: This script seems to leak database connections. Does on.exit get called in
-##      case of exceptions, like a finally clause? Do I need to release result sets
-##      as well as connections?
 ##
 ## Copyright (C) 2011 Institute for Systems Biology, Seattle, Washington, USA.
 ## Christopher Bare
@@ -90,15 +87,15 @@ config$db.host = "localhost"
 # description  - textual description of the network
 extract.network <- function(e, network.name=NULL, data.source=NULL, description=NULL) {
 
-  # connect ot database and disconnect on exit
+  # connect to database and disconnect on exit
   postgreSQL.driver <- dbDriver("PostgreSQL")
   con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-  on.exit(function() {
+  on.exit({
     dbDisconnect(con)
-    dbUnloadDriver(postgreSQL.driver)
   })
 
   species.id <- get.species.id(con, env=e)
+  cat('species.id = ', species.id, "\n")
 
   #insert a row in the nework tab, returning network id
   network.id <- insert.network(con, species.id, network.name, data.source, description)
@@ -117,11 +114,25 @@ extract.network <- function(e, network.name=NULL, data.source=NULL, description=
 
 
 # insert an entry into the network table
-insert.network <- function(con, species.id, network.name=NULL, data.source=NULL, description=NULL) {
+insert.network <- function(con, species.id, network.name=NULL, data.source=NULL, description=NULL, version.id=NULL) {
+  # check if network exists
+  sql <- sprintf("select * from networks_network where species_id=%d and name='%s';", species.id, network.name)
+  result <- dbGetQuery(con, sql)
+  if (nrow(result) > 1) {
+    cat(sprintf("Network \"%s\" already exists for species.id=%d\n",network.name, species.id))
+    cat("Continue creating network? (y or n) ")
+    confirm <- readline()
+    if (confirm!='y') {
+      stop('create network aborted...')
+    }
+  }
+  
   # insert row in network table
-  sql <- sprintf("insert into networks_network (species_id, name, data_source, description, created_at) values (%d, '%s', '%s', '%s', NOW());",
-                 species.id, network.name, data.source, description)
-  cat(sql, "\n")
+  sql <- sprintf("insert into networks_network 
+    (species_id, name, data_source, description, created_at, version_id)
+    values (%d, '%s', '%s', '%s', NOW(), '%s');",
+    species.id, network.name, data.source, description, version.id)
+  cat("sql=", sql, "\n")
   db.result <- dbSendQuery(con, sql)
   dbClearResult(db.result)
 
@@ -136,7 +147,11 @@ insert.network <- function(con, species.id, network.name=NULL, data.source=NULL,
 
 # populate conditions table
 extract.conditions <- function(con, e, network.id) {
-  conditions <- rownames(e$col.membership)
+  # in recent cMonkey versions, col.membership has gone away
+  conditions <- union(rownames(e$col.membership), colnames(e$ratios[[1]]))
+  if (is.null(conditions)) {
+    stop('huh? why are there no conditions?')
+  }
   for (condition in conditions) {
     dbSendQuery(con, sprintf("insert into networks_condition (name, network_id) values ('%s', %d);", condition, network.id))
   }
@@ -184,9 +199,16 @@ extract.bicluster <- function(con, e, k, network.id, species.id) {
     dbSendQuery(con, sql)
   }
   cat(length(genes), "genes\n")
+
+  conditions <- unique(b$cols)
   
+  # test conditions for uniqueness
+  if (length(conditions) < length(b$cols)) {
+    dups <- b$cols[ duplicated(b$cols) ]
+    cat(sprintf('WARNING: non-unique conditions detected in bicluster %d:\n%s\n', k, paste(dups, collapse=', ')))
+  }
+
   # add conditions to bicluster
-  conditions <- b$cols
   for (condition in conditions) {
     condition.id <- condition.ids[condition]
     if (is.na(condition.id) || (is.null(condition.id))) {
@@ -248,9 +270,8 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
 
@@ -341,10 +362,9 @@ extract.ratios <- function(con=NULL, e, network.id, species.id) {
 #   if (is.null(con)) {
 #     postgreSQL.driver <- dbDriver("PostgreSQL")
 #     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-#     on.exit(function() {
+#     on.exit({
 #       dbDisconnect(con)
-#       dbUnloadDriver(postgreSQL.driver)
-#     })
+##     })
 #   }
 # 
 #   gene.ids <- get.gene.ids(con, species.id)
@@ -418,6 +438,10 @@ create.find.or.add.influence <- function(con, gene.ids) {
 }
 
 
+# TODO need to import coefficients from influences
+
+# Take inferelator output and link biclusters with the transcription
+# factors and environmental factors that influence them.
 # data is in files like: data/dvu/zzz_dvu_nwInf_coeffs.RData
 #   e.coeffs
 #   expMap
@@ -430,9 +454,8 @@ extract.influences <- function(con=NULL, e.coeffs, network.id, species.id) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
 
@@ -488,9 +511,8 @@ mark.tfs.old <- function(con=NULL, tfs, species.id) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
   
@@ -507,9 +529,8 @@ mark.tfs <- function(con=NULL, tfs, species.id) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
 
@@ -587,15 +608,16 @@ check.genes <- function(con=NULL, e, species.id) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
   
-  # might this ever be necessary??
-  # genes <- union(rownames(e$row.membership), rownames(e$ratios[[1]]))
-  genes <- rownames(e$row.membership)
+  # newer versions of cMonkey have done away with row.membership and col.membership
+  genes <- union(rownames(e$row.membership), rownames(e$ratios[[1]]))
+  if (is.null(genes) || length(genes) < 1) {
+    stop("No genes found!")
+  }
   
   cat("checking whether genes in network are in the DB...\n")
   gene.ids <- get.gene.ids(con, species.id)
@@ -607,13 +629,16 @@ check.genes <- function(con=NULL, e, species.id) {
     cat(sprintf("%d genes are missing from the networks_gene table!!\n", length(genes.not.found)))
   }
   
+  # look for missing genes in synonyms table
   synonyms <- get.gene.synonyms(con, species.id)
   genes.still.not.found <- Filter( function(g) {!(g %in% names(synonyms))}, genes.not.found )
-  if (length(genes.still.not.found) == 0) {
-    cat("Of those, all match gene synonyms!\n")
-  }
-  else {
-    cat(sprintf("Of those, %d genes also match no synonyms!!\n", length(genes.still.not.found)))
+  if (length(genes.not.found) > 0) {
+    if (length(genes.still.not.found) == 0) {
+      cat("Of those, all match gene synonyms!\n")
+    }
+    else {
+      cat(sprintf("Of those, %d genes also match no synonyms!!\n", length(genes.still.not.found)))
+    }
   }
   
   return(genes.still.not.found)
@@ -639,9 +664,8 @@ extract.genes <- function(e, species.id, chromosome.id.map, genes=NULL) {
 
   postgreSQL.driver <- dbDriver("PostgreSQL")
   con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-  on.exit(function() {
+  on.exit({
     dbDisconnect(con)
-    dbUnloadDriver(postgreSQL.driver)
   })
 
   if (is.null(genes))
@@ -694,19 +718,98 @@ reset.sequence <- function(con=NULL, sequence) {
   if (is.null(con)) {
     postgreSQL.driver <- dbDriver("PostgreSQL")
     con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-    on.exit(function() {
+    on.exit({
       dbDisconnect(con)
-      dbUnloadDriver(postgreSQL.driver)
     })
   }
   sql <- sprintf("SELECT setval('%s', 1);", sequence)
   dbGetQuery(con, sql)
 }
 
+delete.biclusters <- function(con=NULL, network.id) {
+  # connect to db, if needed
+  if (is.null(con)) {
+    postgreSQL.driver <- dbDriver("PostgreSQL")
+    con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
+    on.exit({
+      dbDisconnect(con)
+    })
+  }
+  sql <- sprintf("select count(*) from networks_bicluster where network_id=%d;", network.id)
+  n <- dbGetQuery(con, sql)[1,1]
+
+  if (n==0) {
+    cat(sprintf("no biclusters in network id=%d\n", network.id))
+    return()
+  }
+
+  cat(sprintf('Delete %d biclusters from network id=%d? (y or n)', n, network.id))
+  confirm <- readline()
+  if (confirm!='y') {
+    stop('delete biclusters aborted...')
+  }
+
+  tryCatch(
+  {
+    dbBeginTransaction(con)
+    sql <- sprintf("delete from networks_bicluster_conditions
+                    where bicluster_id in (
+                      select id from networks_bicluster where network_id=%d
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from networks_bicluster_function
+                    where bicluster_id in (
+                      select id from networks_bicluster where network_id=%d
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from networks_bicluster_genes
+                    where bicluster_id in (
+                      select id from networks_bicluster where network_id=%d
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from networks_bicluster_influences
+                    where bicluster_id in (
+                      select id from networks_bicluster where network_id=%d
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from pssms
+                    where motif_id in (
+                      select id from networks_motif
+                      where bicluster_id in (
+                        select id from networks_bicluster where network_id=%d
+                      )
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from networks_motif
+                    where bicluster_id in (
+                      select id from networks_bicluster where network_id=%d
+                    );", network.id)
+    dbGetQuery(con, sql)
+
+    sql <- sprintf("delete from networks_bicluster where network_id=%d;", network.id)
+    dbGetQuery(con, sql)
+    
+    dbCommit(con)
+  },
+  error=function(e) {
+    dbRollback(con)
+  })
+  
+  cat("done!\n")
+}
+
 # get species_id for e$organism
 get.species.id <- function(con, species=NULL, env=NULL) {
   if (is.null(species) && !is.null(env)) {
     species <- env$organism
+  }
+  if (is.null(species)) {
+    stop('no species defined?')
   }
   sql <- sprintf("select id from networks_species where name = '%s' or short_name = '%s';", species, species)
   # cat(sql, "\n")
@@ -767,9 +870,8 @@ assert.equals <- function(func_name, value, expected) {
 run.tests <- function(db.name="network_portal") {
   postgreSQL.driver <- dbDriver("PostgreSQL")
   con <- dbConnect(postgreSQL.driver, user=config$db.user, password=config$db.password, dbname=config$db.name, host=config$db.host)
-  on.exit(function() {
+  on.exit({
     dbDisconnect(con)
-    dbUnloadDriver(postgreSQL.driver)
   })
   
   species.id <- get.species.id(con, species="Halobacterium salinarum NRC-1")

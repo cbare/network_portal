@@ -4,6 +4,8 @@
 ## Christopher Bare
 
 library(RPostgreSQL)
+library(plyr)
+
 
 # database connect info
 config <- environment()
@@ -11,6 +13,20 @@ config$db.user = "dj_ango"
 config$db.password = "django"
 config$db.name = "network_portal"
 config$db.host = "localhost"
+
+
+# usage:
+# networks <- get.networks()
+# systems <- functional.systems()
+# print(systems)
+#
+# compute.and.display.enrichment(4, 'kegg', 'kegg subcategory')
+# 
+# for (system in systems) {
+#   en <- compute.and.display.enrichment(4, system['type'], system['namespace'])
+#   insert.enrichment(en)
+# }
+# 
 
 
 # for each bicluster count genes grouped by function
@@ -277,23 +293,35 @@ get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) 
   return(df)
 }
 
-let.it.rip <- function(insert=F) {
-  systems = list( c(type='kegg', namespace='kegg subcategory'),
+# compute enrichment of a network for functions of a type and subtype (namespace)
+compute.and.display.enrichment <- function(network.id, system.type, system.namespace) {
+  en <- enrichment(network.id, system.type, system.namespace)
+  cat(sprintf("enrichment network=%d, type=%s, namespace=%s\n", network.id, system.type, system.namespace))
+  cat("dim(en) =", dim(en), "\n")
+  cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
+  cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
+  print(head(en))
+  return(en)
+}
+
+# return a list of functional systems and there subcategories
+functional.systems <- function() {
+  return(   list( c(type='kegg', namespace='kegg subcategory'),
                   c(type='kegg', namespace='kegg category'),
                   c(type='tigr', namespace='tigr sub1role'),
                   c(type='tigr', namespace='tigr mainrole'),
                   c(type='cog',  namespace='cog subcategory'),
-                  c(type='cog',  namespace='cog category') )
+                  c(type='cog',  namespace='cog category') ))
+}
+
+# compute enrichment for all networks, all systems
+let.it.rip <- function(insert=F) {
+  systems = functional.systems()
 
   networks <- get.networks()
   for (id in networks$id) {
     for (system in systems) {
-      en <- enrichment(id, system['type'], system['namespace'])
-      cat("enrichment network=", id, "type=", system['type'], "namespace=", system['namespace'], "\n")
-      cat("dim(en) =", dim(en), "\n")
-      cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
-      cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
-      print(head(en))
+      en <- compute.and.display.enrichment(id, system['type'], system['namespace'])
       if (insert) {
         insert.enrichment(en)
       }
