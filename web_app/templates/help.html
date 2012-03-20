@@ -28,15 +28,48 @@
       });
     </script>
 
+    <title>ScreenFlow video</title>
+    <meta http-equiv="content-type" content="text/html;charset=iso-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/Javascript" />
+    <script type="text/javascript" src="{{STATIC_PREFIX}}Network_Portal_Screencast_01/com/js/swfobject/swfobject.js"></script>
+    <script type="text/javascript">
+      var flashvars = {};
+      var params = {};
+      
+      params.bgcolor = "#000000";
+      params.allowscriptaccess = "always";
+      
+      flashvars.videoPath = "{{STATIC_PREFIX}}Network_Portal_Screencast_01/movie.f4v";
+      flashvars.posterPath = "{{STATIC_PREFIX}}Network_Portal_Screencast_01/com/poster/myPosterFrame.jpg";
+      flashvars.skinPath = "{{STATIC_PREFIX}}Network_Portal_Screencast_01/com/skin/skin.swf";
+      
+      var stageW = 572;
+      var stageH = 564;
+      
+      var attributes = {};
+      attributes.id = "flashcontent";
+
+      swfobject.embedSWF("{{STATIC_PREFIX}}Network_Portal_Screencast_01/player.swf", "flashcontent", stageW, stageH, "9.0.0", false, flashvars, params, attributes);
+    </script>
+    
     <!-- These are required for loading NCBI sequence viewer in gene page -->
     <!--<script type="text/javascript" src="http://www.ncbi.nlm.nih.gov/projects/sviewer/js/main.js"/>-->
     {% endblock %}
     {% block content %}
-
+    
     {% load static %}
     {% get_static_prefix as STATIC_PREFIX %}
-
+    
     <div class="main">
+
+      <h5> Network Portal Screencast</h5><br>
+      <span class="search_help"> Learn basic network portal functionalities by watching this screencast. Please note that this is an unedited screencast but we are preparing a new version with higher quality that includes a voiceover. </span> </br>
+<br>
+<div id="flashcontent"><p>This ScreenFlow video requires a more recent version of the Adobe Flash Player to display.  Please update your version of\
+ the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player</a>.</p></div>
+<br><br>
+
       <h5>Navigation</h5>
       <span class="search-help"> Mouse over to see details of specific navigation items</span>
       <img id="Image-Maps_9201202132102136" src="{{ STATIC_PREFIX }}images/gene-page-map.png" usemap="#Image-Maps_9201202132102136" border="0" width="724" height="620" alt="" />
@@ -93,16 +126,9 @@
 	<area shape="rect" coords="652,0,714,28" href="#" alt="contact" title="contact"    />
 	<area shape="rect" coords="722,618,724,620" href="http://www.image-maps.com/index.php?aff=mapped_users_9201202132102136" alt="Image Map" title="Image Map" />
       </map>
-      
-      
 
-
-      How to use Network Portal?
-      <h5>Searching</h5>
-      How to use Search function?
-      <h5> Regulon View</h5>
-      How to use Regulon view
-      <h5> Gene View </h5>
+      <h5>Coming soon...</h5>
+      More detailed help pages are coming soon...
       
     </div><!-- End #main -->
     {% endblock %}
