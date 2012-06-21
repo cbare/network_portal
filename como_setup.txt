@@ -1,0 +1,319 @@
+=============================================
+ Network Portal installation on ISB machines
+=============================================
+
+How to install Network Portal on ISB's standard CentOS Unix machines.
+
+Network Portal is a Django web application. I built and installed Python 2.7.3 in /local/python and got several Python modules using PIP. We use the Apache web server and WSGI, Postgres, and Solr which depends on Java and Jetty.
+
+Installation and configuration of each component is described below.
+
+Tools and Dependencies
+======================
+emacs
+git
+apache2
+python 2.7.3 or latest
+python-pip
+libraries: python-dev build-essential libpq-dev libapache2-mod-wsgi
+Python modules: django, psycopg2, networkx, numpy
+Postgres
+Java 1.6+
+Jetty
+Solr
+
+
+Python
+======
+
+Get Python 2.7.3 or latest 2.7.x from python.org.
+
+./configure --prefix /local/python --enable-shared
+
+Python build finished, but the necessary bits to build these modules were not found:
+_bsddb             _sqlite3           _ssl            
+bsddb185           dbm                dl              
+gdbm               imageop            sunaudiodev     
+
+Installed sqlite, just in case we need it and rebuilt. I had to hack an entry in Python's setup.py script to add '/local/sqlite/include' to sqlite_inc_paths. I hope we can do without the rest?
+
+make
+make install
+
+After installing the new Python, I add /local/python/bin to the beginning of my path, so all python commands use that version of python.
+export PATH=/local/python/bin:$PATH
+which python
+python --version
+
+=Install PIP
+curl -O http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
+sh setuptools-0.6c11-py2.7.egg --prefix=/local/python
+
+curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+python get-pip.py
+
+We need several python modules, which can be installed by PIP: django, networkx, numpy, psycopg2. Not that psycopg2 requires the installation of libpq-dev.
+
+/local/python/bin/pip install django
+/local/python/bin/pip install psycopg2
+/local/python/bin/pip install networkx
+/local/python/bin/pip install numpy
+
+
+Apache
+======
+
+=Editing apache configuration
+export EDITOR=/usr/bin/emacs
+sudoedit /etc/httpd/conf/httpd.conf
+
+=Starting, stopping and restarting
+sudo /etc/init.d/httpd start
+sudo /etc/init.d/httpd restart
+sudo /etc/init.d/httpd stop
+
+=Configure
+Andrew installed WSGI as root (see Andrew's notes at bottom). Add the necessary junk to link Apache to Django in /etc/httpd/conf/httpd.conf:
+
+WSGIScriptAlias / /local/network_portal/web_app/wsgi.py
+# WSGIPythonHome /tools/bin                                                                                                            
+WSGIPythonPath /local/network_portal/web_app
+
+<Directory /local/network_portal/web_app>
+ <Files wsgi.py>
+ Order deny,allow
+ Allow from all
+ </Files>
+</Directory>
+
+Alias /robots.txt /local/network_portal/web_app/static/robots.txt
+Alias /favicon.ico /local/network_portal/web_app/static/favicon.ico
+Alias /media/ /local/network_portal/media/
+Alias /static/ /local/network_portal/web_app/static/
+
+<Directory /local/network_portal/web_app/static>
+Order deny,allow
+Allow from all
+</Directory>
+
+<Directory /local/network_portal/media>
+Order deny,allow
+Allow from all
+</Directory>
+
+=Reverse proxy Solr
+...so we can access it from javascript in web pages.
+
+<IfModule mod_proxy.c>
+  ProxyRequests Off
+
+  <Proxy *>
+  Order deny,allow
+  Allow from all
+  </Proxy>
+
+  ProxyPass /solr/select http://localhost:8983/solr/select
+  ProxyPassReverse /solr/select http://localhost:8983/solr/select
+
+  ProxyPass /solr/suggest http://localhost:8983/solr/suggest
+  ProxyPassReverse /solr/suggest http://localhost:8983/solr/suggest
+</IfModule>
+
+
+Postgres
+========
+
+=Authentication
+Postgres authentication is tricky. There are several methods, of which we'll use two - ident and md5. Ident authentication uses your unix login to login to postgres. For example, one way to administer the database is through the psql client, which you can start like this:
+
+sudo -u postgres psql
+
+You're sudoing to the postgres user and logging into the DB as that user. The more normal way of logging in by supplying a username and password is the 'md5' method. Solr's DataImportHandler does this, as I couldn't get it to work with Ident authentication. It's login user is configured in:
+
+/local/network_portal/solr/conf/data-config.xml
+
+Logging into postgres from Python is configured in /local/network_portal/web_app/settings.py. Because Django runs as the user 'apache' we give permissions to that user in Postgres. User and Password can be left blank when using Ident authentication.
+
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+         'NAME': 'network_portal',        # Or path to database file if using sqlite3.
+         'USER': '',               # Not used with sqlite3.
+         'PASSWORD': '',            # Not used with sqlite3.
+         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+     }
+
+
+Authentication methods are configured in the pg_hba.conf file. Google 'pg_hba.conf postgres 8.4 for more information:
+/local/data/postgres/data/pg_hba.conf
+
+=Data
+Up to this point, the way we've populated the DB is by scripts that read cMonkey output from RData files and insert data into Postgres. These scripts are in the network portal project in the r-scripts folder: (extract-biclusters.R and functional.enrichment.R).
+
+I work w/ this scripts and a separate instance of Postgres on my own machine, then dump the DB and reimport it into the production DB, like this:
+
+scp bragi:/local/apache2/docs/gaggle/cbare/network_portal.dump.2012.03.19.gz .
+gunzip < network_portal.dump.2012.03.19.gz | sudo -u postgres psql --dbname network_portal
+
+=Starting, stopping, restarting
+sudo /etc/init.d/postgresql start
+sudo /etc/init.d/postgresql stop
+sudo /etc/init.d/postgresql restart
+
+=Reloading configuration
+pg_ctl -D /var/lib/pgsql/data reload
+
+
+Java
+====
+Russ installed OpenJDK 1.6.x.
+java -version
+java version "1.6.0_22"
+
+
+Solr
+====
+
+The Solr search engine runs in the Jetty app server. I copied the war file into Jetty's webapps directory, 'cause weird things seemed to happen when I sym-linked it.
+
+cp /local/lib/apache-solr-3.5.0/dist/apache-solr-3.5.0.war /local/jetty/jetty-hightide-8.1.4.v20120524/webapps/solr.war
+
+To make use of Solr's DataImportHandler to build the index from database queries, Solr needs to be configured to talk to Postgres. I think putting the JDBC driver for postgres in /local/network_portal/solr/lib should be sufficient, but I also put it in /local/jetty/jetty-hightide-8.1.4.v20120524/lib/jdbc. Get the latest driver from: jdbc.postgresql.org.
+
+DataImportHandler is configured in: /local/network_portal/solr/conf/data-config.xml
+
+See the above Postgres section for setting up authentication.
+
+Tell Solr to rebuild the index:
+curl http://localhost:8983/solr/dataimport?command=full-import
+
+Jetty
+=====
+
+In /local/jetty/jetty-hightide-8.1.4.v20120524/etc/jetty.xml, change the port on which Jetty will be listening to Solr's default, 8983.
+
+...
+<Set name="port"><Property name="jetty.port" default="8983"/></Set>
+...
+
+Also add system properties to set solr.solr.home and solr.install.dir:
+
+<Call class="java.lang.System" name="setProperty">
+  <Arg>solr.solr.home</Arg>
+  <Arg>/local/network_portal/solr</Arg>
+</Call>
+<Call class="java.lang.System" name="setProperty">
+  <Arg>solr.install.dir</Arg>
+  <Arg>/local/lib/apache-solr-3.5.0</Arg>
+</Call>
+<Call class="java.lang.System" name="setProperty">
+  <Arg>run.mode</Arg>
+  <Arg>production</Arg>
+</Call>
+
+Temporarily, we're starting Jetty like this:
+/local/jetty/jetty-hightide-8.1.4.v20120524/bin/jetty.sh start
+
+We need to run it as a service.
+
+
+
+postgres permissions
+====================
+create user solr with password 'secret';
+grant all privileges on django_admin_log to solr;
+grant all privileges on django_content_type to solr;
+grant all privileges on django_session to solr;
+grant all privileges on django_site to solr;
+grant all privileges on expression to solr;
+grant all privileges on networks_annotation to solr;
+grant all privileges on networks_bicluster to solr;
+grant all privileges on networks_bicluster_conditions to solr;
+grant all privileges on networks_bicluster_function to solr;
+grant all privileges on networks_bicluster_genes to solr;
+grant all privileges on networks_bicluster_influences to solr;
+grant all privileges on networks_chromosome to solr;
+grant all privileges on networks_condition to solr;
+grant all privileges on networks_function to solr;
+grant all privileges on networks_function_relationships to solr;
+grant all privileges on networks_gene to solr;
+grant all privileges on networks_gene_function to solr;
+grant all privileges on networks_influence to solr;
+grant all privileges on networks_influence_parts to solr;
+grant all privileges on networks_motif to solr;
+grant all privileges on networks_network to solr;
+grant all privileges on networks_species to solr;
+grant all privileges on networks_synonym to solr;
+grant all privileges on pssms to solr;
+
+create user apache;
+grant all privileges on django_admin_log to apache;
+grant all privileges on django_content_type to apache;
+grant all privileges on django_session to apache;
+grant all privileges on django_site to apache;
+grant all privileges on expression to apache;
+grant all privileges on networks_annotation to apache;
+grant all privileges on networks_bicluster to apache;
+grant all privileges on networks_bicluster_conditions to apache;
+grant all privileges on networks_bicluster_function to apache;
+grant all privileges on networks_bicluster_genes to apache;
+grant all privileges on networks_bicluster_influences to apache;
+grant all privileges on networks_chromosome to apache;
+grant all privileges on networks_condition to apache;
+grant all privileges on networks_function to apache;
+grant all privileges on networks_function_relationships to apache;
+grant all privileges on networks_gene to apache;
+grant all privileges on networks_gene_function to apache;
+grant all privileges on networks_influence to apache;
+grant all privileges on networks_influence_parts to apache;
+grant all privileges on networks_motif to apache;
+grant all privileges on networks_network to apache;
+grant all privileges on networks_species to apache;
+grant all privileges on networks_synonym to apache;
+grant all privileges on pssms to apache;
+
+
+
+Andrew's notes:
+==============
+
+Noted missing apxs which is required for mod_wsgi, apxs is part of httpd-devel (This also installed several dependency rpms)
+yum install httpd-devel 
+
+Noted /local/python was built without -enabled-shared which is required for mod_wsgi, coonfigured, rebuilt, and installed with them enabled
+./configure --prefix /local/python --enable-shared
+make
+make install
+
+Configured and built mod_wsgi
+./configure --with-python=/local/python/bin/python2.7
+make
+make install (as root)
+
+Add the LoadModule for mod_wsgi to /etc/httpd/conf/httpd.conf
+LoadModule wsgi_module modules/mod_wsgi.so (sudo)
+
+Restarted Apache and verified presece of mod_wsgi & python (sudo)
+Apache/2.2.15 (Unix) DAV/2 mod_wsgi/3.3 Python/2.7.3 configured -- resuming normal operations
+
+Verified install of django, psycopg2, networkx, and numpy (only psycopg2 needed to be installed)
+/local/python/bin/pip install django
+/local/python/bin/pip install psycopg2
+/local/python/bin/pip install networkx
+/local/python/bin/pip install numpy
+
+Verified install of openjdk
+java -version
+java version "1.6.0_22"
+OpenJDK Runtime Environment (IcedTea6 1.10.6) (rhel-1.43.1.10.6.el6_2-x86_64)
+OpenJDK 64-Bit Server VM (build 20.0-b11, mixed mode)
+
+Verified install of jetty  (it appears that solr comes with it's own jetty, so I'm not sure you need this)
+jetty 6.1.24-2.el6
+
+Confirmed that solr will start (I tested the newer 3.6):
+cd /local/install/apache-solr-3.6.0/example
+java -jar start.jar
+2012-06-18 17:39:58.812:INFO::Logging to STDERR via org.mortbay.log.StdErrLog
+2012-06-18 17:39:58.897:INFO::jetty-6.1-SNAPSHOT
+
