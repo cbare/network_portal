@@ -1,6 +1,24 @@
+################################################################################################
+ Setting up Network Portal on EC2
+ notes by: cbare@systemsbiology.org
+################################################################################################
+
 Start w/ alestic Ubuntu 11.04 or latest 64 bit.
 instance type: m1 large, 7.5GB
 Firewall: SSH, HTTP
+
+The basic stack is Python (2.7.x) and Apache2. Python PIP (a package management
+system) is used to install several Python libraries, including numpy which has
+several binary dependencies. The Solr search engine runs on the Jetty app
+server and requires an installation of Java. So far, we've used Java 6. Solr is
+reverse proxied through apache so we can hit it from javascript running in web
+pages. The backend is PostgreSQL version 9, and some fiddling with it's security
+policies is needed so that local user accounts can use the psql command line
+console.
+
+################################################################################################
+ install
+################################################################################################
 
 sudo apt-get -y update
 sudo apt-get -y install emacs
@@ -12,13 +30,6 @@ sudo apt-get -y install libapache2-mod-wsgi
 
 sudo pip install --upgrade pip
 sudo pip install django
-
-PostgreSQL 9.0 on Ubuntu 11.04
-------------------------------
-sudo add-apt-repository ppa:pitti/postgresql
-sudo apt-get update
-sudo apt-get -y install postgresql-9.0 postgresql-client-9.0
-sudo apt-get -y install libpq-dev
 
 PostgreSQL 9.x on Ubuntu 11.10+
 -------------------------------
@@ -50,22 +61,26 @@ sudo update-alternatives --config java
 
 Jetty
 -----
+// alternatively, just get a tgz from codehaus
 sudo apt-get -y install jetty
 sudo apt-get -y install libjetty-extra
 
-##### NOTE #####
-Sunburnt is not used anymore, instead Network Portal search
-is creating its own queries, sending them to Solr and uses
-simplejson to get the results
-######################################################
-Sunburnt, python client for Solr
---------------------------------
-sudo pip install sunburnt
-sudo apt-get -y install libxml2 libxml2-dev
-sudo apt-get -y install libxslt1.1 libxslt1-dev
-sudo pip install httplib2
-sudo pip install lxml
-############################################
+
+Solr
+----
+// don't do this: sudo apt-get -y install solr-jetty (old version 1.4.1)
+curl -O http://mirror.metrocast.net/apache/lucene/solr/3.5.0/apache-solr-3.5.0.tgz
+
+// extract into /home/ubuntu/network_portal/apache-solr-3.5.0/
+tar -xzvf apache-solr-3.5.0.tgz
+
+// install PostgreSQL JDBC driver
+curl -O http://jdbc.postgresql.org/download/postgresql-9.1-901.jdbc4.jar
+
+
+################################################################################################
+ configure
+################################################################################################
 
 
 Setup postgres & populate DB
@@ -78,29 +93,15 @@ sudo /etc/init.d/postgresql restart
 psql -U postgres
 create database network_portal
 create user, grant privileges
-create user joe_mamma with password 'password';
+create user XXXXX with password 'XXXXXX';
 gunzip < network_portal.dump.2011.10.24.gz | psql -U postgres --dbname network_portal
 
-
-Solr
-----
-// sudo apt-get -y install solr-jetty (old version 1.4.1)
-curl -O http://mirror.metrocast.net/apache/lucene/solr/3.5.0/apache-solr-3.5.0.tgz
-
-// extract into /home/ubuntu/network_portal/apache-solr-3.5.0/
-tar -xzvf apache-solr-3.5.0.tgz
-
-// start Solr server (how best to do this in production??)
-java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.5.0/" -jar start.jar
-
-// tell Solr to re-index
-curl http://localhost:8983/solr/dataimport?command=full-import
 
 
 Set up Apache WSGI
 ------------------
 
-wsgi.py=
+contents of the file wsgi.py=
 
 import os
 import sys
@@ -120,6 +121,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'web_app.settings'
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
+
 
 
 Set up Apache conf
@@ -170,9 +172,10 @@ Allow from all
 
 sudo /etc/init.d/apache2 restart
 
+
+
 Solr-Jetty config
 -----------------
-curl -O http://jdbc.postgresql.org/download/postgresql-9.1-901.jdbc4.jar
 
 ** modify port in to standard solr port /etc/jetty/jetty.xml
 <Set name="port"><SystemProperty name="jetty.port" default="8983"/></Set>
@@ -182,10 +185,22 @@ sudo ln -s solr/lib/postgresql-9.1-901.jdbc4.jar /usr/share/solr/WEB-INF/lib/
 
 /usr/share/jetty$ sudo -u jetty java -jar /usr/share/jetty/start.jar
 
-cd /home/ubuntu/network_portal/apache-solr-3.4.0/example
-java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.4.0/" -jar start.jar
+// start Solr server (how best to do this in production??)
+java -Dsolr.solr.home="/home/ubuntu/network_portal/network_portal/solr" -Dsolr.install.dir="/home/ubuntu/network_portal/apache-solr-3.5.0/" -jar start.jar
 
+// a better alternative to using start.jar is to copy the solr.war to
+// jetty's webapps directory and add the following to etc/jetty.xml
+<Call class="java.lang.System" name="setProperty">
+  <Arg>solr.solr.home</Arg>
+  <Arg>/local/jetty/jetty_apps/solr</Arg>
+</Call>
+<Call class="java.lang.System" name="setProperty">
+  <Arg>solr.install.dir</Arg>
+  <Arg>/local/lib/apache-solr-3.5.0</Arg>
+</Call>
 
+// tell Solr to re-index
+curl http://localhost:8983/solr/dataimport?command=full-import
 
 Reverse Proxy Solr through Apache
 ---------------------------------
@@ -194,4 +209,39 @@ sudo ln -s ../mods-available/proxy_http.load .
 sudo ln -s ../mods-available/proxy.load .
 
 Make sure proxy stuff is in /etc/apache2/httpd.conf
+
+
+
+
+################################################################################################
+ old junk, probably not useful anymore
+################################################################################################
+
+NOTE: don't install this stuff!
+
+PostgreSQL 9.0 on Ubuntu 11.04
+------------------------------
+sudo add-apt-repository ppa:pitti/postgresql
+sudo apt-get update
+sudo apt-get -y install postgresql-9.0 postgresql-client-9.0
+sudo apt-get -y install libpq-dev
+
+
+##### NOTE #####
+Sunburnt is not used anymore, instead Network Portal search
+is creating its own queries, sending them to Solr and uses
+simplejson to get the results
+######################################################
+Sunburnt, python client for Solr
+--------------------------------
+sudo pip install sunburnt
+sudo apt-get -y install libxml2 libxml2-dev
+sudo apt-get -y install libxslt1.1 libxslt1-dev
+sudo pip install httplib2
+sudo pip install lxml
+############################################
+
+
+
+
 

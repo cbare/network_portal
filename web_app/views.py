@@ -7,7 +7,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import logout
-from django.contrib.csrf.middleware import csrf_exempt
+
+# apparently, the location of this changed between Django versions?
+# from django.contrib.csrf.middleware import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
