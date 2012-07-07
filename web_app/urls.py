@@ -63,8 +63,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Login / Logout
-    url(r'^login/$', 'django.contrib.auth.views.login'),
-    #url(r'^logout/$', logout_page),
+    #url(r'^login/$', 'django.contrib.auth.views.login'),
+    url(r'^logout/$', 'views.logout_page'),
+    url(r'^login/$', 'views.login_page'),
 
     #(r'^analysis/$', 'web_app.networks.views.analysis', name='analysis'),
     #(r'^analysis/$', include('analysis.urls')),

@@ -1,20 +1,25 @@
-from django.template.loader import get_template
-from django.template import Context
+from django import forms
+from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template import Context
+from django.template.loader import get_template
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login
 
 # apparently, the location of this changed between Django versions?
 # from django.contrib.csrf.middleware import csrf_exempt
 from django.views.decorators.csrf import csrf_exempt
+from django.core.context_processors import csrf
 
 from web_app.networks.models import *
 from web_app.networks.functions import functional_systems
 from web_app.networks.helpers import get_influence_biclusters
+
+import openid
 
 import search as s
 import itertools
@@ -82,7 +87,6 @@ def search(request):
                                              regulates))
         except Exception as e:
             error_message = str(e)
-            
     return render_to_response('search.html', locals())
 
 def logout_page(request):
@@ -91,6 +95,27 @@ def logout_page(request):
     """
     logout(request)
     return HttpResponseRedirect('/')
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    password = forms.CharField(max_length=100)
+
+def login_page(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect('/')
+                else:
+                    error_message = "The account for user %s (%s) is disabled." % (user.get_full_name(), user.username)
+            else:
+                error_message = "Invalid login."
+    else:
+        form = LoginForm()
+    return render_to_response('login.html', locals(), context_instance=RequestContext(request))
 
 def help(request):
     return render_to_response('help.html', locals())

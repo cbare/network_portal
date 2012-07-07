@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Network Portal - Contact{% endblock %}
+{% block content %}
+
+<div class="main">
+  <h5>Login</h5>
+
+  <form action="/login/" method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Submit" />
+  </form>
+
+  {% if error_message %}
+  <div class="error_message">
+    <h4>Login Error</h4>
+    <p>{{ error_message }}</p>
+  </div>
+  {% endif %}
+
+</div><!-- End #main -->
+{% endblock %}

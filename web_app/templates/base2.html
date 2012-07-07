@@ -36,6 +36,11 @@
       <p id="slogan"><a href="http://www.systemsbiology.org"><img alt="Logo" src="{{ STATIC_PREFIX }}images/isb_logo.png"></a></p>
       <div id="underlinemenu" class="underlinemenu">
 	<ul>
+	  {% if request.user.is_authenticated %}
+	  <li><a href="logout">{{ request.user.username }}</a></li>
+	  {% else %}
+	  <li><a href="login">Login</a></li>
+	  {% endif %}
 	  <li><a href="/about">About</a></li>
 	  <li><a href="/contact">Contact</a></li>
 	  <!-- <li><a href="login" id="selected">Login</a></li> -->

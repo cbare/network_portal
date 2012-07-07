@@ -45,6 +45,9 @@ export PATH=/local/python/bin:$PATH
 which python
 python --version
 
+If you see: error while loading shared libraries: libpython2.7.so.1.0: cannot open shared object file,
+export LD_LIBRARY_PATH=/local/python/lib
+
 =Install PIP
 curl -O http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
 sh setuptools-0.6c11-py2.7.egg --prefix=/local/python
