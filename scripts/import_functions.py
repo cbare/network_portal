@@ -1033,7 +1033,6 @@ def insert_cogs(cog_categories):
         if (cur): cur.close()
         if (con): con.close()
 
-
 def map_genes_to_go_cog_and_tigr_terms(genes, species):
     """
     Takes a list of gene objects as returned by the function read_microbes_online_genome_info
@@ -1073,11 +1072,18 @@ def map_genes_to_go_cog_and_tigr_terms(genes, species):
             if len(gene.GO.strip()) > 0:
                 # multiple go terms are comma-separated, far example: GO:0009306,GO:0019861,GO:0016021
                 gene_go_ids = gene.GO.split(',')
-                for id in gene_go_ids:
-                    if id in go_function_ids:
-                        function_id = go_function_ids[id]
-                    else:
-                        raise Exception("Unknown GO ID: " + id)
+                
+                ## WARNING This fix is untested!!
+                # Fix a subtle bug that caused genes to be annotated to the
+                # same GO term multiple times:
+                # GO terms are translated into database IDs, but the database IDs might not
+                # be unique, even if the GO terms are. This is because GO terms have alt_ids,
+                # see for example GO:0003887, which has several. Here, we map GO terms to 
+                # database function IDs then uniquify using set. I think this will raise a
+                # key error if there is no matching function id.
+                unique_function_ids = set([ go_function_ids[id] for id in gene_go_ids])
+                
+                for function_id in unique_function_ids:
                     cur.execute("""
                         insert into networks_gene_function
                         (function_id, gene_id, source)

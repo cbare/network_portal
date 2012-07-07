@@ -29,6 +29,9 @@ config$db.host = "localhost"
 # 
 
 
+# there's possibly an error in this function. I seem to get some cases where more
+# genes are annotated with a function than are in a particular bicluster???
+
 # for each bicluster count genes grouped by function
 # return a data.frame w/ columns bicluster_id, function_id, count
 get.bicluster.function.counts <- function(con, network.id, type, ancestor.map=NULL) {
@@ -198,12 +201,11 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
   },
   finally={
     dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
   })
 }
 
 # put an enrichment data.frame into the DB
-insert.enrichment <- function(en) {
+insert.enrichment <- function(en,method='hypergeometric') {
   tryCatch(
   expr={
     postgreSQL.driver <- dbDriver("PostgreSQL")
@@ -213,17 +215,17 @@ insert.enrichment <- function(en) {
       row <- en[i,]
       sql <- sprintf(paste(
         "insert into networks_bicluster_function",
-        "(bicluster_id, function_id, gene_count, m, n, k, p, p_bh, p_b)",
-        "values (%d, %d, %d, %d, %d, %d, %f, %f, %f);"),
+        "(bicluster_id, function_id, gene_count, m, n, k, p, p_bh, p_b, method)",
+        "values (%d, %d, %d, %d, %d, %d, %f, %f, %f, '%s');"),
             row$bicluster.id, row$function.id, row$gene.count,
             row$m, row$n, row$k,
-            row$p, row$p.bh, row$p.b)
+            row$p, row$p.bh, row$p.b,
+            method)
       dbGetQuery(con, sql)
     }
   },
   finally={
     dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
   })
 }
 
@@ -240,7 +242,6 @@ get.networks <- function() {
   },
   finally={
     dbDisconnect(con)
-    postgreSQL.driver <- dbDriver("PostgreSQL")
   })
 }
 
