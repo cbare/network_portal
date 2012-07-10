@@ -42,7 +42,7 @@ get.bicluster.function.counts <- function(con, network.id, type, ancestor.map=NU
 
   #count number of genes for each function in each bicluster for a species
   sql <- sprintf(paste(
-    "select b.id as bicluster_id, f.id as function_id, count(bg.gene_id) as count",
+    "select b.id as bicluster_id, f.id as function_id, count(distinct(bg.gene_id)) as count",
     "from networks_bicluster b",
     "join networks_bicluster_genes bg on b.id=bg.bicluster_id",
     "join networks_gene_function gf on gf.gene_id=bg.gene_id",
@@ -305,7 +305,7 @@ compute.and.display.enrichment <- function(network.id, system.type, system.names
   return(en)
 }
 
-# return a list of functional systems and there subcategories
+# return a list of functional systems and their subcategories
 functional.systems <- function() {
   return(   list( c(type='kegg', namespace='kegg subcategory'),
                   c(type='kegg', namespace='kegg category'),

@@ -37,7 +37,7 @@ for row in dups:
     
     # delete the rest
     cur.execute("""
-    delete from networks_gene_function where id in (%s);
+        delete from networks_gene_function where id in (%s);
     """ % ",".join([ str(id) for id in to_delete ]) )
     con.commit()
 
