@@ -451,3 +451,10 @@ join networks_function f on f.id=bf.function_id
 where b.network_id = 1
 and f.type='go'
 order by b.id;
+
+-- find screwed up enrichments
+select * from networks_bicluster_function bf join networks_function f on bf.function_id=f.id where gene_count > k;
+
+
+
+(select id from function where namespace in ('cog category', 'cog subcategory', 'kegg category', 'kegg subcategory'))

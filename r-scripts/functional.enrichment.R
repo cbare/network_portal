@@ -16,18 +16,16 @@ config$db.host = "localhost"
 
 
 # usage:
-# networks <- get.networks()
-# systems <- functional.systems()
-# print(systems)
-#
 # compute.and.display.enrichment(4, 'kegg', 'kegg subcategory')
-# 
-# for (system in systems) {
-#   en <- compute.and.display.enrichment(4, system['type'], system['namespace'])
-#   insert.enrichment(en)
-# }
-# 
+#
+# or:
+# let.it.rip(insert=F)
+#
+# or, to write functional enrichment back to the database:
+# let.it.rip(insert=T)
+#
 
+# Test w/ bicl 366, kegg enrichment
 
 # there's possibly an error in this function. I seem to get some cases where more
 # genes are annotated with a function than are in a particular bicluster???
@@ -35,21 +33,19 @@ config$db.host = "localhost"
 # for each bicluster count genes grouped by function
 # return a data.frame w/ columns bicluster_id, function_id, count
 get.bicluster.function.counts <- function(con, network.id, type, ancestor.map=NULL) {
-
+  
   # don't limit this to a specific namespace, 'cause functions are annotated at
   # the most specific level possible. We map them up to higher levels through
   # the ancestor.map
-
-  #count number of genes for each function in each bicluster for a species
+  
   sql <- sprintf(paste(
-    "select b.id as bicluster_id, f.id as function_id, count(distinct(bg.gene_id)) as count",
+    "select b.id as bicluster_id, f.id as function_id, bg.gene_id",
     "from networks_bicluster b",
     "join networks_bicluster_genes bg on b.id=bg.bicluster_id",
     "join networks_gene_function gf on gf.gene_id=bg.gene_id",
     "join networks_function f on gf.function_id=f.id",
     "where b.network_id = %d",
     "and f.type='%s'",
-    "group by b.id, f.id",
     "order by b.id, f.id;"),
     network.id, type)
   df <- dbGetQuery(con, sql)
@@ -58,10 +54,9 @@ get.bicluster.function.counts <- function(con, network.id, type, ancestor.map=NU
   if (is.null(ancestor.map))
     ancestor.map <- get.ancestor.map(con, df$function_id)
   
-  # note: there's a bug here that will cause the same gene to be counted more than once in the higher level categories
-  merged.df <- merge(df, ancestor.map, by='function_id')
-  mm <- data.frame(`bicluster_id`=merged.df$`bicluster_id`, `function_id`=merged.df$`ancestor_id`, `count`=merged.df$`count`)
-  mm2 <- ddply(mm, .(bicluster_id, function_id), function(r) count=sum(r$count))
+  mm <- merge(df, ancestor.map, by='function_id')
+  mm2 <- ddply(mm, .(bicluster_id, ancestor_id), function(r) count=length(unique(r$gene_id)))
+  colnames(mm2)[2] <- 'function_id'
   colnames(mm2)[3] <- 'count'
   return(mm2)
 }
@@ -73,30 +68,28 @@ get.function.gene.counts <- function(con, gene.ids, type=NULL, ancestor.map=NULL
   # don't limit this to a specific namespace, 'cause functions are annotated at
   # the most specific level possible. We map them up to higher levels through
   # the ancestor.map
-
+  
   # count total number of genes in the genome for each function
   # (independent of a particular network, except that the set of
   #  genes considered here should be the same as those considered
   #  in the biclustering and network inference.)
   sql <- sprintf(paste(
-    "select gf.function_id, count(distinct(gf.gene_id))",
+    "select gf.function_id, gf.gene_id",
     "from networks_gene_function gf",
     "join networks_gene g on g.id = gf.gene_id",
     "join networks_function f on gf.function_id=f.id",
     "where g.id in (%s)",
     if (is.null(type)) { "" } else { sprintf("and f.type='%s'", type) },
-    "group by gf.function_id",
     "order by gf.function_id;"),
-    paste(gene.ids,collapse=","), type)
+    paste(gene.ids,collapse=","))
   df <- dbGetQuery(con, sql)
   
   if (is.null(ancestor.map))
     ancestor.map <- get.ancestor.map(con, df$function_id)
-
-  # note: there's a bug here that will cause the same gene to be counted more than once in the higher level categories
-  merged.df <- merge(df, ancestor.map, by='function_id')
-  mm <- data.frame(`function_id`=merged.df$`ancestor_id`, `count`=merged.df$`count`)
-  mm2 <- ddply(mm, .(function_id), function(r) count=sum(r$count))
+  
+  mm <- merge(df, ancestor.map, by='function_id')
+  mm2 <- ddply(mm, .(ancestor_id), function(r) count=length(unique(r$gene_id)))
+  colnames(mm2)[1] <- 'function_id'
   colnames(mm2)[2] <- 'count'
   return(mm2)
 }
@@ -316,7 +309,8 @@ compute.and.display.enrichment <- function(network.id, system.type, system.names
 
 # return a list of functional systems and their subcategories
 functional.systems <- function() {
-  return(   list( c(type='kegg', namespace='kegg subcategory'),
+  return(   list( c(type='kegg', namespace='pathway'),
+                  c(type='kegg', namespace='kegg subcategory'),
                   c(type='kegg', namespace='kegg category'),
                   c(type='tigr', namespace='tigr sub1role'),
                   c(type='tigr', namespace='tigr mainrole'),
