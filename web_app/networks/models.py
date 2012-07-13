@@ -574,5 +574,6 @@ class Bicluster_Function(models.Model):
     p = models.FloatField(blank=True, null=True)
     p_bh = models.FloatField(blank=True, null=True)
     p_b = models.FloatField(blank=True, null=True)
+    method = models.CharField(max_length=30, blank=True, null=True)
 
 
