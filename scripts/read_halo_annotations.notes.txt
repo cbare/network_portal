@@ -1,0 +1,37 @@
+Read halo GO annotations from the network portal database and work with them in R.
+
+
+
+\C
+\f '\t'
+\a
+\o /local/halo.id.synonyms.txt
+select g.name, s.name as synonym
+from networks_gene g 
+  join networks_synonym s on g.id=s.target_id
+where s.target_type='gene' and s.type like 'vng%';
+\o
+\o /local/halo.go.txt
+select g.name, f.native_id
+from networks_gene g
+  join networks_gene_function gf on g.id=gf.gene_id
+  join networks_function f on gf.function_id=f.id
+where g.species_id=2 and f.type='go';
+\o
+
+hg <- read.table(file='halo.go.txt', header=F, sep="\t", stringsAsFactors=F)
+hs <- read.table(file='halo.id.synonyms.txt', header=F, sep="\t", stringsAsFactor=F)
+colnames(hs) <- c('name', 'synonym')
+colnames(hg) <- c('name', 'go')
+hg2 <- merge(hg,hs,by="name",all.x=TRUE)
+# na.omit(hg2)[1:20,]
+hg2$name[!is.na(hg2$synonym)] <- hg2$synonym[!is.na(hg2$synonym)]
+
+hg3 <- data.frame(
+  name=unique(hg2$name),
+  go=sapply(unique(hg2$name), function(n) paste(hg2[hg2$name==n, 2], collapse=',')))
+
+hg4 <- hg3[order(hg3$name),]
+write.table(hg4, file='halo.go.list.txt',quote=F, sep="\t", row.names=F)
+
+

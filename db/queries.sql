@@ -342,3 +342,112 @@ from networks_influence i
 where b.network_id=3
 and i.type='combiner') as n
 order by n.name;
+
+
+-- get GO annotations for a gene
+select g.id, g.name, f.native_id
+from networks_gene g
+  join networks_gene_function gf on g.id=gf.gene_id
+  join networks_function f on gf.function_id=f.id
+where 
+f.type='go' and f.namespace='biological_process'
+and g.species_id=1
+and g.name='DVU0443';
+
+
+-- select GO annotations for a bicluster
+select b.id, f.native_id, bf.gene_count, bf.m, bf.k, bf.p, bf.p_bh, bf.method
+from
+  networks_function f
+  join networks_bicluster_function bf on bf.function_id=f.id
+  join networks_bicluster b on bf.bicluster_id=b.id
+where
+  f.type='go'
+  and bf.p_bh <= 0.05
+  and b.network_id=1
+order by b.id, f.id;
+
+-- show duplicate function annotations
+select f.id, f.native_id, foo.*
+from networks_function f join
+  (select gene_id, function_id, count(id) as c from networks_gene_function group by gene_id,function_id) as foo on f.id=foo.function_id
+where foo.c > 1 order by f.native_id;
+
+-- find duplicate GO annotatons
+select gf.id, foo.* from networks_gene_function gf join
+(select gene_id, function_id, count(id) as c from networks_gene_function group by gene_id,function_id) as foo
+on gf.gene_id=foo.gene_id and gf.function_id=foo.function_id
+where foo.c > 1
+
+
+-- count genes that have duplicate entries for GO annotations (caused by synonyms)
+select b.id as bicluster_id, f.id as function_id, count(distinct(bg.gene_id)) as count
+from networks_bicluster b
+join networks_bicluster_genes bg on b.id=bg.bicluster_id
+join networks_gene_function gf on gf.gene_id=bg.gene_id
+join networks_function f on gf.function_id=f.id
+where b.network_id = 1
+and f.type='go'
+group by b.id, f.id
+order by b.id, f.id;
+
+
+
+-- delete GO annotations 
+delete from networks_bicluster_function where method='hypergeometric' and function_id in (select id from networks_function where type='go');
+vacuum;
+
+
+
+-- get genes in a network that are in some network
+select distinct(bg.gene_id)
+from networks_bicluster_genes bg
+join networks_bicluster b on b.id = bg.bicluster_id
+where b.network_id=1
+order by bg.gene_id;
+
+-- count genes in each bicluster for a network
+select b.id as bicluster_id, count(distinct(bg.gene_id)) as gene_count
+from networks_bicluster b 
+join networks_bicluster_genes bg on b.id=bg.bicluster_id
+where b.network_id = 1
+group by b.id
+order by b.id;
+
+
+-- get functions for biclusters
+select b.id as bicluster_id, bf.function_id, f.namespace, f.native_id, bf.method
+from networks_bicluster b 
+join networks_bicluster_function bf on b.id=bf.bicluster_id
+join networks_function f on f.id=bf.function_id
+where b.network_id = 1
+and f.type='go'
+and bf.method='topgo'
+order by b.id;
+
+-- what types of annotations exist for a network
+select distinct(f.type)
+from networks_bicluster b 
+join networks_bicluster_function bf on b.id=bf.bicluster_id
+join networks_function f on f.id=bf.function_id
+where b.network_id = 4;
+
+-- do we have higher levels of the GO hierarchy?
+select b.id as bicluster_id, bf.function_id, f.namespace, f.native_id
+from networks_bicluster b 
+join networks_bicluster_function bf on b.id=bf.bicluster_id
+join networks_function f on f.id=bf.function_id
+where b.network_id = 1
+and f.type='go'
+and f.id not in 
+ (select distinct(f.id) from networks_gene_function gf join networks_function f on f.id=gf.function_id join networks_gene g on g.id=gf.gene_id where g.species_id=1)
+order by b.id;
+
+-- get functional annotations for a bicluster
+select b.id as bicluster_id, bf.function_id, f.namespace, f.native_id
+from networks_bicluster b 
+join networks_bicluster_function bf on b.id=bf.bicluster_id
+join networks_function f on f.id=bf.function_id
+where b.network_id = 1
+and f.type='go'
+order by b.id;
