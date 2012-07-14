@@ -1,3 +1,6 @@
+-- This is just a place to cut and paste queries so as not to have to type
+-- them again. - Chris
+
 -- get gene ids for a bicluster
 select gene_id
 from biclusters b join biclusters_genes bg on b.id=bg.bicluster_id
@@ -454,7 +457,60 @@ order by b.id;
 
 -- find screwed up enrichments
 select * from networks_bicluster_function bf join networks_function f on bf.function_id=f.id where gene_count > k;
+select count(*) from networks_bicluster_function bf join networks_function f on bf.function_id=f.id where gene_count > k and bf.method='hypergeometric2';
 
+select count(*)
+from networks_bicluster_function bf join networks_function f on bf.function_id=f.id
+where f.type='cog' and f.namespace='cog' and bf.method='hypergeometric2';
 
+(select bf.bicluster_id, bf.function_id
+from networks_bicluster_function bf join networks_function f on bf.function_id=f.id
+where f.type='kegg' and f.namespace='kegg pathway' and bf.method='hypergeometric2')
+except
+(select bf.bicluster_id, bf.function_id
+from networks_bicluster_function bf join networks_function f on bf.function_id=f.id
+where f.type='kegg' and f.namespace='kegg pathway' and bf.method='hypergeometric')
+order by bicluster_id;
+
+select distinct(bf.bicluster_id, bf.function_id)
+from networks_bicluster_function bf join networks_function f on bf.function_id=f.id
+where f.type='kegg' and f.namespace='kegg pathway' and bf.method='hypergeometric2'
+
+select distinct(type,namespace) from networks_function;
 
 (select id from function where namespace in ('cog category', 'cog subcategory', 'kegg category', 'kegg subcategory'))
+
+select bf.*, bf2.gene_count, bf2.m, bf2.n, bf2.k, bf2.p
+from networks_bicluster_function bf
+  join networks_bicluster_function bf2
+  on bf.bicluster_id=bf2.bicluster_id and bf.function_id=bf2.function_id
+  join networks_function f
+  on bf.function_id=f.id
+where bf.method='hypergeometric' and bf2.method='hypergeometric2'
+and f.namespace='kegg pathway'
+
+select bf.*, bf2.gene_count, bf2.m, bf2.n, bf2.k, bf2.p
+from networks_bicluster_function bf
+  join networks_bicluster_function bf2
+  on bf.bicluster_id=bf2.bicluster_id and bf.function_id=bf2.function_id
+  join networks_function f
+  on bf.function_id=f.id
+where bf.method='hypergeometric' and bf2.method='hypergeometric2'
+and f.namespace='kegg pathway'
+
+select bg.gene_id, gf.function_id
+from networks_bicluster b 
+  join networks_bicluster_genes bg on b.id=bg.bicluster_id
+  join networks_gene_function gf on bg.gene_id=gf.gene_id
+  join networks_function f on f.id=gf.function_id
+where b.id=873
+  and f.namespace='kegg pathway';
+
+select count(*)
+from networks_bicluster_function bf
+  join networks_function f on f.id=bf.function_id
+where f.namespace='kegg pathway'
+  and bf.gene_count>1;
+
+
+

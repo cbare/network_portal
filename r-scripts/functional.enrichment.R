@@ -96,15 +96,15 @@ get.function.gene.counts <- function(con, gene.ids, type=NULL, ancestor.map=NULL
 
 
 # compute functional enrichment for all biclusters in the given network
-# with the given system and namespace. If gene.ids are not given, use the
+# with the given system. If gene.ids are not given, use the
 # set of genes that appear in at least one bicluster. This will likely not
 # include all genes in the organism. If genes were considered, but not
 # included in any bicluster, we should include those in the background.
 #
 # examples:
-# enrichment(network.id=1, type='kegg', namespace='kegg pathway')
-# enrichment(network.id=1, type='tigr', namespace='tigrfam')
-enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
+# enrichment(network.id=1, type='kegg')
+# enrichment(network.id=1, type='tigr')
+enrichment <- function(network.id, type=NULL, gene.ids=NULL) {
   tryCatch(
   expr={
     postgreSQL.driver <- dbDriver("PostgreSQL")
@@ -149,8 +149,8 @@ enrichment <- function(network.id, type=NULL, namespace=NULL, gene.ids=NULL) {
     bicluster.gene.counts <- dbGetQuery(con, sql)
     cat(sprintf("counted genes in %d biclusters.\n", nrow(bicluster.gene.counts)))
     
-    ancestor.map <- get.ancestor.map(con,type=type, namespace=namespace)
-    cat(sprintf("constructed ancestor map for %s - %s.\n", type, namespace))
+    ancestor.map <- get.ancestor.map(con,type=type)
+    cat(sprintf("constructed ancestor map for %s.\n", type))
     
     # for each bicluster count genes grouped by function
     # return a data.frame w/ columns bicluster_id, function_id, count
@@ -269,6 +269,9 @@ get.ancestors <- function(con, function_ids) {
 
 # return a data.frame with two columns, function_id and ancestor_id mapping a function
 # to it's ancestors, where a function is considered to be it's own ancestor.
+# if namespace is specified, filter the ancestors to just that namespace.
+# WARNING: don't try to run this on GO terms. GO is much bigger and has a deeper hierarchy
+# than the other systems. It will be very slow.
 get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) {
   if (is.null(function_ids)) {
     sql <- sprintf(paste("select id from networks_function where type='%s';"),type)
@@ -296,10 +299,10 @@ get.ancestor.map <- function(con, function_ids=NULL, type=NULL, namespace=NULL) 
   return(df)
 }
 
-# compute enrichment of a network for functions of a type and subtype (namespace)
-compute.and.display.enrichment <- function(network.id, system.type, system.namespace) {
-  cat(sprintf("enrichment network=%d, type=%s, namespace=%s\n", network.id, system.type, system.namespace))
-  en <- enrichment(network.id, system.type, system.namespace)
+# compute enrichment of a network for functions of a type
+compute.and.display.enrichment <- function(network.id, system) {
+  cat(sprintf("enrichment network=%d, type=%s\n", network.id, system))
+  en <- enrichment(network.id, system)
   cat("dim(en) =", dim(en), "\n")
   cat("sum(en$p.bh < 0.05) =", sum(en$p.bh < 0.05), "\n")
   cat("sum(en$p.b < 0.05) =", sum(en$p.b < 0.05), "\n")
@@ -309,7 +312,7 @@ compute.and.display.enrichment <- function(network.id, system.type, system.names
 
 # return a list of functional systems and their subcategories
 functional.systems <- function() {
-  return(   list( c(type='kegg', namespace='pathway'),
+  return(   list( c(type='kegg', namespace='kegg pathway'),
                   c(type='kegg', namespace='kegg subcategory'),
                   c(type='kegg', namespace='kegg category'),
                   c(type='tigr', namespace='tigr sub1role'),
@@ -320,14 +323,18 @@ functional.systems <- function() {
 
 # compute enrichment for all networks, all systems
 let.it.rip <- function(insert=F) {
-  systems = functional.systems()
+  systems = c('kegg', 'tigr', 'cog')
 
   networks <- get.networks()
   for (id in networks$id) {
     for (system in systems) {
-      en <- compute.and.display.enrichment(id, system['type'], system['namespace'])
+      en <- compute.and.display.enrichment(id, system)
       if (insert) {
-        insert.enrichment(en)
+        # if any filtering is desired, based on p values or gene_count,
+        # here would be the place to do it. It might be a good idea to
+        # filter out namespaces 'cog' and 'tigr' since they mostly correspond
+        # to individual genes, not groups of genes.
+        insert.enrichment(en, method='hypergeometric2')
       }
     }
   }

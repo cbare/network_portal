@@ -308,7 +308,6 @@ let.it.rip.GO <- function(insert=F) {
         
         # if any filtering is desired, based on p values or gene_count,
         # here would be the place to do it.
-        
         insert.enrichment(en)
       }
     }
